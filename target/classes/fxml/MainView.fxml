@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.najahni.controllers.MainController"
+            styleClass="main-container">
+    
+    <!-- En-tête -->
+    <top>
+        <VBox styleClass="header">
+            <Label text="NAJAHNI" styleClass="header-title"/>
+            <Label text="Plateforme d'Entrepreneuriat et d'Investissement" styleClass="header-subtitle"/>
+        </VBox>
+    </top>
+    
+    <!-- Menu de Navigation -->
+    <left>
+        <VBox styleClass="nav-menu" spacing="5" minWidth="200">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10"/>
+            </padding>
+            
+            <Button fx:id="btnDashboard" text="📊 Tableau de bord" 
+                    onAction="#showDashboard" 
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            
+            <Separator/>
+            
+            <Label text="Gestion" style="-fx-text-fill: #95a5a6; -fx-font-size: 12px; -fx-padding: 10 0 5 5;"/>
+            
+            <Button fx:id="btnUsers" text="👥 Utilisateurs" 
+                    onAction="#showUsers" 
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            
+            <Button fx:id="btnProjects" text="📁 Projets" 
+                    onAction="#showProjects" 
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            
+            <Button fx:id="btnOpportunities" text="💰 Opportunités" 
+                    onAction="#showOpportunities" 
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            
+            <Button fx:id="btnOffers" text="🤝 Offres" 
+                    onAction="#showOffers" 
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            
+            <Separator/>
+            
+            <Label text="Apprentissage" style="-fx-text-fill: #95a5a6; -fx-font-size: 12px; -fx-padding: 10 0 5 5;"/>
+            
+            <Button fx:id="btnCours" text="📚 Cours" 
+                    onAction="#showCours" 
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            
+            <Button fx:id="btnApprentissage" text="🎮 Mon Apprentissage" 
+                    onAction="#showApprentissage" 
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+            
+            <Separator/>
+            
+            <Label text="PIDEV - NAJAHNI v1.0" 
+                   style="-fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-padding: 10 0 0 5;"/>
+        </VBox>
+    </left>
+    
+    <!-- Zone de Contenu Principal -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <!-- Le contenu sera chargé dynamiquement -->
+        </StackPane>
+    </center>
+    
+</BorderPane>
