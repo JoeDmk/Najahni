@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:controller="controllers.AjouterUserController"
+            prefHeight="500.0" prefWidth="600.0"
+            style="-fx-background-color: #ecf0f1;"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <top>
+        <HBox style="-fx-background-color: #2c3e50; -fx-padding: 15;">
+            <Button text="← Retour" onAction="#handleBack"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;"/>
+            <Label text="  Ajouter un utilisateur" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="12" style="-fx-padding: 30;">
+            <HBox spacing="10">
+                <TextField fx:id="firstnameField" promptText="Prénom" prefHeight="35" HBox.hgrow="ALWAYS"
+                           style="-fx-background-radius: 10;"/>
+                <TextField fx:id="lastnameField" promptText="Nom" prefHeight="35" HBox.hgrow="ALWAYS"
+                           style="-fx-background-radius: 10;"/>
+            </HBox>
+
+            <TextField fx:id="emailField" promptText="Email" prefHeight="35" style="-fx-background-radius: 10;"/>
+            <TextField fx:id="phoneField" promptText="Téléphone" prefHeight="35" style="-fx-background-radius: 10;"/>
+            <PasswordField fx:id="passwordField" promptText="Mot de passe" prefHeight="35" style="-fx-background-radius: 10;"/>
+
+            <ComboBox fx:id="roleComboBox" prefHeight="35" prefWidth="540" style="-fx-background-radius: 10;"/>
+
+            <Label fx:id="errorLabel" visible="false" wrapText="true"/>
+            <Label fx:id="successLabel" visible="false" wrapText="true"/>
+
+            <Button text="Ajouter" onAction="#handleAdd" prefHeight="38" prefWidth="300"
+                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14;"/>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:controller="controllers.ProfilController"
+            prefHeight="650.0" prefWidth="800.0"
+            style="-fx-background-color: #ecf0f1;"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2c3e50; -fx-padding: 15;">
+            <Button text="← Retour" onAction="#handleBack"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14; -fx-cursor: hand;"/>
+            <Label text="Mon Profil" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="5">
+                <Label text="Rôle:" style="-fx-text-fill: #95a5a6;"/>
+                <Label fx:id="roleLabel" style="-fx-text-fill: #f39c12; -fx-font-weight: bold;"/>
+            </HBox>
+            <HBox spacing="5">
+                <Label fx:id="verifiedLabel" style="-fx-text-fill: #2ecc71;"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox spacing="15" style="-fx-padding: 30;">
+
+                <HBox spacing="15">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Prénom"/>
+                        <TextField fx:id="firstnameField" prefHeight="35" style="-fx-background-radius: 10;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Nom"/>
+                        <TextField fx:id="lastnameField" prefHeight="35" style="-fx-background-radius: 10;"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="5">
+                    <Label text="Email"/>
+                    <TextField fx:id="emailField" prefHeight="35" style="-fx-background-radius: 10;"/>
+                </VBox>
+
+                <VBox spacing="5">
+                    <Label text="Téléphone"/>
+                    <TextField fx:id="phoneField" prefHeight="35" style="-fx-background-radius: 10;"/>
+                </VBox>
+
+                <VBox spacing="5">
+                    <Label text="Bio"/>
+                    <TextArea fx:id="bioField" prefHeight="80" style="-fx-background-radius: 10;" wrapText="true"/>
+                </VBox>
+
+                <HBox spacing="15">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Entreprise"/>
+                        <TextField fx:id="companyField" prefHeight="35" style="-fx-background-radius: 10;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="LinkedIn"/>
+                        <TextField fx:id="linkedinField" prefHeight="35" style="-fx-background-radius: 10;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="15">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Adresse"/>
+                        <TextField fx:id="addressField" prefHeight="35" style="-fx-background-radius: 10;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Date de naissance"/>
+                        <DatePicker fx:id="dateOfBirthPicker" prefHeight="35" prefWidth="300"/>
+                    </VBox>
+                </HBox>
+
+                <Label fx:id="errorLabel" visible="false" wrapText="true"/>
+                <Label fx:id="successLabel" visible="false" wrapText="true"/>
+
+                <HBox spacing="10" alignment="CENTER">
+                    <Button text="Enregistrer" onAction="#handleSaveProfile" prefHeight="38" prefWidth="200"
+                            style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14;"/>
+                    <Button text="Changer mot de passe" onAction="#handleChangePassword" prefHeight="38"
+                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,83 @@
+.navbar {
+    -fx-background-color: #ed6637;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 30px;
+    -fx-background-radius: 30px;
+    -fx-alignment: center;
+    -fx-spacing: 20px;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 20px;
+    -fx-padding: 8px 15px;
+}
+.nav-button .label {
+    -fx-text-fill: white !important;
+}
+
+
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF; /* White color for better contrast */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 4, 0, 0, 2);
+}
+
+
+
+.offer-card {
+    -fx-background-color: white;
+    -fx-padding: 15px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0.3, 0, 0);
+}
+
+
+.offer-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ed6637;
+}
+
+.offer-price {
+    -fx-font-size: 14px;
+    -fx-text-fill: #e74c3c;
+}
+
+.offer-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666;
+}
+.text {
+    -fx-fill: #333333; /* Dark gray for readability */
+    -fx-font-weight: bold;
+}
+
+/* Reserve Button */
+.reserve-button {
+    -fx-background-color: #ed6637;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 15px;
+    -fx-border-radius: 5;
+}
+
+.reserve-button:hover {
+    -fx-background-color: #e0522e;
+}
+/* Reduce the white overlay effect */
+.card {
+    -fx-background-color: rgba(255, 255, 255, 0.85); /* Slightly less transparent for readability */
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+}

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:controller="controllers.HomeController"
+            prefHeight="600.0" prefWidth="900.0"
+            style="-fx-background-color: #ecf0f1;"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2c3e50; -fx-padding: 15;">
+            <ImageView fitWidth="36" fitHeight="36" preserveRatio="true">
+                <image><Image url="@logo_najahni.png"/></image>
+            </ImageView>
+            <Label text="Najahni" style="-fx-text-fill: #f39c12; -fx-font-size: 22; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Mon Profil" onAction="#handleProfile"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 10;"/>
+            <Button text="Réseau" onAction="#handleNetwork"
+                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 10;"/>
+            <Button text="Mot de passe" onAction="#handleChangePassword"
+                    style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 10;"/>
+            <Button text="Déconnexion" onAction="#handleLogout"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 10;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="30" style="-fx-padding: 50;">
+
+            <Label fx:id="welcomeLabel" text="Bienvenue !"
+                   style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+            <HBox spacing="5" alignment="CENTER">
+                <Label text="Rôle:" style="-fx-font-size: 16; -fx-text-fill: #7f8c8d;"/>
+                <Label fx:id="roleLabel" text="" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            </HBox>
+
+            <HBox spacing="40" alignment="CENTER">
+                <VBox alignment="CENTER" spacing="5"
+                      style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <Label fx:id="followersCountLabel" text="0"
+                           style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+                    <Label text="Abonnés" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="5"
+                      style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <Label fx:id="followingCountLabel" text="0"
+                           style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #2ecc71;"/>
+                    <Label text="Abonnements" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
+                </VBox>
+            </HBox>
+
+            <Label text="Connectez-vous avec des entrepreneurs, mentors et investisseurs."
+                   style="-fx-font-size: 14; -fx-text-fill: #95a5a6;" wrapText="true" alignment="CENTER"/>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:controller="controllers.NetworkController"
+            prefHeight="650.0" prefWidth="900.0"
+            style="-fx-background-color: #ecf0f1;"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2c3e50; -fx-padding: 15;">
+            <Button text="← Retour" onAction="#handleBack"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;"/>
+            <Label text="Mon Réseau" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="15">
+                <VBox alignment="CENTER">
+                    <Label fx:id="followersCountLabel" text="0" style="-fx-text-fill: #3498db; -fx-font-size: 18; -fx-font-weight: bold;"/>
+                    <Label text="Abonnés" style="-fx-text-fill: white; -fx-font-size: 11;"/>
+                </VBox>
+                <VBox alignment="CENTER">
+                    <Label fx:id="followingCountLabel" text="0" style="-fx-text-fill: #2ecc71; -fx-font-size: 18; -fx-font-weight: bold;"/>
+                    <Label text="Abonnements" style="-fx-text-fill: white; -fx-font-size: 11;"/>
+                </VBox>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="15" style="-fx-padding: 20;">
+
+            <TextField fx:id="searchField" promptText="Rechercher des utilisateurs..." prefHeight="38"
+                       style="-fx-background-radius: 20;" onAction="#handleSearch"/>
+
+            <HBox spacing="15" VBox.vgrow="ALWAYS">
+
+                <!-- Suggestions -->
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Suggestions" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <ListView fx:id="suggestionsListView" VBox.vgrow="ALWAYS"
+                              style="-fx-background-radius: 10;"/>
+                </VBox>
+
+                <!-- Following -->
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Abonnements" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2ecc71;"/>
+                    <ListView fx:id="followingListView" VBox.vgrow="ALWAYS"
+                              style="-fx-background-radius: 10;"/>
+                </VBox>
+
+                <!-- Followers -->
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Abonnés" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+                    <ListView fx:id="followersListView" VBox.vgrow="ALWAYS"
+                              style="-fx-background-radius: 10;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
