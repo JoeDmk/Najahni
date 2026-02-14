@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.najahni.controllers.DashboardController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="20" style="-fx-background-color: transparent;">
+    
+    <padding>
+        <Insets top="10" right="15" bottom="10" left="10"/>
+    </padding>
+    
+    <!-- Section de Bienvenue -->
+    <VBox styleClass="welcome-panel" spacing="10">
+        <Label text="Bienvenue sur NAJAHNI" styleClass="welcome-text"/>
+        <Label text="Votre Plateforme de Gestion d'Entrepreneuriat et d'Investissement" styleClass="welcome-subtext"/>
+    </VBox>
+    
+    <!-- Cartes de Statistiques -->
+    <Label text="Statistiques de la Plateforme" styleClass="section-title"/>
+    
+    <HBox fx:id="statsContainer" spacing="20">
+        <!-- Carte Total Utilisateurs -->
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5">
+            <Label fx:id="lblTotalUsers" text="0" styleClass="stat-value"/>
+            <Label text="Total Utilisateurs" styleClass="stat-label"/>
+            <HBox spacing="10" alignment="CENTER">
+                <Label fx:id="lblEntrepreneurs" text="Entrepreneurs : 0" style="-fx-text-fill: #27ae60;"/>
+                <Label fx:id="lblInvestors" text="Investisseurs : 0" style="-fx-text-fill: #3498db;"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Carte Total Projets -->
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5">
+            <Label fx:id="lblTotalProjects" text="0" styleClass="stat-value"/>
+            <Label text="Total Projets" styleClass="stat-label"/>
+            <HBox spacing="10" alignment="CENTER">
+                <Label fx:id="lblApprovedProjects" text="Approuvés : 0" style="-fx-text-fill: #27ae60;"/>
+                <Label fx:id="lblPendingProjects" text="En attente : 0" style="-fx-text-fill: #f39c12;"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Carte Total Investissements -->
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5">
+            <Label fx:id="lblTotalInvestments" text="0" styleClass="stat-value"/>
+            <Label text="Total Investissements" styleClass="stat-label"/>
+            <Label fx:id="lblTotalAmount" text="Total : 0,00 €" style="-fx-text-fill: #9b59b6; -fx-font-weight: bold;"/>
+        </VBox>
+    </HBox>
+    
+    <!-- Actions Rapides -->
+    <Label text="Actions Rapides" styleClass="section-title"/>
+    
+    <HBox spacing="15">
+        <Button text="➕ Ajouter Utilisateur" onAction="#addNewUser" styleClass="btn-primary"/>
+        <Button text="📁 Créer Projet" onAction="#addNewProject" styleClass="btn-success"/>
+        <Button text="💰 Ajouter Investissement" onAction="#addNewInvestment" styleClass="btn-warning"/>
+        <Button text="🔄 Actualiser" onAction="#refreshDashboard" styleClass="btn-secondary"/>
+    </HBox>
+    
+    <!-- Section Projets Récents -->
+    <Label text="Projets Récents" styleClass="section-title"/>
+    
+    <TableView fx:id="recentProjectsTable" VBox.vgrow="ALWAYS" minHeight="280">
+        <columns>
+            <TableColumn fx:id="colProjectTitle" text="Titre" prefWidth="240" minWidth="200"/>
+            <TableColumn fx:id="colProjectSector" text="Secteur" prefWidth="170" minWidth="150"/>
+            <TableColumn fx:id="colProjectStatus" text="Statut" prefWidth="130" minWidth="110"/>
+            <TableColumn fx:id="colProjectEntrepreneur" text="Entrepreneur" prefWidth="200" minWidth="180"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucun projet disponible"/>
+        </placeholder>
+    </TableView>
+    
+</VBox>
+</content>
+</ScrollPane>

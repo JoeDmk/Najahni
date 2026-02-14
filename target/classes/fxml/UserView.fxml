@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.najahni.controllers.UserController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="15" style="-fx-background-color: transparent;">
+    
+    <padding>
+        <Insets top="10" right="15" bottom="10" left="10"/>
+    </padding>
+    
+    <!-- En-tête de Page -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Gestion des Utilisateurs" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Nouvel Utilisateur" onAction="#showAddForm" styleClass="btn-primary"/>
+        <Button text="🔄 Actualiser" onAction="#refreshTable" styleClass="btn-secondary"/>
+    </HBox>
+    
+    <Separator/>
+    
+    <!-- Contenu Principal - Vue Divisée -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS" minHeight="500">
+        
+        <!-- Tableau des Utilisateurs -->
+        <VBox HBox.hgrow="ALWAYS" spacing="10">
+            <Label text="Liste des Utilisateurs" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            
+            <!-- Barre de Recherche/Filtre -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="txtSearch" promptText="Rechercher par nom ou courriel..." prefWidth="250"/>
+                <ComboBox fx:id="cboRoleFilter" promptText="Filtrer par rôle" prefWidth="150"/>
+                <Button text="Rechercher" onAction="#searchUsers" styleClass="btn-primary"/>
+                <Button text="Effacer" onAction="#clearSearch" styleClass="btn-secondary"/>
+            </HBox>
+            
+            <TableView fx:id="usersTable" VBox.vgrow="ALWAYS" minHeight="400">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="60" minWidth="60"/>
+                    <TableColumn fx:id="colName" text="Nom" prefWidth="180" minWidth="150"/>
+                    <TableColumn fx:id="colEmail" text="Courriel" prefWidth="220" minWidth="180"/>
+                    <TableColumn fx:id="colRole" text="Rôle" prefWidth="130" minWidth="100"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="120" minWidth="100"/>
+                </columns>
+                <placeholder>
+                    <Label text="Aucun utilisateur trouvé"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+        
+        <!-- Formulaire Utilisateur -->
+        <VBox fx:id="formContainer" styleClass="form-container" spacing="15" minWidth="350" maxWidth="350">
+            <Label fx:id="formTitle" text="Ajouter un Utilisateur" styleClass="form-title"/>
+            
+            <Separator/>
+            
+            <!-- Champ ID Masqué -->
+            <TextField fx:id="txtId" visible="false" managed="false"/>
+            
+            <!-- Champ Nom -->
+            <VBox spacing="5">
+                <Label text="Nom Complet *" styleClass="form-label"/>
+                <TextField fx:id="txtName" promptText="Entrez le nom complet" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Champ Courriel -->
+            <VBox spacing="5">
+                <Label text="Adresse Courriel *" styleClass="form-label"/>
+                <TextField fx:id="txtEmail" promptText="Entrez l'adresse courriel" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Champ Mot de Passe -->
+            <VBox spacing="5">
+                <Label text="Mot de Passe *" styleClass="form-label"/>
+                <PasswordField fx:id="txtPassword" promptText="Entrez le mot de passe" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Sélection du Rôle -->
+            <VBox spacing="5">
+                <Label text="Rôle *" styleClass="form-label"/>
+                <ComboBox fx:id="cboRole" promptText="Sélectionnez un rôle" maxWidth="Infinity" styleClass="form-field"/>
+            </VBox>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+            
+            <!-- Boutons du Formulaire -->
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="btnSave" text="💾 Enregistrer" onAction="#saveUser" styleClass="btn-success"/>
+                <Button fx:id="btnCancel" text="❌ Annuler" onAction="#cancelForm" styleClass="btn-secondary"/>
+            </HBox>
+            
+            <Label fx:id="lblFormMessage" text="" styleClass="form-message"/>
+        </VBox>
+        
+    </HBox>
+    
+</VBox>
+</content>
+</ScrollPane>
