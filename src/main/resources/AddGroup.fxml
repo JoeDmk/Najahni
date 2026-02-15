@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.GroupAddController"
+            prefWidth="900"
+            prefHeight="600"
+            style="-fx-background-color: #f4f6f8;">
+
+    <top>
+        <HBox style="-fx-padding: 20 40 0 40;">
+            <Button text="⬅ Back"
+                    onAction="#goBack"
+                    style="-fx-background-color: transparent;
+                           -fx-text-fill: #4f46e5;
+                           -fx-font-weight: bold;" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER">
+
+            <!-- CARD -->
+            <VBox spacing="20"
+                  alignment="CENTER_LEFT"
+                  style="-fx-background-color: white;
+                         -fx-padding: 40;
+                         -fx-background-radius: 20;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 6);">
+
+                <Label text="Create New Group"
+                       style="-fx-font-size: 24px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #111827;" />
+
+                <TextField fx:id="groupname"
+                           promptText="Group Name"
+                           prefWidth="400"
+                           style="-fx-background-radius: 10;" />
+
+                <TextField fx:id="groupdescription"
+                           promptText="Group Description"
+                           prefWidth="400"
+                           style="-fx-background-radius: 10;" />
+
+                <CheckBox fx:id="privateCheckBox"
+                          text="🔒 Private Group"
+                          style="-fx-font-size: 14px;" />
+
+                <Label fx:id="statusLabel"
+                       style="-fx-text-fill: #ef4444;
+                              -fx-font-weight: bold;" />
+
+                <Button fx:id="creategroup"
+                        text="🚀 Create Group"
+                        onAction="#addgroup"
+                        style="-fx-background-color: #4f46e5;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 10;" />
+
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

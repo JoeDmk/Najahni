@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.GroupsPageController"
+            prefWidth="900"
+            prefHeight="650"
+            style="-fx-background-color: #f9fafb;"
+            stylesheets="@styles/app.css">
+
+    <!-- 🔹 Modern Header -->
+    <top>
+        <VBox spacing="20" style="-fx-padding: 25 40 15 40;">
+
+            <!-- Title Row -->
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Groups"
+                       style="-fx-font-size: 28px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #111827;" />
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="+ Create Group"
+                        onAction="#goToAddGroup"
+                        style="-fx-background-color: #4f46e5;
+                               -fx-text-fill: white;
+                               -fx-font-size: 13px;
+                               -fx-padding: 8 18 8 18;
+                               -fx-background-radius: 8;" />
+            </HBox>
+
+            <!-- Controls Row -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+
+                <ComboBox fx:id="sortComboBox"
+                          prefWidth="180"
+                          promptText="Sort by"
+                          onAction="#handleSortChange"
+                          style="-fx-background-radius: 8;" />
+
+                <TextField fx:id="searchField"
+                           promptText="Search groups..."
+                           prefWidth="250"
+                           style="-fx-background-radius: 8;" />
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="← Back"
+                        onAction="#goToHome"
+                        styleClass="back-btn"/>
+
+            </HBox>
+
+        </VBox>
+    </top>
+
+    <!-- 🔹 Content Area -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: transparent;"
+                    BorderPane.alignment="CENTER">
+
+            <VBox fx:id="groupsContainer"
+                  spacing="20"
+                  style="-fx-padding: 20 40 40 40;" />
+        </ScrollPane>
+    </center>
+
+</BorderPane>

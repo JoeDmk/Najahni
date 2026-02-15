@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="rootPane"
+            xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.GroupDashboardController"
+            prefWidth="1000"
+            prefHeight="700"
+            style="-fx-background-color: #f9fafb;"
+            stylesheets="@styles/app.css">
+
+    <!-- 🔹 HEADER -->
+    <top>
+        <VBox spacing="15" style="-fx-padding: 30 40 20 40;">
+
+            <Button text="← Back"
+                    onAction="#goBack"
+                    styleClass="back-btn"/>
+
+
+            <HBox alignment="CENTER_LEFT" spacing="15">
+
+                <VBox spacing="5">
+                    <Label fx:id="groupName"
+                           style="-fx-font-size: 26px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #111827;" />
+
+                    <Label fx:id="groupDescription"
+                           style="-fx-text-fill: #6b7280;" />
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <HBox spacing="10">
+                    <Button fx:id="joinButton"
+                            text="Join Group"
+                            onAction="#joinGroup"
+                            visible="false"
+                            style="-fx-background-color: #4f46e5;
+                                   -fx-text-fill: white;
+                                   -fx-background-radius: 8;" />
+
+                    <Button fx:id="leaveButton"
+                            text="Leave Group"
+                            onAction="#leaveGroup"
+                            visible="false"
+                            style="-fx-background-color: #ef4444;
+                                   -fx-text-fill: white;
+                                   -fx-background-radius: 8;" />
+                </HBox>
+
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- 🔹 MAIN CONTENT -->
+    <center>
+        <HBox fx:id="mainContentBox"
+              spacing="25"
+              style="-fx-padding: 20 40 40 40;">
+
+
+        <!-- MEMBERS CARD -->
+            <VBox spacing="15"
+                  style="-fx-background-color: white;
+                         -fx-padding: 20;
+                         -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);"
+                  HBox.hgrow="ALWAYS">
+
+                <Label fx:id="memberCountLabel"
+                       text="Members"
+                       style="-fx-font-size: 16px;
+                              -fx-font-weight: bold;" />
+
+                <ScrollPane fitToWidth="true"
+                            style="-fx-background-color: transparent;">
+                    <VBox fx:id="membersContainer" spacing="10"/>
+                </ScrollPane>
+
+            </VBox>
+
+            <!-- THREADS CARD -->
+            <VBox spacing="15"
+                  style="-fx-background-color: white;
+                         -fx-padding: 20;
+                         -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);"
+                  HBox.hgrow="ALWAYS">
+
+                <HBox alignment="CENTER_LEFT">
+                    <Label fx:id="threadsLabel"
+                           text="Threads"
+                           style="-fx-font-size: 16px;
+                                  -fx-font-weight: bold;" />
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Button fx:id="addThreadButton"
+                            text="+ Add Thread"
+                            onAction="#addThread"
+                            visible="false"
+                            style="-fx-background-color: #4f46e5;
+                                   -fx-text-fill: white;
+                                   -fx-background-radius: 8;" />
+                </HBox>
+
+                <ScrollPane fitToWidth="true"
+                            style="-fx-background-color: transparent;">
+                    <VBox fx:id="threadsContainer" spacing="15"/>
+                </ScrollPane>
+
+            </VBox>
+
+        </HBox>
+    </center>
+
+</BorderPane>

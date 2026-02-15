@@ -1,0 +1,15 @@
+[33m1c3a37d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mCommunity[m[33m, [m[1;31mNajahni/Community[m[33m, [m[1;32mbackup-before-recover[m[33m)[m HEAD@{Sun Feb 15 02:42:25 2026}: checkout: moving from snapshot to Community
+[33m1c3a37d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mCommunity[m[33m, [m[1;31mNajahni/Community[m[33m, [m[1;32mbackup-before-recover[m[33m)[m HEAD@{Sun Feb 15 01:45:39 2026}: rebase (finish): returning to refs/heads/Community
+[33m1c3a37d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mCommunity[m[33m, [m[1;31mNajahni/Community[m[33m, [m[1;32mbackup-before-recover[m[33m)[m HEAD@{Sun Feb 15 01:45:39 2026}: rebase (start): checkout 1c3a37dcb00648d6fd78cf95524bc47153a199be
+[33ma4ef8a5[m HEAD@{Sun Feb 15 01:45:30 2026}: rebase (finish): returning to refs/heads/Community
+[33ma4ef8a5[m HEAD@{Sun Feb 15 01:45:30 2026}: rebase (start): checkout a4ef8a5d5e6136d079d466531a95236dc0521d51
+[33m3168885[m HEAD@{Sun Feb 15 01:41:48 2026}: commit (amend): "Initial commit - Community"
+[33m6ee04cf[m HEAD@{Sun Feb 15 01:41:01 2026}: commit: "Initial commit - Community"
+[33ma4ef8a5[m HEAD@{Sun Feb 15 01:40:45 2026}: commit: "Initial commit - Community"
+[33m1c3a37d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mCommunity[m[33m, [m[1;31mNajahni/Community[m[33m, [m[1;32mbackup-before-recover[m[33m)[m HEAD@{Sat Feb 14 23:02:39 2026}: commit: "Initial commit - Community"
+[33m8407b79[m HEAD@{Fri Feb 13 12:27:34 2026}: commit: "Initial commit - Community"
+[33m2de9f39[m HEAD@{Fri Feb 13 09:55:25 2026}: commit (amend): "Initial commit - Community"
+[33m1ab8e0a[m HEAD@{Fri Feb 13 09:52:55 2026}: commit (amend): "Initial commit - Community"
+[33m8a66279[m HEAD@{Fri Feb 13 09:49:53 2026}: commit (amend): "Initial commit - Community"
+[33me629e2b[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{Fri Feb 13 09:47:05 2026}: checkout: moving from master to Community
+[33me629e2b[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{Fri Feb 13 09:46:37 2026}: commit (initial): "Initial commit - Community"

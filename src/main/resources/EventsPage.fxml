@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.EventsPageController"
+            prefWidth="900"
+            prefHeight="650"
+            stylesheets="@styles/app.css">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT"
+              spacing="20"
+              styleClass="header-bar">
+
+            <Label text="Events"
+                   styleClass="page-title"/>
+
+            <Pane HBox.hgrow="ALWAYS"/>
+
+            <Button text="Back"
+                    onAction="#goBack"
+                    styleClass="back-btn"/>
+
+            <Button text="+ Create Event"
+                    onAction="#goToAddEvent"
+                    styleClass="primary-btn"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox fx:id="eventsContainer"
+                  spacing="20"
+                  style="-fx-padding: 30;"/>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

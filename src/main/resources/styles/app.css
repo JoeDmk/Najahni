@@ -1,0 +1,217 @@
+/* ===== BACK BUTTON ===== */
+.back-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 13px;
+    -fx-padding: 6 12 6 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.back-btn:hover {
+    -fx-text-fill: #111827;
+    -fx-background-color: #f3f4f6;
+}
+
+/* ===== ROOT ===== */
+.root {
+    -fx-background-color: #f1f5f9;
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+}
+
+/* ===== PAGE TITLE ===== */
+.page-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* ===== HEADER BAR ===== */
+.header-bar {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+/* ===== PRIMARY BUTTON ===== */
+.primary-btn {
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 8 18 8 18;
+}
+
+.primary-btn:hover {
+    -fx-background-color: #4338ca;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+/* ===== SECONDARY BUTTON ===== */
+.secondary-btn {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #334155;
+    -fx-background-radius: 10;
+}
+
+.secondary-btn:hover {
+    -fx-background-color: #cbd5e1;
+}
+
+/* ===== SUCCESS BUTTON ===== */
+.success-btn {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+
+.success-btn:hover {
+    -fx-background-color: #059669;
+}
+
+/* ===== DANGER BUTTON ===== */
+.danger-btn {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+}
+
+.danger-btn:hover {
+    -fx-background-color: #dc2626;
+}
+
+/* ===== CARD ===== */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);
+}
+
+.card:hover {
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+}
+
+/* ===== INPUT ===== */
+.text-field, .text-area, .date-picker {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #cbd5e1;
+}
+
+.text-field:focused,
+.text-area:focused,
+.date-picker:focused {
+    -fx-border-color: #4f46e5;
+}
+/* ===== HOME BACKGROUND ===== */
+.home-root {
+    -fx-background-color: linear-gradient(to bottom right, #eef2ff, #f8fafc);
+}
+
+/* ===== HOME CARD ===== */
+.home-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 40;
+    -fx-spacing: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);
+}
+
+/* ===== HOME TITLE ===== */
+.home-title {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+/* ===== HOME SUBTITLE ===== */
+.home-subtitle {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 14px;
+}
+
+/* ===== NAVIGATION BUTTON ===== */
+.nav-btn {
+    -fx-background-color: #f9fafb;
+    -fx-text-fill: #1f2937;
+    -fx-font-size: 15px;
+    -fx-padding: 15 20 15 20;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: #e5e7eb;
+    -fx-cursor: hand;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+/* ===== LOGO ===== */
+.app-logo {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 25, 0.3, 0, 6);
+}
+
+.logo-container {
+    -fx-padding: 10 0 20 0;
+}
+.app-logo:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+.home-card {
+    -fx-background-color: rgba(255,255,255,0.95);
+}
+/* ===== POST META ===== */
+.meta-text {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px;
+}
+
+.post-author {
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+    -fx-font-size: 14px;
+}
+
+.post-content {
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 14px;
+}
+
+.icon-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #475569;
+    -fx-padding: 6 10 6 10;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.icon-btn:hover {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #111827;
+}
+
+.like-btn-liked {
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #b91c1c;
+    -fx-background-radius: 10;
+}
+
+.like-btn-liked:hover {
+    -fx-background-color: #fecaca;
+}
+.reaction-menu {
+    -fx-font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji";
+    -fx-font-size: 13px;
+}
+.context-menu {
+    -fx-background-radius: 12;
+    -fx-padding: 5;
+}
+

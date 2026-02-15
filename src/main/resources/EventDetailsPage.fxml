@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.EventDetailsController"
+            stylesheets="@styles/app.css">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT"
+              spacing="20"
+              styleClass="header-bar">
+
+            <Label fx:id="titleLabel"
+                   styleClass="page-title"/>
+
+            <Pane HBox.hgrow="ALWAYS"/>
+
+            <Button text="Back"
+                    onAction="#goBack"
+                    styleClass="secondary-btn"/>
+            <Button fx:id="validateTicketBtn"
+                    text="Validate Ticket"
+                    onAction="#onValidateTicket"
+                    visible="false"
+                    managed="false"/>
+
+        </HBox>
+    </top>
+
+    <!-- BODY -->
+    <center>
+        <HBox spacing="30" style="-fx-padding: 30;">
+
+            <!-- LEFT SIDE -->
+            <VBox spacing="15" HBox.hgrow="ALWAYS">
+                <VBox styleClass="card">
+                    <Label text="Description"
+                           style="-fx-font-weight:bold;"/>
+                    <Label fx:id="descriptionLabel"/>
+                </VBox>
+
+                <VBox styleClass="card">
+                    <Label fx:id="dateLabel"/>
+                    <Label fx:id="capacityLabel"
+                           style="-fx-font-weight:bold;"/>
+
+                    <Button fx:id="joinBtn"
+                            styleClass="primary-btn"/>
+                </VBox>
+            </VBox>
+
+            <!-- RIGHT SIDE -->
+            <VBox spacing="15" prefWidth="300">
+                <VBox styleClass="card">
+                    <Label text="Participants"
+                           style="-fx-font-weight:bold;"/>
+
+                    <VBox fx:id="participantsContainer"
+                          spacing="10"/>
+                </VBox>
+            </VBox>
+
+        </HBox>
+    </center>
+
+</BorderPane>

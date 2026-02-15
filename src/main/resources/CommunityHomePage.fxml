@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane fx:id="rootPane"
+            xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.CommunityHomeController"
+            prefWidth="900"
+            prefHeight="650"
+            stylesheets="@styles/app.css"
+            styleClass="home-root">
+
+    <center>
+        <StackPane alignment="CENTER">
+
+            <VBox alignment="CENTER"
+                  styleClass="home-card">
+
+                <!-- Logo Container -->
+                <VBox alignment="CENTER"
+                      styleClass="logo-container">
+
+                    <ImageView fitWidth="120"
+                               preserveRatio="true"
+                               styleClass="app-logo">
+                        <image>
+                            <Image url="@images/logo.png"/>
+                        </image>
+                    </ImageView>
+
+                </VBox>
+
+                <!-- Title -->
+                <Label text="Community"
+                       styleClass="home-title"/>
+
+                <Label text="Connect • Share • Organize"
+                       styleClass="home-subtitle"/>
+
+                <!-- Navigation Buttons -->
+                <VBox spacing="15" alignment="CENTER">
+
+                    <Button text="👥  Groups"
+                            prefWidth="250"
+                            onAction="#goToGroups"
+                            styleClass="nav-btn"/>
+
+                    <Button text="📝  Posts"
+                            prefWidth="250"
+                            onAction="#goToPosts"
+                            styleClass="nav-btn"/>
+
+                    <Button text="📅  Events"
+                            prefWidth="250"
+                            onAction="#goToEvents"
+                            styleClass="nav-btn"/>
+
+
+                </VBox>
+
+            </VBox>
+
+        </StackPane>
+    </center>
+
+
+</BorderPane>

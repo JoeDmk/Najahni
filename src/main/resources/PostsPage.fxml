@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.PostsPageController"
+            prefWidth="900"
+            prefHeight="650"
+            stylesheets="@styles/app.css"
+            style="-fx-background-color: #f9fafb;">
+
+    <!-- HEADER -->
+    <top>
+        <VBox spacing="15" style="-fx-padding: 25 40 15 40;">
+
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="Posts" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="← Back"
+                        onAction="#goBack"
+                        styleClass="back-btn"/>
+
+                <Button text="+ New Post"
+                        onAction="#focusComposer"
+                        styleClass="primary-btn"/>
+            </HBox>
+
+            <!-- Composer Card -->
+            <VBox styleClass="card" spacing="10">
+                <Label text="Share something…" style="-fx-text-fill:#334155; -fx-font-weight: bold;"/>
+                <TextArea fx:id="contentArea"
+                          promptText="What’s on your mind?"
+                          wrapText="true"
+                          prefRowCount="3"
+                          style="-fx-background-radius: 10;"/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="📷 Add Image"
+                            onAction="#handlePickImage"
+                            styleClass="secondary-btn"/>
+
+                    <Label fx:id="imageStatusLabel"
+                           text=""
+                           style="-fx-text-fill:#64748b;"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Button text="Post"
+                            onAction="#handleCreatePost"
+                            styleClass="primary-btn"/>
+                </HBox>
+            </VBox>
+
+            <!-- Feed Controls -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <ComboBox fx:id="sortComboBox"
+                          prefWidth="180"
+                          promptText="Sort by"
+                          onAction="#handleSortChange"
+                          style="-fx-background-radius: 8;" />
+
+                <TextField fx:id="searchField"
+                           promptText="Search posts..."
+                           prefWidth="280"
+                           onKeyReleased="#handleSearch"
+                           style="-fx-background-radius: 8;" />
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Refresh"
+                        onAction="#handleRefresh"
+                        styleClass="secondary-btn"/>
+            </HBox>
+
+        </VBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <ScrollPane fx:id="feedScroll"
+                    fitToWidth="true"
+                    style="-fx-background-color: transparent;">
+            <VBox fx:id="postsContainer"
+                  spacing="18"
+                  style="-fx-padding: 10 40 40 40;"/>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

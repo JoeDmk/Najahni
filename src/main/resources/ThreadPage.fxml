@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.ThreadPageController"
+            prefWidth="900"
+            prefHeight="650"
+            style="-fx-background-color: #f4f6f8;">
+
+    <!-- ✅ ONE SCROLL FOR WHOLE PAGE -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    vbarPolicy="AS_NEEDED"
+                    style="-fx-background-color: transparent;">
+
+            <!-- content root -->
+            <VBox spacing="20"
+                  style="-fx-padding: 30 40 30 40;">
+
+                <!-- Back -->
+                <Button text="⬅ Back"
+                        onAction="#goBack"
+                        style="-fx-background-color: transparent;
+                               -fx-text-fill: #4f46e5;
+                               -fx-font-weight: bold;" />
+
+                <!-- THREAD CARD -->
+                <VBox spacing="15"
+                      style="-fx-background-color: white;
+                             -fx-padding: 25;
+                             -fx-background-radius: 16;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 6);">
+
+                    <Label fx:id="threadTitle"
+                           style="-fx-font-size: 22px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #111827;" />
+
+                    <Label fx:id="threadContent"
+                           wrapText="true"
+                           style="-fx-font-size: 14px;
+                                  -fx-text-fill: #374151;" />
+
+                    <!-- 🧠 AI SUMMARY BOX -->
+                    <VBox spacing="8"
+                          style="-fx-background-color:#f9fafb; -fx-padding:12; -fx-background-radius:12;">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="🧠 AI Summary"
+                                   style="-fx-font-weight:bold; -fx-text-fill:#111827;" />
+                            <Button text="Generate"
+                                    onAction="#generateSummary"
+                                    style="-fx-background-color:#111827; -fx-text-fill:white; -fx-background-radius:8;"/>
+                        </HBox>
+
+                        <Label fx:id="summaryLabel"
+                               text="(Click Generate to summarize this discussion)"
+                               wrapText="true"
+                               style="-fx-text-fill:#374151;"/>
+                    </VBox>
+
+                    <HBox spacing="10">
+                        <Button fx:id="editButton"
+                                text="✏ Edit"
+                                onAction="#editThread"
+                                style="-fx-background-color: #3b82f6;
+                                       -fx-text-fill: white;
+                                       -fx-background-radius: 8;" />
+
+                        <Button fx:id="deleteButton"
+                                text="🗑 Delete"
+                                onAction="#deleteThread"
+                                style="-fx-background-color: #ef4444;
+                                       -fx-text-fill: white;
+                                       -fx-background-radius: 8;" />
+                    </HBox>
+
+                    <Label fx:id="commentCountLabel"
+                           style="-fx-font-weight: bold;
+                                  -fx-text-fill: #6b7280;" />
+                </VBox>
+
+                <!-- COMMENTS LIST -->
+                <VBox fx:id="commentsContainer"
+                      spacing="15" />
+
+                <!-- ADD COMMENT (now scrolls too) -->
+                <VBox spacing="10"
+                      style="-fx-background-color: white;
+                             -fx-padding: 20;
+                             -fx-background-radius: 16;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 4);">
+
+                    <TextArea fx:id="commentField"
+                              promptText="Write a comment..."
+                              prefHeight="80"
+                              wrapText="true"
+                              style="-fx-background-radius: 10;" />
+
+                    <Button text="💬 Add Comment"
+                            onAction="#addComment"
+                            style="-fx-background-color: #4f46e5;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: bold;
+                                   -fx-background-radius: 10;" />
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

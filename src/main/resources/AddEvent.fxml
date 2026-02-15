@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.EventAddController"
+            stylesheets="@styles/app.css">
+
+    <top>
+        <HBox alignment="CENTER_LEFT"
+              spacing="20"
+              styleClass="header-bar">
+
+            <Label text="Create Event"
+                   styleClass="page-title"/>
+
+            <Pane HBox.hgrow="ALWAYS"/>
+
+            <Button text="Back"
+                    onAction="#goBack"
+                    styleClass="secondary-btn"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER">
+            <VBox spacing="15"
+                  prefWidth="450"
+                  styleClass="card">
+
+                <TextField fx:id="eventtitle"
+                           promptText="Event title"/>
+
+                <DatePicker fx:id="eventdate"/>
+
+                <TextArea fx:id="eventdescription"
+                          promptText="Describe the event..."
+                          prefRowCount="4"/>
+
+                <TextField fx:id="eventcapacity"
+                           promptText="Capacity"/>
+
+                <Button fx:id="createevent"
+                        text="Create Event"
+                        onAction="#addEvent"
+                        styleClass="success-btn"/>
+
+                <Label fx:id="statusLabel"/>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>
