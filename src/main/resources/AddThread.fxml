@@ -8,54 +8,42 @@
             fx:controller="Controller.ThreadAddController"
             prefWidth="900"
             prefHeight="600"
-            style="-fx-background-color: #f4f6f8;">
+            stylesheets="@styles/app.css">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header">
+            <Label text="Create Thread" styleClass="header-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="Back" onAction="#goBackToDashboard" styleClass="btn-secondary"/>
+        </HBox>
+    </top>
 
     <center>
-        <VBox alignment="CENTER">
+        <VBox alignment="CENTER" styleClass="content-area">
+            <VBox prefWidth="520" spacing="16" alignment="CENTER_LEFT" styleClass="form-container">
 
-            <!-- CARD -->
-            <VBox spacing="20"
-                  alignment="CENTER_LEFT"
-                  style="-fx-background-color: white;
-                         -fx-padding: 40;
-                         -fx-background-radius: 20;
-                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 6);">
-
-                <Label text="Create New Thread"
-                       style="-fx-font-size: 24px;
-                              -fx-font-weight: bold;
-                              -fx-text-fill: #111827;" />
+                <Label text="Thread Details" styleClass="form-title"/>
 
                 <TextField fx:id="titleField"
                            promptText="Thread Title"
-                           prefWidth="400"
-                           style="-fx-background-radius: 10;" />
+                           styleClass="form-field"/>
 
                 <TextArea fx:id="contentArea"
                           promptText="Write your content..."
-                          prefWidth="400"
-                          prefHeight="180"
+                          prefRowCount="6"
                           wrapText="true"
-                          style="-fx-background-radius: 10;" />
+                          styleClass="form-field"/>
 
-                <Label fx:id="errorLabel"
-                       style="-fx-text-fill: #ef4444;
-                              -fx-font-weight: bold;" />
+                <Label fx:id="errorLabel" styleClass="form-message form-message-error"/>
 
-                <HBox spacing="15">
-
+                <HBox spacing="12" alignment="CENTER_RIGHT">
                     <Button text="Cancel"
                             onAction="#goBackToDashboard"
-                            style="-fx-background-color: #9ca3af;
-                                   -fx-text-fill: white;
-                                   -fx-background-radius: 10;" />
+                            styleClass="btn-secondary"/>
 
-                    <Button text="🚀 Create Thread"
+                    <Button text="Create Thread"
                             onAction="#createThread"
-                            style="-fx-background-color: #4f46e5;
-                                   -fx-text-fill: white;
-                                   -fx-font-weight: bold;
-                                   -fx-background-radius: 10;" />
+                            styleClass="btn-primary"/>
                 </HBox>
 
             </VBox>

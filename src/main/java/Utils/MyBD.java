@@ -2,7 +2,7 @@ package Utils;
 import java.sql.*;
 public class MyBD {
    private Connection conn;
-   final private String URL="jdbc:mysql://localhost:3306/communauté";
+   final private String URL="jdbc:mysql://localhost:3306/najjahni";
    final private String USER="root";
    final private String PASS="";
    private static MyBD instance;

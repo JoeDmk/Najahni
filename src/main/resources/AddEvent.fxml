@@ -9,47 +9,28 @@
             stylesheets="@styles/app.css">
 
     <top>
-        <HBox alignment="CENTER_LEFT"
-              spacing="20"
-              styleClass="header-bar">
-
-            <Label text="Create Event"
-                   styleClass="page-title"/>
-
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header">
+            <Label text="Create Event" styleClass="header-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
-
-            <Button text="Back"
-                    onAction="#goBack"
-                    styleClass="secondary-btn"/>
+            <Button text="Back" onAction="#goBack" styleClass="btn-secondary"/>
         </HBox>
     </top>
 
     <center>
-        <VBox alignment="CENTER">
-            <VBox spacing="15"
-                  prefWidth="450"
-                  styleClass="card">
+        <VBox alignment="CENTER" styleClass="content-area">
+            <VBox spacing="15" prefWidth="450" styleClass="form-container">
 
-                <TextField fx:id="eventtitle"
-                           promptText="Event title"/>
+                <Label text="Event Details" styleClass="form-title"/>
 
-                <DatePicker fx:id="eventdate"/>
+                <TextField fx:id="eventtitle" promptText="Event title" styleClass="form-field"/>
+                <DatePicker fx:id="eventdate" styleClass="form-field"/>
+                <TextArea fx:id="eventdescription" promptText="Describe the event..." prefRowCount="4" styleClass="form-field"/>
+                <TextField fx:id="eventcapacity" promptText="Capacity" styleClass="form-field"/>
 
-                <TextArea fx:id="eventdescription"
-                          promptText="Describe the event..."
-                          prefRowCount="4"/>
+                <Button fx:id="createevent" text="Create Event" onAction="#addEvent" styleClass="btn-success"/>
 
-                <TextField fx:id="eventcapacity"
-                           promptText="Capacity"/>
-
-                <Button fx:id="createevent"
-                        text="Create Event"
-                        onAction="#addEvent"
-                        styleClass="success-btn"/>
-
-                <Label fx:id="statusLabel"/>
+                <Label fx:id="statusLabel" styleClass="form-message"/>
             </VBox>
         </VBox>
     </center>
-
 </BorderPane>

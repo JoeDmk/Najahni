@@ -12,59 +12,72 @@
     <top>
         <HBox alignment="CENTER_LEFT"
               spacing="20"
-              styleClass="header-bar">
+              styleClass="header">
 
             <Label fx:id="titleLabel"
-                   styleClass="page-title"/>
+                   styleClass="header-title"/>
 
             <Pane HBox.hgrow="ALWAYS"/>
 
-            <Button text="Back"
+            <Button text="← Back"
                     onAction="#goBack"
-                    styleClass="secondary-btn"/>
+                    styleClass="btn-secondary"/>
+
             <Button fx:id="validateTicketBtn"
                     text="Validate Ticket"
                     onAction="#onValidateTicket"
                     visible="false"
-                    managed="false"/>
-
+                    managed="false"
+                    styleClass="btn-primary"/>
         </HBox>
     </top>
 
-    <!-- BODY -->
+    <!-- BODY (WHOLE PAGE SCROLLABLE) -->
     <center>
-        <HBox spacing="30" style="-fx-padding: 30;">
+        <ScrollPane fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    vbarPolicy="AS_NEEDED"
+                    style="-fx-background-color: transparent;">
 
-            <!-- LEFT SIDE -->
-            <VBox spacing="15" HBox.hgrow="ALWAYS">
-                <VBox styleClass="card">
-                    <Label text="Description"
-                           style="-fx-font-weight:bold;"/>
-                    <Label fx:id="descriptionLabel"/>
-                </VBox>
+            <VBox styleClass="content-area">
 
-                <VBox styleClass="card">
-                    <Label fx:id="dateLabel"/>
-                    <Label fx:id="capacityLabel"
-                           style="-fx-font-weight:bold;"/>
+                <HBox spacing="30" styleClass="page-wrap">
 
-                    <Button fx:id="joinBtn"
-                            styleClass="primary-btn"/>
-                </VBox>
+                    <!-- LEFT SIDE -->
+                    <VBox spacing="15" HBox.hgrow="ALWAYS">
+
+                        <VBox styleClass="card" spacing="10">
+                            <Label text="Description" styleClass="card-title"/>
+                            <Label fx:id="descriptionLabel" wrapText="true"/>
+                        </VBox>
+
+                        <VBox styleClass="card" spacing="10">
+                            <Label fx:id="dateLabel" styleClass="muted-text"/>
+                            <Label fx:id="capacityLabel" styleClass="card-title"/>
+
+                            <Button fx:id="joinBtn"
+                                    styleClass="btn-primary"/>
+                        </VBox>
+
+                    </VBox>
+
+                    <!-- RIGHT SIDE -->
+                    <VBox spacing="15" prefWidth="320">
+
+                        <VBox styleClass="card" spacing="10">
+                            <Label text="Participants" styleClass="card-title"/>
+
+                            <VBox fx:id="participantsContainer"
+                                  spacing="10"/>
+                        </VBox>
+
+                    </VBox>
+
+                </HBox>
+
             </VBox>
 
-            <!-- RIGHT SIDE -->
-            <VBox spacing="15" prefWidth="300">
-                <VBox styleClass="card">
-                    <Label text="Participants"
-                           style="-fx-font-weight:bold;"/>
-
-                    <VBox fx:id="participantsContainer"
-                          spacing="10"/>
-                </VBox>
-            </VBox>
-
-        </HBox>
+        </ScrollPane>
     </center>
 
 </BorderPane>

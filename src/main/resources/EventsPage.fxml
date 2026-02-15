@@ -14,27 +14,28 @@
     <top>
         <HBox alignment="CENTER_LEFT"
               spacing="20"
-              styleClass="header-bar">
+              styleClass="header">
 
             <Label text="Events"
-                   styleClass="page-title"/>
+                   styleClass="header-title"/>
 
             <Pane HBox.hgrow="ALWAYS"/>
 
-            <Button text="Back"
+            <Button text="← Back"
                     onAction="#goBack"
-                    styleClass="back-btn"/>
+                    styleClass="btn-secondary"/>
 
             <Button text="+ Create Event"
                     onAction="#goToAddEvent"
-                    styleClass="primary-btn"/>
+                    styleClass="btn-primary"/>
         </HBox>
     </top>
 
     <!-- CONTENT -->
     <center>
-        <ScrollPane fitToWidth="true">
-            <VBox fx:id="eventsContainer"
+        <ScrollPane fitToWidth="true" styleClass="content-area">
+
+        <VBox fx:id="eventsContainer"
                   spacing="20"
                   style="-fx-padding: 30;"/>
         </ScrollPane>
