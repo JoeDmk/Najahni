@@ -4,12 +4,19 @@ import exceptions.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import tools.SceneHelper;
 import models.User;
 import services.*;
 import util.Type;
+
+import java.io.File;
 
 public class SignUpController {
     private UserService userService = UserService.getInstance();
@@ -21,15 +28,83 @@ public class SignUpController {
     @FXML private TextField phoneField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
+    @FXML private TextField passwordVisibleField;
+    @FXML private TextField confirmPasswordVisibleField;
+    @FXML private Button btnTogglePassword;
+    @FXML private Button btnToggleConfirmPassword;
     @FXML private ComboBox<String> roleComboBox;
     @FXML private Button registerButton;
     @FXML private Label messageLabel;
+    @FXML private StackPane profileImageContainer;
+    @FXML private Circle profileImageClip;
+    @FXML private ImageView profileImageView;
+    @FXML private Label lblUploadHint;
+
+    private boolean passwordVisible = false;
+    private boolean confirmPasswordVisible = false;
+    private String selectedImagePath = null;
 
     @FXML
     public void initialize() {
         if (roleComboBox != null) {
             roleComboBox.getItems().addAll("Entrepreneur", "Mentor", "Investisseur");
             roleComboBox.setValue("Entrepreneur");
+        }
+
+        // Setup circular clip for profile image
+        if (profileImageView != null && profileImageClip != null) {
+            Circle clip = new Circle(48, 48, 48);
+            profileImageView.setClip(clip);
+        }
+
+        // Click on the image container to upload
+        if (profileImageContainer != null) {
+            profileImageContainer.setOnMouseClicked(e -> handleProfileImageUpload());
+        }
+
+        // Bind password toggle fields
+        if (passwordVisibleField != null) {
+            passwordVisibleField.textProperty().bindBidirectional(passwordField.textProperty());
+        }
+        if (confirmPasswordVisibleField != null) {
+            confirmPasswordVisibleField.textProperty().bindBidirectional(confirmPasswordField.textProperty());
+        }
+    }
+
+    @FXML
+    private void handleTogglePassword() {
+        passwordVisible = !passwordVisible;
+        passwordField.setVisible(!passwordVisible);
+        passwordField.setManaged(!passwordVisible);
+        passwordVisibleField.setVisible(passwordVisible);
+        passwordVisibleField.setManaged(passwordVisible);
+        btnTogglePassword.setText(passwordVisible ? "🙈" : "👁");
+    }
+
+    @FXML
+    private void handleToggleConfirmPassword() {
+        confirmPasswordVisible = !confirmPasswordVisible;
+        confirmPasswordField.setVisible(!confirmPasswordVisible);
+        confirmPasswordField.setManaged(!confirmPasswordVisible);
+        confirmPasswordVisibleField.setVisible(confirmPasswordVisible);
+        confirmPasswordVisibleField.setManaged(confirmPasswordVisible);
+        btnToggleConfirmPassword.setText(confirmPasswordVisible ? "🙈" : "👁");
+    }
+
+    private void handleProfileImageUpload() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir une photo de profil");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
+        );
+        Stage stage = (Stage) registerButton.getScene().getWindow();
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            selectedImagePath = file.toURI().toString();
+            Image image = new Image(selectedImagePath, 96, 96, false, true);
+            profileImageView.setImage(image);
+            profileImageView.setVisible(true);
+            if (lblUploadHint != null) lblUploadHint.setVisible(false);
         }
     }
 
@@ -56,6 +131,9 @@ public class SignUpController {
 
             // Create user
             User user = new User(firstname, lastname, email, phone, password, role);
+            if (selectedImagePath != null) {
+                user.setProfilePicture(selectedImagePath);
+            }
 
             // Register
             userService.addUser(user);
@@ -91,10 +169,7 @@ public class SignUpController {
         Parent root = loader.load();
         EmailCodeController ctrl = loader.getController();
         ctrl.setUserAndCode(user, verificationCode);
-        Stage stage = (Stage) registerButton.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.centerOnScreen();
-        stage.show();
+        SceneHelper.switchScene(SceneHelper.stageOf(registerButton), root);
     }
 
     @FXML
@@ -102,10 +177,7 @@ public class SignUpController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/SignIn.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(registerButton), root);
         } catch (Exception e) {
             showError("Impossible de charger la page de connexion.");
             e.printStackTrace();

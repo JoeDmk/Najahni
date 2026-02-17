@@ -3,13 +3,12 @@ package controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 import models.User;
+import tools.SceneHelper;
 import services.*;
 import util.Type;
 
@@ -25,6 +24,11 @@ public class StatsController {
     @FXML private Label bannedLabel;
 
     private UserService userService = UserService.getInstance();
+    private User currentUser;
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
 
     @FXML
     public void initialize() {
@@ -74,12 +78,9 @@ public class StatsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Dashboard.fxml"));
             Parent root = loader.load();
             DashboardController ctrl = loader.getController();
-            User admin = SessionService.getInstance().getCurrentUser();
+            User admin = currentUser != null ? currentUser : SessionService.getInstance().getCurrentUser();
             ctrl.setCurrentUser(admin);
-            Stage stage = (Stage) rolesPieChart.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(rolesPieChart), root);
         } catch (Exception e) {
             e.printStackTrace();
         }

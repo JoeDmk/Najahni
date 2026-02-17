@@ -27,8 +27,10 @@ CREATE TABLE `user` (
     `address`         VARCHAR(300),
     `date_of_birth`   DATE,
     `verified`        BOOLEAN NOT NULL DEFAULT FALSE,
+    `phone_verified`  BOOLEAN NOT NULL DEFAULT FALSE,
     `is_active`       BOOLEAN NOT NULL DEFAULT TRUE,
     `is_banned`       BOOLEAN NOT NULL DEFAULT FALSE,
+    `google_provider_id` VARCHAR(255) DEFAULT NULL,
     `created_at`      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

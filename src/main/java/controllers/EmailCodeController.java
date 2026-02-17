@@ -3,10 +3,9 @@ package controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import models.User;
+import tools.SceneHelper;
 import services.*;
 
 /**
@@ -49,10 +48,7 @@ public class EmailCodeController {
                 Parent root = loader.load();
                 HomeController ctrl = loader.getController();
                 ctrl.setCurrentUser(user);
-                Stage stage = (Stage) codeField.getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.centerOnScreen();
-                stage.show();
+                SceneHelper.switchScene(SceneHelper.stageOf(codeField), root);
             } catch (Exception e) {
                 showError("Erreur lors de la vérification.");
                 e.printStackTrace();
@@ -82,11 +78,29 @@ public class EmailCodeController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/SignIn.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) codeField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(codeField), root);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Skip verification — log in without verifying email.
+     * The user's email will show as "Non vérifié" and can be verified later from the profile.
+     */
+    @FXML
+    private void handleSkip() {
+        try {
+            SessionManager.saveSession(user.getEmail(), user.getRole().name());
+            SessionService.getInstance().setCurrentUser(user);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Home.fxml"));
+            Parent root = loader.load();
+            HomeController ctrl = loader.getController();
+            ctrl.setCurrentUser(user);
+            SceneHelper.switchScene(SceneHelper.stageOf(codeField), root);
+        } catch (Exception e) {
+            showError("Erreur lors de la redirection.");
             e.printStackTrace();
         }
     }

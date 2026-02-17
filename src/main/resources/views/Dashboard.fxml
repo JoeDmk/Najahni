@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- ======================== OLD DESIGN (commented out) ========================
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -9,8 +10,6 @@
             fx:controller="controllers.DashboardController"
             stylesheets="@najahni.css"
             prefWidth="1100" prefHeight="700">
-
-    <!-- TOP BAR -->
     <top>
         <HBox styleClass="dashboard-topbar" alignment="CENTER_LEFT" spacing="15">
             <padding><Insets top="10" right="20" bottom="10" left="20"/></padding>
@@ -25,12 +24,9 @@
             <Button text="Déconnexion" onAction="#handleLogout" styleClass="btn-topbar-danger"/>
         </HBox>
     </top>
-
     <center>
         <VBox spacing="15" style="-fx-background-color: #f5f6fa;">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-
-            <!-- Stats Cards -->
             <HBox spacing="15" alignment="CENTER">
                 <VBox alignment="CENTER" styleClass="stat-card" style="-fx-border-color: #3498db;">
                     <Label text="Total" styleClass="stat-label"/>
@@ -53,15 +49,9 @@
                     <Label fx:id="bannedLabel" text="0" styleClass="stat-value" style="-fx-text-fill: #e74c3c;"/>
                 </VBox>
             </HBox>
-
-            <!-- Content - Split View -->
             <HBox spacing="20" VBox.vgrow="ALWAYS">
-                
-                <!-- Users Table -->
                 <VBox HBox.hgrow="ALWAYS" spacing="10">
                     <Label text="Liste des Utilisateurs" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;"/>
-                    
-                    <!-- Search/Filter Bar -->
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <TextField fx:id="searchField" promptText="Rechercher par nom ou email..." prefWidth="250" prefHeight="35" styleClass="search-field"/>
                         <ComboBox fx:id="roleFilterCombo" prefHeight="35" prefWidth="150" styleClass="filter-combo"/>
@@ -69,7 +59,6 @@
                         <Button text="➕ Ajouter" onAction="#handleAddUser" styleClass="btn-primary"/>
                         <Button text="🔄" onAction="#refreshData" styleClass="btn-secondary" prefHeight="35"/>
                     </HBox>
-                    
                     <TableView fx:id="usersTable" VBox.vgrow="ALWAYS" styleClass="users-table">
                         <columns>
                             <TableColumn fx:id="idColumn" text="ID" prefWidth="50" minWidth="50"/>
@@ -81,28 +70,142 @@
                             <TableColumn fx:id="statusColumn" text="Statut" prefWidth="80" minWidth="60"/>
                             <TableColumn fx:id="verifiedColumn" text="Vérifié" prefWidth="70" minWidth="50"/>
                         </columns>
-                        <placeholder>
-                            <Label text="Aucun utilisateur trouvé"/>
-                        </placeholder>
+                        <placeholder><Label text="Aucun utilisateur trouvé"/></placeholder>
                     </TableView>
                 </VBox>
-                
-                <!-- Action Panel -->
                 <VBox fx:id="actionPanel" styleClass="action-panel" spacing="15" minWidth="250" maxWidth="250">
                     <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
                     <Label text="Actions" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;"/>
                     <Separator/>
-                    
                     <Label text="Sélectionnez un utilisateur dans le tableau pour effectuer une action." 
                            wrapText="true" style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;"/>
-                    
                     <Region VBox.vgrow="ALWAYS"/>
-                    
                     <Button text="👤 Voir Profil" onAction="#handleViewProfile" styleClass="btn-action" maxWidth="Infinity" prefHeight="38"/>
+                    <Button text="✏ Modifier" onAction="#handleEditUser" styleClass="btn-action" maxWidth="Infinity" prefHeight="38"/>
                     <Button text="🔒 Ban / Unban" onAction="#handleBanUser" styleClass="btn-action-warn" maxWidth="Infinity" prefHeight="38"/>
                     <Button text="🗑 Supprimer" onAction="#handleDeleteUser" styleClass="btn-action-danger" maxWidth="Infinity" prefHeight="38"/>
                 </VBox>
-                
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
+======================== END OLD DESIGN ======================== -->
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.DashboardController"
+            stylesheets="@modern.css"
+            style="-fx-background-color: #F0F2F5;">
+
+    <!-- TOP NAV -->
+    <top>
+        <HBox styleClass="top-nav" alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <ImageView fitWidth="34" fitHeight="34" preserveRatio="true">
+                <image><Image url="@logo_najahni.png"/></image>
+            </ImageView>
+            <Label text="NAJAHNI" styleClass="nav-brand"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="welcomeLabel" text="Bienvenue, Admin" styleClass="nav-welcome"/>
+            <Button fx:id="btnToggleScreen" text="⛶" onAction="#handleToggleScreen" styleClass="btn-nav" style="-fx-font-size: 16px;"/>
+            <Button text="Mon Profil" onAction="#handleMyProfile" styleClass="btn-nav"/>
+            <Button text="Statistiques" onAction="#handleStats" styleClass="btn-nav-accent"/>
+            <Button text="Déconnexion" onAction="#handleLogout" styleClass="btn-nav-danger"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="18">
+            <padding><Insets top="22" right="24" bottom="22" left="24"/></padding>
+
+            <!-- Stat Cards Row -->
+            <HBox spacing="16" alignment="CENTER">
+                <VBox alignment="CENTER" styleClass="stat-card-modern, stat-card-blue">
+                    <Label text="TOTAL" styleClass="stat-card-label"/>
+                    <Label fx:id="totalUsersLabel" text="0" styleClass="stat-card-value"
+                           style="-fx-text-fill: #6C63FF;"/>
+                </VBox>
+                <VBox alignment="CENTER" styleClass="stat-card-modern, stat-card-green">
+                    <Label text="ENTREPRENEURS" styleClass="stat-card-label"/>
+                    <Label fx:id="entrepreneursLabel" text="0" styleClass="stat-card-value"
+                           style="-fx-text-fill: #00B894;"/>
+                </VBox>
+                <VBox alignment="CENTER" styleClass="stat-card-modern, stat-card-orange">
+                    <Label text="MENTORS" styleClass="stat-card-label"/>
+                    <Label fx:id="mentorsLabel" text="0" styleClass="stat-card-value"
+                           style="-fx-text-fill: #F9A825;"/>
+                </VBox>
+                <VBox alignment="CENTER" styleClass="stat-card-modern, stat-card-purple">
+                    <Label text="INVESTISSEURS" styleClass="stat-card-label"/>
+                    <Label fx:id="investisseursLabel" text="0" styleClass="stat-card-value"
+                           style="-fx-text-fill: #A29BFE;"/>
+                </VBox>
+                <VBox alignment="CENTER" styleClass="stat-card-modern, stat-card-red">
+                    <Label text="BANNIS" styleClass="stat-card-label"/>
+                    <Label fx:id="bannedLabel" text="0" styleClass="stat-card-value"
+                           style="-fx-text-fill: #E17055;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Main Content -->
+            <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+                <!-- Users Table Section -->
+                <VBox HBox.hgrow="ALWAYS" spacing="14">
+                    <Label text="Liste des Utilisateurs" styleClass="section-heading"/>
+
+                    <!-- Search/Filter Bar -->
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <TextField fx:id="searchField" promptText="Rechercher par nom ou email..."
+                                   prefWidth="280" prefHeight="40" styleClass="search-modern"/>
+                        <ComboBox fx:id="roleFilterCombo" prefHeight="40" prefWidth="160"
+                                  styleClass="filter-modern"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Ajouter" onAction="#handleAddUser" styleClass="btn-add"/>
+                        <Button text="↻" onAction="#refreshData" styleClass="btn-refresh" prefHeight="40"/>
+                    </HBox>
+
+                    <TableView fx:id="usersTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="idColumn" text="ID" prefWidth="50" minWidth="50"/>
+                            <TableColumn fx:id="firstnameColumn" text="Prénom" prefWidth="120" minWidth="100"/>
+                            <TableColumn fx:id="lastnameColumn" text="Nom" prefWidth="120" minWidth="100"/>
+                            <TableColumn fx:id="emailColumn" text="Email" prefWidth="210" minWidth="160"/>
+                            <TableColumn fx:id="phoneColumn" text="Téléphone" prefWidth="125" minWidth="90"/>
+                            <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="115" minWidth="80"/>
+                            <TableColumn fx:id="statusColumn" text="Statut" prefWidth="85" minWidth="65"/>
+                            <TableColumn fx:id="verifiedColumn" text="Vérifié" prefWidth="75" minWidth="55"/>
+                        </columns>
+                        <placeholder><Label text="Aucun utilisateur trouvé" styleClass="text-muted"/></placeholder>
+                    </TableView>
+                </VBox>
+
+                <!-- Action Panel -->
+                <VBox fx:id="actionPanel" styleClass="action-panel-modern" spacing="14"
+                      minWidth="260" maxWidth="260">
+                    <padding><Insets top="20" right="18" bottom="20" left="18"/></padding>
+
+                    <Label text="Actions" styleClass="action-panel-title"/>
+                    <Separator styleClass="modern-separator"/>
+
+                    <Label text="Sélectionnez un utilisateur dans le tableau pour effectuer une action."
+                           wrapText="true" styleClass="action-panel-hint"/>
+
+                    <Region VBox.vgrow="ALWAYS"/>
+
+                    <Button text="Voir Profil" onAction="#handleViewProfile"
+                            styleClass="btn-action-modern" maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="Modifier" onAction="#handleEditUser"
+                            styleClass="btn-action-edit" maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="Ban / Unban" onAction="#handleBanUser"
+                            styleClass="btn-action-warn-modern" maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="Supprimer" onAction="#handleDeleteUser"
+                            styleClass="btn-action-danger-modern" maxWidth="Infinity" prefHeight="42"/>
+                </VBox>
             </HBox>
         </VBox>
     </center>

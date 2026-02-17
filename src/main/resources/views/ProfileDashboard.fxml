@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- ======================== OLD DESIGN (commented out) ========================
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -8,7 +9,6 @@
             style="-fx-background-color: #ecf0f1;"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1">
-
     <top>
         <HBox style="-fx-background-color: #2c3e50; -fx-padding: 15;">
             <Button text="← Retour" onAction="#handleBack"
@@ -16,54 +16,20 @@
             <Label text="  Profil Utilisateur" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;"/>
         </HBox>
     </top>
-
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-            <VBox spacing="12" style="-fx-padding: 30; -fx-background-color: white; -fx-background-radius: 15; -fx-margin: 20;">
-
+            <VBox spacing="12" style="-fx-padding: 30; -fx-background-color: white; -fx-background-radius: 15;">
                 <Label fx:id="nameLabel" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-
-                <HBox spacing="10">
-                    <Label text="Email:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="emailLabel"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Téléphone:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="phoneLabel"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Rôle:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="roleLabel" style="-fx-text-fill: #f39c12;"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Bio:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="bioLabel" wrapText="true"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Entreprise:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="companyLabel"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="LinkedIn:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="linkedinLabel"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Adresse:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="addressLabel"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Date de naissance:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="dobLabel"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Statut:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="statusLabel"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="Vérifié:" style="-fx-font-weight: bold;"/>
-                    <Label fx:id="verifiedLabel"/>
-                </HBox>
-
+                <HBox spacing="10"><Label text="Email:" style="-fx-font-weight: bold;"/><Label fx:id="emailLabel"/></HBox>
+                <HBox spacing="10"><Label text="Téléphone:" style="-fx-font-weight: bold;"/><Label fx:id="phoneLabel"/></HBox>
+                <HBox spacing="10"><Label text="Rôle:" style="-fx-font-weight: bold;"/><Label fx:id="roleLabel" style="-fx-text-fill: #f39c12;"/></HBox>
+                <HBox spacing="10"><Label text="Bio:" style="-fx-font-weight: bold;"/><Label fx:id="bioLabel" wrapText="true"/></HBox>
+                <HBox spacing="10"><Label text="Entreprise:" style="-fx-font-weight: bold;"/><Label fx:id="companyLabel"/></HBox>
+                <HBox spacing="10"><Label text="LinkedIn:" style="-fx-font-weight: bold;"/><Label fx:id="linkedinLabel"/></HBox>
+                <HBox spacing="10"><Label text="Adresse:" style="-fx-font-weight: bold;"/><Label fx:id="addressLabel"/></HBox>
+                <HBox spacing="10"><Label text="Date de naissance:" style="-fx-font-weight: bold;"/><Label fx:id="dobLabel"/></HBox>
+                <HBox spacing="10"><Label text="Statut:" style="-fx-font-weight: bold;"/><Label fx:id="statusLabel"/></HBox>
+                <HBox spacing="10"><Label text="Vérifié:" style="-fx-font-weight: bold;"/><Label fx:id="verifiedLabel"/></HBox>
                 <HBox spacing="30" alignment="CENTER" style="-fx-padding: 15;">
                     <VBox alignment="CENTER">
                         <Label fx:id="followersLabel" text="0" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
@@ -74,6 +40,89 @@
                         <Label text="Abonnements" style="-fx-text-fill: #7f8c8d;"/>
                     </VBox>
                 </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
+======================== END OLD DESIGN ======================== -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
+
+<BorderPane fx:controller="controllers.ProfileDashboardController"
+            stylesheets="@modern.css"
+            style="-fx-background-color: #F0F2F5;"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <top>
+        <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets top="14" right="24" bottom="14" left="24"/></padding>
+            <Button text="← Retour" onAction="#handleBack" styleClass="btn-back"/>
+            <Label text="Profil Utilisateur" styleClass="page-header-title"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="modern-scroll">
+            <VBox alignment="CENTER" style="-fx-padding: 30;">
+                <VBox styleClass="profile-card" spacing="20" maxWidth="580">
+                    <padding><Insets top="35" right="40" bottom="35" left="40"/></padding>
+
+                    <!-- Profile Picture -->
+                    <HBox alignment="CENTER">
+                        <StackPane fx:id="profileImageContainer" prefWidth="104" prefHeight="104"
+                                   style="-fx-background-color: #E8E8E8; -fx-background-radius: 52;">
+                            <Label fx:id="lblInitials" style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #999;"/>
+                            <ImageView fx:id="profileImageView" fitWidth="104" fitHeight="104"
+                                       preserveRatio="false" visible="false"/>
+                        </StackPane>
+                    </HBox>
+
+                    <!-- Name -->
+                    <Label fx:id="nameLabel" styleClass="profile-name"/>
+
+                    <!-- Counters -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <VBox styleClass="counter-box" alignment="CENTER" prefWidth="150">
+                            <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
+                            <Label fx:id="followersLabel" text="0" styleClass="counter-value"
+                                   style="-fx-text-fill: #6C63FF;"/>
+                            <Label text="Abonnés" styleClass="counter-label"/>
+                        </VBox>
+                        <VBox styleClass="counter-box" alignment="CENTER" prefWidth="150">
+                            <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
+                            <Label fx:id="followingLabel" text="0" styleClass="counter-value"
+                                   style="-fx-text-fill: #00B894;"/>
+                            <Label text="Abonnements" styleClass="counter-label"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Fields -->
+                    <VBox spacing="10">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Email" styleClass="profile-field-label" prefWidth="140"/>
+                            <Label fx:id="emailLabel" styleClass="profile-field-value"/>
+                            <Label fx:id="emailVerifiedBadge" style="-fx-font-size: 13;"/>
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Téléphone" styleClass="profile-field-label" prefWidth="140"/>
+                            <Label fx:id="phoneLabel" styleClass="profile-field-value"/>
+                            <Label fx:id="phoneVerifiedBadge" style="-fx-font-size: 13;"/>
+                        </HBox>
+                        <HBox spacing="10"><Label text="Rôle" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="roleLabel" styleClass="role-badge"/></HBox>
+                        <HBox spacing="10"><Label text="Bio" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="bioLabel" styleClass="profile-field-value" wrapText="true"/></HBox>
+                        <HBox spacing="10"><Label text="Entreprise" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="companyLabel" styleClass="profile-field-value"/></HBox>
+                        <HBox spacing="10"><Label text="LinkedIn" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="linkedinLabel" styleClass="profile-field-value"/></HBox>
+                        <HBox spacing="10"><Label text="Adresse" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="addressLabel" styleClass="profile-field-value"/></HBox>
+                        <HBox spacing="10"><Label text="Date de naissance" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="dobLabel" styleClass="profile-field-value"/></HBox>
+                        <HBox spacing="10"><Label text="Statut" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="statusLabel" styleClass="profile-field-value"/></HBox>
+                        <HBox spacing="10"><Label text="Vérifié" styleClass="profile-field-label" prefWidth="140"/><Label fx:id="verifiedLabel" styleClass="verified-badge"/></HBox>
+                    </VBox>
+                </VBox>
             </VBox>
         </ScrollPane>
     </center>

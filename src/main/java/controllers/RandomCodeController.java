@@ -3,9 +3,8 @@ package controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import tools.SceneHelper;
 import services.*;
 
 /**
@@ -46,10 +45,7 @@ public class RandomCodeController {
                 Parent root = loader.load();
                 ChangeMdpController ctrl = loader.getController();
                 ctrl.setEmail(email);
-                Stage stage = (Stage) codeField.getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.centerOnScreen();
-                stage.show();
+                SceneHelper.switchScene(SceneHelper.stageOf(codeField), root);
             } catch (Exception e) {
                 showError("Erreur de redirection.");
                 e.printStackTrace();
@@ -76,10 +72,7 @@ public class RandomCodeController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/SignIn.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) codeField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(codeField), root);
         } catch (Exception e) {
             e.printStackTrace();
         }

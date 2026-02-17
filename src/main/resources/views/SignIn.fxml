@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- ======================== OLD DESIGN (commented out) ========================
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -11,25 +12,16 @@
             styleClass="login-background"
             stylesheets="@najahni.css"
             prefWidth="900" prefHeight="600">
-    
-    <!-- Left Side - Branding -->
     <left>
         <VBox styleClass="login-branding" spacing="20" alignment="CENTER" minWidth="400" maxWidth="400">
-            <padding>
-                <Insets top="50" right="40" bottom="50" left="40"/>
-            </padding>
-            
+            <padding><Insets top="50" right="40" bottom="50" left="40"/></padding>
             <ImageView fitWidth="120" fitHeight="120" preserveRatio="true">
                 <image><Image url="@logo_najahni.png"/></image>
             </ImageView>
-            
             <Label text="NAJAHNI" styleClass="login-brand-title"/>
-            
             <Label text="Plateforme d'Entrepreneuriat&#10;et d'Investissement" 
                    styleClass="login-brand-subtitle" textAlignment="CENTER" wrapText="true"/>
-            
             <Region VBox.vgrow="ALWAYS" minHeight="30"/>
-            
             <VBox spacing="15" alignment="CENTER_LEFT">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="✓" style="-fx-text-fill: #27ae60; -fx-font-size: 18px;"/>
@@ -48,33 +40,24 @@
                     <Label text="Gagnez des badges et montez en niveau" style="-fx-text-fill: white;"/>
                 </HBox>
             </VBox>
-            
             <Region VBox.vgrow="ALWAYS"/>
-            
             <Label text="© 2026 NAJAHNI - PIDEV Project" 
                    style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 11px;"/>
         </VBox>
     </left>
-    
-    <!-- Right Side - Login Form -->
     <center>
         <VBox alignment="CENTER" style="-fx-background-color: #f5f6fa;">
             <VBox fx:id="loginContainer" styleClass="login-form-container" spacing="25" 
                   alignment="CENTER" maxWidth="380">
-                <padding>
-                    <Insets top="40" right="40" bottom="40" left="40"/>
-                </padding>
-                
+                <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
                 <Label text="Connexion" styleClass="login-title"/>
                 <Label text="Bienvenue ! Connectez-vous à votre compte." 
                        style="-fx-text-fill: #7f8c8d; -fx-font-size: 13px;"/>
-                
                 <VBox spacing="8">
                     <Label text="Adresse Email" styleClass="form-label"/>
                     <TextField fx:id="txtEmail" promptText="exemple@najahni.tn" 
                                styleClass="login-field" prefHeight="45"/>
                 </VBox>
-                
                 <VBox spacing="8">
                     <HBox alignment="CENTER_LEFT">
                         <Label text="Mot de Passe" styleClass="form-label"/>
@@ -85,35 +68,159 @@
                     <PasswordField fx:id="txtPassword" promptText="••••••••" 
                                    styleClass="login-field" prefHeight="45"/>
                 </VBox>
-                
                 <HBox alignment="CENTER_LEFT">
                     <CheckBox fx:id="chkRemember" text="Se souvenir de moi" 
                               style="-fx-text-fill: #7f8c8d;"/>
                 </HBox>
-                
                 <Label fx:id="lblError" text="" wrapText="true" 
                        style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;" maxWidth="300"/>
-                
                 <Button fx:id="btnLogin" text="Se Connecter" onAction="#handleLogin" 
                         styleClass="btn-login" prefHeight="50" maxWidth="Infinity"/>
-                
                 <Separator/>
-                
                 <VBox spacing="10" alignment="CENTER">
                     <Label text="Accès rapide pour test:" style="-fx-text-fill: #95a5a6; -fx-font-size: 11px;"/>
-                    <Button text="🚀 Connexion Démo (Admin)" onAction="#handleDemoLogin" 
+                    <Button text="Connexion Démo (Admin)" onAction="#handleDemoLogin" 
                             styleClass="btn-demo" prefHeight="35" maxWidth="Infinity"/>
                 </VBox>
-                
                 <Separator/>
-                
                 <HBox spacing="5" alignment="CENTER">
                     <Label text="Pas encore inscrit ?" style="-fx-text-fill: #7f8c8d;"/>
                     <Hyperlink text="Créer un compte" onAction="#handleShowSignup" styleClass="link-signup"/>
                 </HBox>
-                
             </VBox>
         </VBox>
     </center>
-    
+</BorderPane>
+======================== END OLD DESIGN ======================== -->
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.SignInController"
+            stylesheets="@modern.css"
+            style="-fx-background-color: #F0F2F5;">
+
+    <!-- Left Side - Premium Brand Panel -->
+    <left>
+        <VBox styleClass="brand-panel" spacing="24" alignment="CENTER" minWidth="420" maxWidth="420">
+            <padding><Insets top="50" right="45" bottom="50" left="45"/></padding>
+
+            <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                <image><Image url="@logo_najahni.png"/></image>
+            </ImageView>
+
+            <Label text="NAJAHNI" styleClass="brand-title"/>
+
+            <Label text="Plateforme d'Entrepreneuriat&#10;et d'Investissement"
+                   styleClass="brand-subtitle" textAlignment="CENTER" wrapText="true"/>
+
+            <Region VBox.vgrow="ALWAYS" minHeight="25"/>
+
+            <VBox spacing="18" alignment="CENTER_LEFT">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="✦" styleClass="brand-feature-icon"/>
+                    <Label text="Gérez vos projets entrepreneuriaux" styleClass="brand-feature-text"/>
+                </HBox>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="✦" styleClass="brand-feature-icon"/>
+                    <Label text="Trouvez des investisseurs" styleClass="brand-feature-text"/>
+                </HBox>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="✦" styleClass="brand-feature-icon"/>
+                    <Label text="Apprenez et développez vos compétences" styleClass="brand-feature-text"/>
+                </HBox>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="✦" styleClass="brand-feature-icon"/>
+                    <Label text="Gagnez des badges et montez en niveau" styleClass="brand-feature-text"/>
+                </HBox>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Label text="© 2026 NAJAHNI — PIDEV Project" styleClass="brand-footer"/>
+        </VBox>
+    </left>
+
+    <!-- Right Side - Glass Login Form -->
+    <center>
+        <VBox alignment="CENTER" styleClass="form-panel-bg">
+            <VBox fx:id="loginContainer" styleClass="glass-card" spacing="22"
+                  alignment="CENTER" maxWidth="400">
+                <padding><Insets top="45" right="42" bottom="45" left="42"/></padding>
+
+                <Label text="Connexion" styleClass="page-title"/>
+                <Label text="Bienvenue ! Connectez-vous à votre compte." styleClass="page-subtitle"/>
+
+                <VBox spacing="8">
+                    <Label text="Adresse Email" styleClass="field-label"/>
+                    <TextField fx:id="txtEmail" promptText="exemple@najahni.tn"
+                               styleClass="modern-field" prefHeight="48"/>
+                </VBox>
+
+                <VBox spacing="8">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Mot de Passe" styleClass="field-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Hyperlink fx:id="linkForgotPassword" text="Mot de passe oublié ?"
+                                   onAction="#handleForgotPassword" styleClass="link-muted"/>
+                    </HBox>
+                    <PasswordField fx:id="txtPassword" promptText="••••••••"
+                                   styleClass="modern-field" prefHeight="48"/>
+                </VBox>
+
+                <HBox alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkRemember" text="Se souvenir de moi" styleClass="modern-check"/>
+                </HBox>
+
+                <!-- "I'm not a robot" CAPTCHA Verification -->
+                <HBox fx:id="captchaBox" styleClass="captcha-box" spacing="12"
+                      alignment="CENTER_LEFT">
+                    <!-- Checkbox that triggers the math challenge popup -->
+                    <CheckBox fx:id="chkCaptcha" onAction="#handleCaptchaClick"
+                              styleClass="captcha-checkbox"/>
+                    <!-- Status text: changes to "✓ Vérifié" on success -->
+                    <Label fx:id="lblCaptchaStatus" text="Je ne suis pas un robot"
+                           styleClass="captcha-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <!-- Small shield icon on the right -->
+                    <Label text="&#x1f6e1;" style="-fx-font-size: 22px; -fx-opacity: 0.5;"/>
+                </HBox>
+
+                <Label fx:id="lblError" text="" wrapText="true" styleClass="error-label"
+                       visible="false" maxWidth="320"/>
+
+                <Button fx:id="btnLogin" text="Se Connecter" onAction="#handleLogin"
+                        styleClass="btn-primary-gradient" prefHeight="50" maxWidth="Infinity"/>
+
+                <!-- "Continue with Google" OAuth button -->
+                <HBox alignment="CENTER" spacing="0">
+                    <Label text="— ou —" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                </HBox>
+                <Button fx:id="btnGoogle" text="  Continuer avec Google"
+                        onAction="#handleGoogleLogin"
+                        styleClass="btn-google" prefHeight="46" maxWidth="Infinity"
+                        graphicTextGap="10"/>
+
+                <Separator styleClass="modern-separator"/>
+
+                <VBox spacing="8" alignment="CENTER">
+                    <Label text="Accès rapide pour test :" styleClass="text-muted"
+                           style="-fx-font-size: 11px;"/>
+                    <Button text="Connexion Démo (Admin)" onAction="#handleDemoLogin"
+                            styleClass="btn-outline" prefHeight="36" maxWidth="Infinity"/>
+                </VBox>
+
+                <Separator styleClass="modern-separator"/>
+
+                <HBox spacing="5" alignment="CENTER">
+                    <Label text="Pas encore inscrit ?" styleClass="text-muted"/>
+                    <Hyperlink text="Créer un compte" onAction="#handleShowSignup" styleClass="link-primary"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
 </BorderPane>

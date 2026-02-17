@@ -1,0 +1,933 @@
+/* ============================================================
+   NAJAHNI - Premium Modern Stylesheet
+   A sleek, glassmorphism-inspired design system
+   ============================================================ */
+
+/* ---- Root & Global ---- */
+.root {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -najahni-primary: #6C63FF;
+    -najahni-primary-dark: #5A52D5;
+    -najahni-primary-light: #8B85FF;
+    -najahni-secondary: #FF6584;
+    -najahni-accent: #43E97B;
+    -najahni-dark: #1A1A2E;
+    -najahni-dark-mid: #16213E;
+    -najahni-dark-light: #0F3460;
+    -najahni-bg: #F0F2F5;
+    -najahni-card: #FFFFFF;
+    -najahni-text: #2D3436;
+    -najahni-text-secondary: #636E72;
+    -najahni-border: #E1E8ED;
+    -najahni-success: #00B894;
+    -najahni-warning: #FDCB6E;
+    -najahni-danger: #E17055;
+    -najahni-info: #74B9FF;
+}
+
+/* ============================================================
+   SIDEBAR / BRAND PANEL  (Login & Signup left side)
+   ============================================================ */
+
+.brand-panel {
+    -fx-background-color: linear-gradient(to bottom right, #1A1A2E, #16213E, #0F3460);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 20, 0, 5, 0);
+}
+
+.brand-title {
+    -fx-text-fill: white;
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+}
+
+.brand-subtitle {
+    -fx-text-fill: rgba(255,255,255,0.75);
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+}
+
+.brand-feature-icon {
+    -fx-text-fill: #43E97B;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.brand-feature-text {
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-font-size: 14px;
+}
+
+.brand-footer {
+    -fx-text-fill: rgba(255,255,255,0.4);
+    -fx-font-size: 11px;
+}
+
+.brand-divider {
+    -fx-background-color: rgba(255,255,255,0.15);
+    -fx-pref-height: 1;
+}
+
+.brand-description {
+    -fx-text-fill: rgba(255,255,255,0.65);
+    -fx-font-size: 13px;
+}
+
+/* ============================================================
+   FORM PANELS  (Right side of login/signup, form pages)
+   ============================================================ */
+
+.form-panel-bg {
+    -fx-background-color: linear-gradient(to bottom, #F0F2F5, #E8EAED);
+}
+
+.glass-card {
+    -fx-background-color: rgba(255,255,255,0.95);
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.10), 24, 0, 0, 8);
+    -fx-border-color: rgba(255,255,255,0.6);
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+}
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+}
+
+.page-subtitle {
+    -fx-text-fill: #636E72;
+    -fx-font-size: 14px;
+}
+
+.field-label {
+    -fx-text-fill: #2D3436;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.modern-field {
+    -fx-background-color: #F8F9FA;
+    -fx-background-radius: 12;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 12;
+    -fx-padding: 12 16;
+    -fx-font-size: 14px;
+}
+.modern-field:focused {
+    -fx-border-color: #6C63FF;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.20), 12, 0, 0, 0);
+}
+
+.modern-combo {
+    -fx-background-color: #F8F9FA;
+    -fx-background-radius: 12;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 12;
+    -fx-font-size: 14px;
+    -fx-padding: 4 8;
+}
+.modern-combo:focused {
+    -fx-border-color: #6C63FF;
+}
+.modern-combo .list-cell {
+    -fx-font-size: 14px;
+    -fx-padding: 8 12;
+}
+
+.modern-textarea {
+    -fx-background-color: #F8F9FA;
+    -fx-background-radius: 12;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 12;
+    -fx-font-size: 14px;
+    -fx-padding: 8;
+}
+.modern-textarea:focused {
+    -fx-border-color: #6C63FF;
+    -fx-background-color: white;
+}
+.modern-textarea .content {
+    -fx-background-color: transparent;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn-primary-gradient {
+    -fx-background-color: linear-gradient(to right, #6C63FF, #8B85FF);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.30), 10, 0, 0, 4);
+}
+.btn-primary-gradient:hover {
+    -fx-background-color: linear-gradient(to right, #5A52D5, #6C63FF);
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.45), 14, 0, 0, 6);
+}
+.btn-primary-gradient:pressed {
+    -fx-background-color: #5A52D5;
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.20), 6, 0, 0, 2);
+}
+
+.btn-success-gradient {
+    -fx-background-color: linear-gradient(to right, #00B894, #43E97B);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,184,148,0.30), 10, 0, 0, 4);
+}
+.btn-success-gradient:hover {
+    -fx-background-color: linear-gradient(to right, #00A884, #00B894);
+    -fx-effect: dropshadow(gaussian, rgba(0,184,148,0.45), 14, 0, 0, 6);
+}
+
+.btn-danger-gradient {
+    -fx-background-color: linear-gradient(to right, #E17055, #FF6584);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+.btn-danger-gradient:hover {
+    -fx-background-color: linear-gradient(to right, #D63031, #E17055);
+    -fx-effect: dropshadow(gaussian, rgba(225,112,85,0.35), 10, 0, 0, 4);
+}
+
+.btn-warning-gradient {
+    -fx-background-color: linear-gradient(to right, #FDCB6E, #F9A825);
+    -fx-text-fill: #1A1A2E;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+.btn-warning-gradient:hover {
+    -fx-background-color: linear-gradient(to right, #F9A825, #F39C12);
+    -fx-effect: dropshadow(gaussian, rgba(253,203,110,0.35), 10, 0, 0, 4);
+}
+
+.btn-outline {
+    -fx-background-color: transparent;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-text-fill: #636E72;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 6 16;
+}
+.btn-outline:hover {
+    -fx-border-color: #6C63FF;
+    -fx-text-fill: #6C63FF;
+    -fx-background-color: rgba(108,99,255,0.05);
+}
+
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 8 16;
+}
+.btn-ghost:hover {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 10;
+}
+
+.btn-icon {
+    -fx-background-color: rgba(108,99,255,0.08);
+    -fx-text-fill: #6C63FF;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-padding: 8 14;
+}
+.btn-icon:hover {
+    -fx-background-color: rgba(108,99,255,0.15);
+}
+
+/* Link styles */
+.link-primary {
+    -fx-text-fill: #6C63FF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.link-primary:hover {
+    -fx-text-fill: #5A52D5;
+}
+
+.link-muted {
+    -fx-text-fill: #6C63FF;
+    -fx-font-size: 12px;
+}
+.link-muted:hover {
+    -fx-text-fill: #5A52D5;
+}
+
+.text-muted {
+    -fx-text-fill: #636E72;
+    -fx-font-size: 13px;
+}
+
+/* ============================================================
+   TOP NAV BAR  (Dashboard, Home, etc.)
+   ============================================================ */
+
+.top-nav {
+    -fx-background-color: linear-gradient(to right, #1A1A2E, #16213E, #0F3460);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 12, 0, 0, 3);
+}
+
+.nav-brand {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.nav-welcome {
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-font-size: 14px;
+}
+
+.btn-nav {
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-text-fill: rgba(255,255,255,0.9);
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-padding: 8 18;
+}
+.btn-nav:hover {
+    -fx-background-color: rgba(255,255,255,0.18);
+}
+
+.btn-nav-accent {
+    -fx-background-color: linear-gradient(to right, #6C63FF, #8B85FF);
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 18;
+}
+.btn-nav-accent:hover {
+    -fx-background-color: linear-gradient(to right, #5A52D5, #6C63FF);
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.3), 8, 0, 0, 2);
+}
+
+.btn-nav-danger {
+    -fx-background-color: rgba(225,112,85,0.85);
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-padding: 8 18;
+}
+.btn-nav-danger:hover {
+    -fx-background-color: #E17055;
+}
+
+/* ============================================================
+   PAGE HEADER BAR (sub-pages like AjouterUser, Profil, etc.)
+   ============================================================ */
+
+.page-header {
+    -fx-background-color: linear-gradient(to right, #1A1A2E, #0F3460);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0, 0, 3);
+}
+
+.page-header-title {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.btn-back {
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-padding: 8 16;
+}
+.btn-back:hover {
+    -fx-background-color: rgba(255,255,255,0.20);
+}
+
+/* ============================================================
+   STAT CARDS  (Dashboard)
+   ============================================================ */
+
+.stat-card-modern {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 20 28;
+    -fx-min-width: 155;
+    -fx-pref-width: 170;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
+    -fx-border-radius: 16;
+    -fx-border-width: 0 0 4 0;
+}
+
+.stat-card-blue {
+    -fx-border-color: #6C63FF;
+}
+.stat-card-green {
+    -fx-border-color: #00B894;
+}
+.stat-card-orange {
+    -fx-border-color: #FDCB6E;
+}
+.stat-card-purple {
+    -fx-border-color: #A29BFE;
+}
+.stat-card-red {
+    -fx-border-color: #E17055;
+}
+
+.stat-card-label {
+    -fx-text-fill: #636E72;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-transform: uppercase;
+}
+
+.stat-card-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+/* ============================================================
+   SEARCH & FILTER BAR
+   ============================================================ */
+
+.search-modern {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 12;
+    -fx-padding: 8 16;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 6, 0, 0, 2);
+}
+.search-modern:focused {
+    -fx-border-color: #6C63FF;
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.15), 10, 0, 0, 0);
+}
+
+.filter-modern {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 12;
+    -fx-font-size: 13px;
+}
+.filter-modern:focused {
+    -fx-border-color: #6C63FF;
+}
+
+/* ============================================================
+   TABLE  (Dashboard users table)
+   ============================================================ */
+
+.modern-table {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 3);
+}
+.modern-table .column-header-background {
+    -fx-background-color: #F8F9FA;
+    -fx-background-radius: 14 14 0 0;
+}
+.modern-table .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+    -fx-font-size: 13px;
+    -fx-padding: 10 8;
+}
+.modern-table .table-row-cell {
+    -fx-border-color: transparent transparent #F0F2F5 transparent;
+    -fx-cell-size: 42;
+}
+.modern-table .table-row-cell:selected {
+    -fx-background-color: rgba(108,99,255,0.08);
+}
+.modern-table .table-row-cell:hover {
+    -fx-background-color: rgba(108,99,255,0.04);
+}
+.modern-table .table-cell {
+    -fx-text-fill: #2D3436;
+    -fx-font-size: 13px;
+    -fx-padding: 0 8;
+}
+
+/* ============================================================
+   ACTION PANEL  (Dashboard sidebar)
+   ============================================================ */
+
+.action-panel-modern {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);
+}
+
+.action-panel-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+}
+
+.action-panel-hint {
+    -fx-text-fill: #636E72;
+    -fx-font-size: 12px;
+}
+
+.btn-action-modern {
+    -fx-background-color: linear-gradient(to right, #6C63FF, #8B85FF);
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.btn-action-modern:hover {
+    -fx-background-color: linear-gradient(to right, #5A52D5, #6C63FF);
+    -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.3), 8, 0, 0, 3);
+}
+
+.btn-action-edit {
+    -fx-background-color: linear-gradient(to right, #74B9FF, #0984E3);
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.btn-action-edit:hover {
+    -fx-background-color: linear-gradient(to right, #0984E3, #0652DD);
+    -fx-effect: dropshadow(gaussian, rgba(9,132,227,0.3), 8, 0, 0, 3);
+}
+
+.btn-action-warn-modern {
+    -fx-background-color: linear-gradient(to right, #FDCB6E, #F9A825);
+    -fx-text-fill: #1A1A2E;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.btn-action-warn-modern:hover {
+    -fx-background-color: linear-gradient(to right, #F9A825, #F39C12);
+    -fx-effect: dropshadow(gaussian, rgba(253,203,110,0.35), 8, 0, 0, 3);
+}
+
+.btn-action-danger-modern {
+    -fx-background-color: linear-gradient(to right, #E17055, #FF6584);
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.btn-action-danger-modern:hover {
+    -fx-background-color: linear-gradient(to right, #D63031, #E17055);
+    -fx-effect: dropshadow(gaussian, rgba(225,112,85,0.35), 8, 0, 0, 3);
+}
+
+/* ============================================================
+   DASHBOARD ACTION BUTTONS (Add, Refresh)
+   ============================================================ */
+
+.btn-add {
+    -fx-background-color: linear-gradient(to right, #00B894, #43E97B);
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 22;
+    -fx-effect: dropshadow(gaussian, rgba(0,184,148,0.25), 8, 0, 0, 3);
+}
+.btn-add:hover {
+    -fx-background-color: linear-gradient(to right, #00A884, #00B894);
+    -fx-effect: dropshadow(gaussian, rgba(0,184,148,0.4), 12, 0, 0, 4);
+}
+
+.btn-refresh {
+    -fx-background-color: #F0F2F5;
+    -fx-text-fill: #636E72;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-padding: 8 14;
+}
+.btn-refresh:hover {
+    -fx-background-color: #E1E8ED;
+    -fx-text-fill: #2D3436;
+}
+
+/* ============================================================
+   PROFILE VIEW CARDS
+   ============================================================ */
+
+.profile-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16, 0, 0, 5);
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+}
+
+.profile-name {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+}
+
+.profile-field-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #636E72;
+    -fx-font-size: 13px;
+}
+
+.profile-field-value {
+    -fx-text-fill: #2D3436;
+    -fx-font-size: 14px;
+}
+
+.profile-badge {
+    -fx-background-color: rgba(108,99,255,0.10);
+    -fx-background-radius: 20;
+    -fx-padding: 6 16;
+    -fx-text-fill: #6C63FF;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* Counter boxes (followers, following, etc.) */
+.counter-box {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 22 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-min-width: 140;
+}
+
+.counter-value {
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+}
+
+.counter-label {
+    -fx-text-fill: #636E72;
+    -fx-font-size: 14px;
+}
+
+/* ============================================================
+   STATS PAGE
+   ============================================================ */
+
+.stat-summary-card {
+    -fx-background-radius: 16;
+    -fx-padding: 22 28;
+    -fx-min-width: 190;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 10, 0, 0, 3);
+}
+
+.stat-summary-label {
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-font-size: 14px;
+}
+
+.stat-summary-value {
+    -fx-text-fill: white;
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+/* ============================================================
+   NETWORK / LIST VIEWS
+   ============================================================ */
+
+.modern-list {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 14;
+}
+.modern-list .list-cell {
+    -fx-padding: 10 14;
+    -fx-border-color: transparent transparent #F0F2F5 transparent;
+    -fx-font-size: 14px;
+}
+.modern-list .list-cell:selected {
+    -fx-background-color: rgba(108,99,255,0.08);
+    -fx-text-fill: #1A1A2E;
+}
+
+.section-heading {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+}
+
+/* ============================================================
+   CHECKBOX MODERN
+   ============================================================ */
+
+.modern-check {
+    -fx-font-size: 13px;
+    -fx-text-fill: #2D3436;
+}
+.modern-check .box {
+    -fx-background-color: #F8F9FA;
+    -fx-border-color: #E1E8ED;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 3;
+}
+.modern-check:selected .box {
+    -fx-background-color: #6C63FF;
+    -fx-border-color: #6C63FF;
+}
+.modern-check:selected .mark {
+    -fx-background-color: white;
+}
+
+/* ============================================================
+   SCROLLPANE
+   ============================================================ */
+
+.modern-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.modern-scroll .viewport {
+    -fx-background-color: transparent;
+}
+.modern-scroll .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+.modern-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(108,99,255,0.20);
+    -fx-background-radius: 10;
+}
+.modern-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(108,99,255,0.40);
+}
+
+/* ============================================================
+   ERROR / SUCCESS LABELS
+   ============================================================ */
+
+.error-label {
+    -fx-text-fill: #D63031;
+    -fx-font-size: 13px;
+    -fx-padding: 10 16;
+    -fx-background-color: rgba(214,48,49,0.08);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(214,48,49,0.15);
+    -fx-border-radius: 10;
+}
+
+.success-label {
+    -fx-text-fill: #00B894;
+    -fx-font-size: 13px;
+    -fx-padding: 10 16;
+    -fx-background-color: rgba(0,184,148,0.08);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(0,184,148,0.15);
+    -fx-border-radius: 10;
+}
+
+/* ============================================================
+   SEPARATOR
+   ============================================================ */
+
+.modern-separator {
+    -fx-background-color: #E1E8ED;
+    -fx-pref-height: 1;
+}
+
+/* ============================================================
+   VERIFIED / ROLE BADGES in header
+   ============================================================ */
+
+.role-badge {
+    -fx-text-fill: #FDCB6E;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.verified-badge {
+    -fx-text-fill: #43E97B;
+    -fx-font-size: 14px;
+}
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+
+.chart-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+}
+.chart-legend-item {
+    -fx-font-size: 12px;
+}
+.chart-pie-label {
+    -fx-font-size: 12px;
+    -fx-fill: #636E72;
+}
+.default-color0.chart-pie { -fx-pie-color: #6C63FF; }
+.default-color1.chart-pie { -fx-pie-color: #FF6584; }
+.default-color2.chart-pie { -fx-pie-color: #43E97B; }
+.default-color3.chart-pie { -fx-pie-color: #FDCB6E; }
+.default-color4.chart-pie { -fx-pie-color: #74B9FF; }
+
+.default-color0.chart-bar { -fx-bar-fill: #6C63FF; }
+.default-color1.chart-bar { -fx-bar-fill: #00B894; }
+.default-color2.chart-bar { -fx-bar-fill: #E17055; }
+.default-color3.chart-bar { -fx-bar-fill: #FDCB6E; }
+.default-color4.chart-bar { -fx-bar-fill: #74B9FF; }
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+.chart-vertical-grid-lines, .chart-horizontal-grid-lines {
+    -fx-stroke: rgba(0,0,0,0.06);
+}
+.axis-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #636E72;
+}
+.axis {
+    -fx-tick-label-fill: #636E72;
+}
+
+/* ============================================================
+   RESPONSIVE / FULLSCREEN ENHANCEMENTS
+   ============================================================ */
+
+/* Center-panel forms expand to fill and center their glass-cards */
+.form-panel-bg {
+    -fx-alignment: center;
+}
+
+/* Glass cards grow nicely with max-width */
+.glass-card {
+    -fx-max-width: 600;
+}
+
+/* Stat cards grow to fill row */
+.stat-card-modern {
+    -fx-min-width: 140;
+    -fx-pref-width: 200;
+}
+
+/* Counter boxes flex */
+.counter-box {
+    -fx-min-width: 100;
+}
+
+/* Action panel adapts */
+.action-panel-modern {
+    -fx-min-width: 220;
+    -fx-max-width: 300;
+}
+
+/* Profile card centers in fullscreen */
+.profile-card {
+    -fx-max-width: 700;
+}
+
+/* ============================================================
+   CAPTCHA — "I'm not a robot" CHECKBOX PANEL
+   ============================================================ */
+
+/* The main panel that looks like Google's reCAPTCHA box */
+.captcha-box {
+    -fx-background-color: #FAFAFA;
+    -fx-border-color: #D3D3D3;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2);
+}
+.captcha-box:hover {
+    -fx-background-color: #F0F0F0;
+    -fx-border-color: #B0B0B0;
+}
+
+/* The checkbox inside the CAPTCHA panel */
+.captcha-checkbox {
+    -fx-padding: 2;
+}
+.captcha-checkbox .box {
+    -fx-background-color: white;
+    -fx-border-color: #C0C0C0;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-pref-width: 26;
+    -fx-pref-height: 26;
+}
+.captcha-checkbox:selected .box {
+    -fx-background-color: #00B894;
+    -fx-border-color: #00B894;
+}
+.captcha-checkbox:selected .mark {
+    -fx-background-color: white;
+}
+
+/* The label text "Je ne suis pas un robot" / "✓ Vérifié" */
+.captcha-label {
+    -fx-text-fill: #2D3436;
+    -fx-font-size: 13px;
+}
+
+/* ============================================================
+   GOOGLE SIGN-IN BUTTON
+   Styled to match Google's branding guidelines:
+   white background, dark text, subtle border, Google icon color on hover
+   ============================================================ */
+
+.btn-google {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #3C4043;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-border-color: #DADCE0;
+    -fx-border-radius: 12;
+    -fx-border-width: 1.5;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 4, 0, 0, 2);
+}
+.btn-google:hover {
+    -fx-background-color: #F7F8F8;
+    -fx-border-color: #4285F4;
+    -fx-effect: dropshadow(gaussian, rgba(66,133,244,0.25), 8, 0, 0, 2);
+}
+.btn-google:pressed {
+    -fx-background-color: #E8EAED;
+    -fx-border-color: #4285F4;
+}

@@ -4,10 +4,9 @@ import exceptions.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import models.User;
+import tools.SceneHelper;
 import services.*;
 
 /**
@@ -69,10 +68,7 @@ public class ChangePasswordController {
             Parent root = loader.load();
             ProfilController ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
-            Stage stage = (Stage) currentPasswordField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(currentPasswordField), root);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -4,19 +4,35 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 public class TwilioService {
-    // TODO: Replace with your actual Twilio credentials
-    public static final String ACCOUNT_SID = "YOUR_TWILIO_ACCOUNT_SID";
-    public static final String AUTH_TOKEN = "YOUR_TWILIO_AUTH_TOKEN";
-    private static final String TWILIO_PHONE_NUMBER = "+1XXXXXXXXXX";
+    private final String accountSid;
+    private final String authToken;
+    private final String twilioPhoneNumber;
 
     public TwilioService() {
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        Properties props = loadSecrets();
+        this.accountSid = props.getProperty("twilio.account_sid", "");
+        this.authToken = props.getProperty("twilio.auth_token", "");
+        this.twilioPhoneNumber = props.getProperty("twilio.phone_number", "");
+        Twilio.init(accountSid, authToken);
+    }
+
+    private Properties loadSecrets() {
+        Properties props = new Properties();
+        try (InputStream is = getClass().getResourceAsStream("/secrets.properties")) {
+            if (is != null) props.load(is);
+        } catch (Exception e) {
+            System.err.println("Could not load secrets.properties: " + e.getMessage());
+        }
+        return props;
     }
 
     public void sendSms(String to, String message) {
         PhoneNumber toNumber = new PhoneNumber(to);
-        PhoneNumber fromNumber = new PhoneNumber(TWILIO_PHONE_NUMBER);
+        PhoneNumber fromNumber = new PhoneNumber(twilioPhoneNumber);
         Message.creator(toNumber, fromNumber, message).create();
     }
 }

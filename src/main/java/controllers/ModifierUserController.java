@@ -7,27 +7,56 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import models.User;
 import tools.SceneHelper;
-import services.*;
+import services.SessionService;
+import services.UserService;
 import util.Type;
 
 /**
- * Add user from admin dashboard (replaces AjouterClient/AjouterGuide).
+ * Controller for modifying an existing user from the admin dashboard.
  */
-public class AjouterUserController {
+public class ModifierUserController {
 
     @FXML private TextField firstnameField;
     @FXML private TextField lastnameField;
     @FXML private TextField emailField;
     @FXML private TextField phoneField;
-    @FXML private PasswordField passwordField;
     @FXML private ComboBox<String> roleComboBox;
+    @FXML private CheckBox activeCheckBox;
+    @FXML private CheckBox bannedCheckBox;
     @FXML private Label errorLabel;
     @FXML private Label successLabel;
 
     private DashboardController dashboardController;
+    private User userToEdit;
 
     public void setDashboardController(DashboardController controller) {
         this.dashboardController = controller;
+    }
+
+    /**
+     * Loads the selected user's data into the form fields.
+     */
+    public void setUser(User user) {
+        this.userToEdit = user;
+        if (user != null) {
+            firstnameField.setText(user.getFirstname());
+            lastnameField.setText(user.getLastname());
+            emailField.setText(user.getEmail());
+            phoneField.setText(user.getPhone() != null ? user.getPhone() : "");
+
+            if (roleComboBox != null && user.getRole() != null) {
+                String roleName = switch (user.getRole()) {
+                    case ENTREPRENEUR -> "Entrepreneur";
+                    case MENTOR -> "Mentor";
+                    case INVESTISSEUR -> "Investisseur";
+                    default -> "Entrepreneur";
+                };
+                roleComboBox.setValue(roleName);
+            }
+
+            activeCheckBox.setSelected(user.getIsActive());
+            bannedCheckBox.setSelected(user.getIsBanned());
+        }
     }
 
     @FXML
@@ -39,14 +68,15 @@ public class AjouterUserController {
     }
 
     @FXML
-    private void handleAdd() {
+    private void handleSave() {
         try {
             String firstname = firstnameField.getText().trim();
             String lastname = lastnameField.getText().trim();
             String email = emailField.getText().trim();
             String phone = phoneField.getText().trim();
-            String password = passwordField.getText().trim();
             String selectedRole = roleComboBox.getValue();
+            boolean isActive = activeCheckBox.isSelected();
+            boolean isBanned = bannedCheckBox.isSelected();
 
             Type role = switch (selectedRole) {
                 case "Mentor" -> Type.MENTOR;
@@ -54,20 +84,21 @@ public class AjouterUserController {
                 default -> Type.ENTREPRENEUR;
             };
 
-            User user = new User(firstname, lastname, email, phone, password, role);
-            UserService.getInstance().addUser(user);
+            // Update the user object with new values
+            userToEdit.setFirstname(firstname);
+            userToEdit.setLastname(lastname);
+            userToEdit.setEmail(email);
+            userToEdit.setPhone(phone);
+            userToEdit.setRole(role);
+            userToEdit.setIsActive(isActive);
+            userToEdit.setIsBanned(isBanned);
 
-            showSuccess("Utilisateur ajouté avec succès !");
+            UserService.getInstance().updateUser(userToEdit);
 
-            // Clear fields
-            firstnameField.clear();
-            lastnameField.clear();
-            emailField.clear();
-            phoneField.clear();
-            passwordField.clear();
+            showSuccess("Utilisateur modifié avec succès !");
 
         } catch (EmptyFieldException | InvalidEmailException | InvalidPhoneNumberException |
-                 IncorrectPasswordException | CustomIllegalStateException e) {
+                 IncorrectPasswordException | UserNotFoundException e) {
             showError(e.getMessage());
         }
     }

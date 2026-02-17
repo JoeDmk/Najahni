@@ -20,8 +20,10 @@ public class User {
     private String address;
     private LocalDate dateOfBirth;
     private boolean verified;
+    private boolean phoneVerified;
     private boolean isActive;
     private boolean isBanned;
+    private String googleProviderId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -138,11 +140,17 @@ public class User {
     public boolean isVerified() { return verified; }
     public void setVerified(boolean verified) { this.verified = verified; }
 
+    public boolean isPhoneVerified() { return phoneVerified; }
+    public void setPhoneVerified(boolean phoneVerified) { this.phoneVerified = phoneVerified; }
+
     public boolean getIsActive() { return isActive; }
     public void setIsActive(boolean isActive) { this.isActive = isActive; }
 
     public boolean getIsBanned() { return isBanned; }
     public void setIsBanned(boolean isBanned) { this.isBanned = isBanned; }
+
+    public String getGoogleProviderId() { return googleProviderId; }
+    public void setGoogleProviderId(String googleProviderId) { this.googleProviderId = googleProviderId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

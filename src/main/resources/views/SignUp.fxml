@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- ======================== OLD DESIGN (commented out) ========================
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
@@ -9,22 +10,16 @@
       fx:controller="controllers.SignUpController"
       styleClass="auth-container"
       stylesheets="@najahni.css">
-    
-    <!-- Left Panel - Branding -->
     <VBox styleClass="auth-branding-panel" alignment="CENTER" spacing="25" HBox.hgrow="ALWAYS">
         <padding><Insets top="40" right="50" bottom="40" left="50"/></padding>
-        
         <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
             <image><Image url="@logo_najahni.png"/></image>
         </ImageView>
         <Label text="NAJAHNI" styleClass="auth-brand-title"/>
         <Label text="Rejoignez la communauté" styleClass="auth-brand-subtitle"/>
-        
         <Separator styleClass="auth-separator" maxWidth="200"/>
-        
         <Label text="Créez votre compte gratuitement et accédez à toutes les fonctionnalités de la plateforme." 
                styleClass="auth-brand-description" wrapText="true" maxWidth="320" textAlignment="CENTER"/>
-        
         <VBox spacing="12" alignment="CENTER">
             <padding><Insets top="20"/></padding>
             <HBox alignment="CENTER" spacing="10">
@@ -41,23 +36,15 @@
             </HBox>
         </VBox>
     </VBox>
-    
-    <!-- Right Panel - Signup Form -->
     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="auth-form-scroll" HBox.hgrow="ALWAYS">
         <VBox styleClass="auth-form-panel" alignment="CENTER" spacing="20">
             <padding><Insets top="40" right="60" bottom="40" left="60"/></padding>
-            
             <VBox spacing="8" alignment="CENTER">
                 <Label text="Créer un compte" styleClass="auth-title"/>
                 <Label text="Remplissez le formulaire pour vous inscrire" styleClass="auth-subtitle"/>
             </VBox>
-            
-            <!-- Error/Success Message -->
             <Label fx:id="messageLabel" styleClass="auth-error" visible="false" managed="false"/>
-            
-            <!-- Signup Form -->
             <VBox spacing="18" maxWidth="400" alignment="CENTER">
-                
                 <HBox spacing="10">
                     <VBox spacing="6" HBox.hgrow="ALWAYS">
                         <Label text="Prénom *" styleClass="auth-label"/>
@@ -68,41 +55,179 @@
                         <TextField fx:id="lastnameField" promptText="Votre nom" styleClass="auth-input" prefHeight="42"/>
                     </VBox>
                 </HBox>
-                
                 <VBox spacing="6">
                     <Label text="Adresse email *" styleClass="auth-label"/>
                     <TextField fx:id="emailField" promptText="exemple@email.com" styleClass="auth-input" prefHeight="42"/>
                 </VBox>
-
                 <VBox spacing="6">
                     <Label text="Téléphone" styleClass="auth-label"/>
                     <TextField fx:id="phoneField" promptText="+216 XX XXX XXX" styleClass="auth-input" prefHeight="42"/>
                 </VBox>
-                
                 <VBox spacing="6">
                     <Label text="Mot de passe *" styleClass="auth-label"/>
                     <PasswordField fx:id="passwordField" promptText="Minimum 6 caractères" styleClass="auth-input" prefHeight="42"/>
                 </VBox>
-                
                 <VBox spacing="6">
                     <Label text="Confirmer le mot de passe *" styleClass="auth-label"/>
                     <PasswordField fx:id="confirmPasswordField" promptText="Retapez votre mot de passe" styleClass="auth-input" prefHeight="42"/>
                 </VBox>
-                
                 <VBox spacing="6">
                     <Label text="Je suis un(e) *" styleClass="auth-label"/>
                     <ComboBox fx:id="roleComboBox" promptText="Sélectionnez votre rôle" styleClass="auth-combo" prefHeight="42" maxWidth="Infinity"/>
                 </VBox>
-                
                 <Button fx:id="registerButton" text="Créer mon compte" styleClass="btn-auth-primary" 
                         onAction="#handleRegister" prefHeight="48" maxWidth="Infinity"/>
             </VBox>
-            
             <Separator maxWidth="400"/>
-            
             <HBox alignment="CENTER" spacing="5">
                 <Label text="Déjà inscrit?" styleClass="auth-switch-text"/>
                 <Hyperlink text="Se connecter" styleClass="auth-switch-link" onAction="#handleSignIn"/>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</HBox>
+======================== END OLD DESIGN ======================== -->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.SignUpController"
+      stylesheets="@modern.css"
+      style="-fx-background-color: #F0F2F5;">
+
+    <!-- Left Panel - Brand -->
+    <VBox styleClass="brand-panel" alignment="CENTER" spacing="28" HBox.hgrow="ALWAYS"
+          minWidth="400" maxWidth="430">
+        <padding><Insets top="50" right="50" bottom="50" left="50"/></padding>
+
+        <ImageView fitWidth="90" fitHeight="90" preserveRatio="true">
+            <image><Image url="@logo_najahni.png"/></image>
+        </ImageView>
+        <Label text="NAJAHNI" styleClass="brand-title"/>
+        <Label text="Rejoignez la communauté" styleClass="brand-subtitle"/>
+
+        <Separator styleClass="brand-divider" maxWidth="200"/>
+
+        <Label text="Créez votre compte gratuitement et accédez à toutes les fonctionnalités de la plateforme."
+               styleClass="brand-description" wrapText="true" maxWidth="320" textAlignment="CENTER"/>
+
+        <VBox spacing="14" alignment="CENTER">
+            <padding><Insets top="15"/></padding>
+            <HBox alignment="CENTER" spacing="12">
+                <Label text="✦" styleClass="brand-feature-icon"/>
+                <Label text="Accès gratuit et illimité" styleClass="brand-feature-text"/>
+            </HBox>
+            <HBox alignment="CENTER" spacing="12">
+                <Label text="✦" styleClass="brand-feature-icon"/>
+                <Label text="Communauté active" styleClass="brand-feature-text"/>
+            </HBox>
+            <HBox alignment="CENTER" spacing="12">
+                <Label text="✦" styleClass="brand-feature-icon"/>
+                <Label text="Support dédié" styleClass="brand-feature-text"/>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <!-- Right Panel - Signup Form -->
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="modern-scroll" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER" spacing="22" styleClass="form-panel-bg">
+            <padding><Insets top="45" right="60" bottom="45" left="60"/></padding>
+
+            <VBox spacing="8" alignment="CENTER">
+                <Label text="Créer un compte" styleClass="page-title"/>
+                <Label text="Remplissez le formulaire pour vous inscrire" styleClass="page-subtitle"/>
+            </VBox>
+
+            <Label fx:id="messageLabel" styleClass="error-label" visible="false" managed="false"/>
+
+            <!-- Profile Image Upload - Circular -->
+            <VBox alignment="CENTER" spacing="8">
+                <StackPane fx:id="profileImageContainer" alignment="CENTER"
+                           style="-fx-cursor: hand;" prefWidth="100" prefHeight="100">
+                    <Circle fx:id="profileImageClip" radius="48" stroke="#6C63FF" strokeWidth="2.5"
+                            fill="#E8E8FF"/>
+                    <Label fx:id="lblUploadHint" text="📷" style="-fx-font-size: 28px;"/>
+                    <ImageView fx:id="profileImageView" fitWidth="96" fitHeight="96"
+                               preserveRatio="false" visible="false"/>
+                </StackPane>
+                <Label text="Cliquez pour ajouter une photo" styleClass="text-muted"
+                       style="-fx-font-size: 11px;"/>
+            </VBox>
+
+            <VBox spacing="18" maxWidth="420" alignment="CENTER">
+                <HBox spacing="12">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Prénom *" styleClass="field-label"/>
+                        <TextField fx:id="firstnameField" promptText="Votre prénom"
+                                   styleClass="modern-field" prefHeight="46"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Nom *" styleClass="field-label"/>
+                        <TextField fx:id="lastnameField" promptText="Votre nom"
+                                   styleClass="modern-field" prefHeight="46"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6">
+                    <Label text="Adresse email *" styleClass="field-label"/>
+                    <TextField fx:id="emailField" promptText="exemple@email.com"
+                               styleClass="modern-field" prefHeight="46"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Téléphone" styleClass="field-label"/>
+                    <TextField fx:id="phoneField" promptText="+216 XX XXX XXX"
+                               styleClass="modern-field" prefHeight="46"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Mot de passe *" styleClass="field-label"/>
+                    <StackPane>
+                        <PasswordField fx:id="passwordField" promptText="Minimum 6 caractères"
+                                       styleClass="modern-field" prefHeight="46"/>
+                        <TextField fx:id="passwordVisibleField" promptText="Minimum 6 caractères"
+                                   styleClass="modern-field" prefHeight="46" visible="false" managed="false"/>
+                        <Button fx:id="btnTogglePassword" text="👁" onAction="#handleTogglePassword"
+                                style="-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 14px;"
+                                StackPane.alignment="CENTER_RIGHT"
+                                translateX="-10"/>
+                    </StackPane>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Confirmer le mot de passe *" styleClass="field-label"/>
+                    <StackPane>
+                        <PasswordField fx:id="confirmPasswordField" promptText="Retapez votre mot de passe"
+                                       styleClass="modern-field" prefHeight="46"/>
+                        <TextField fx:id="confirmPasswordVisibleField" promptText="Retapez votre mot de passe"
+                                   styleClass="modern-field" prefHeight="46" visible="false" managed="false"/>
+                        <Button fx:id="btnToggleConfirmPassword" text="👁" onAction="#handleToggleConfirmPassword"
+                                style="-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 14px;"
+                                StackPane.alignment="CENTER_RIGHT"
+                                translateX="-10"/>
+                    </StackPane>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Je suis un(e) *" styleClass="field-label"/>
+                    <ComboBox fx:id="roleComboBox" promptText="Sélectionnez votre rôle"
+                              styleClass="modern-combo" prefHeight="46" maxWidth="Infinity"/>
+                </VBox>
+
+                <Button fx:id="registerButton" text="Créer mon compte"
+                        styleClass="btn-primary-gradient"
+                        onAction="#handleRegister" prefHeight="50" maxWidth="Infinity"/>
+            </VBox>
+
+            <Separator styleClass="modern-separator" maxWidth="420"/>
+
+            <HBox alignment="CENTER" spacing="5">
+                <Label text="Déjà inscrit ?" styleClass="text-muted"/>
+                <Hyperlink text="Se connecter" styleClass="link-primary" onAction="#handleSignIn"/>
             </HBox>
         </VBox>
     </ScrollPane>

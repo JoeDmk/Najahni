@@ -6,11 +6,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import models.User;
+import tools.SceneHelper;
 import services.*;
 import util.Type;
 
@@ -22,6 +22,7 @@ import java.util.List;
 public class DashboardController {
 
     @FXML private Label welcomeLabel;
+    @FXML private Button btnToggleScreen;
     @FXML private Label totalUsersLabel;
     @FXML private Label entrepreneursLabel;
     @FXML private Label mentorsLabel;
@@ -47,7 +48,7 @@ public class DashboardController {
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
-        if (welcomeLabel != null) {
+        if (welcomeLabel != null && user != null) {
             welcomeLabel.setText("Bienvenue, " + user.getFullName());
         }
         loadStats();
@@ -132,10 +133,7 @@ public class DashboardController {
             Parent root = loader.load();
             AjouterUserController ctrl = loader.getController();
             ctrl.setDashboardController(this);
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(usersTable), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -188,10 +186,24 @@ public class DashboardController {
             Parent root = loader.load();
             ProfileDashboardController ctrl = loader.getController();
             ctrl.setUser(selected);
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(usersTable), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleEditUser() {
+        User selected = usersTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ModifierUser.fxml"));
+            Parent root = loader.load();
+            ModifierUserController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            ctrl.setUser(selected);
+            SceneHelper.switchScene(SceneHelper.stageOf(usersTable), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -202,10 +214,9 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/StatsView.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            StatsController ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            SceneHelper.switchScene(SceneHelper.stageOf(usersTable), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -218,10 +229,7 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/SignIn.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(usersTable), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -234,10 +242,7 @@ public class DashboardController {
             Parent root = loader.load();
             ProfilController ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
-            Stage stage = (Stage) usersTable.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(usersTable), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -247,5 +252,19 @@ public class DashboardController {
     public void refreshData() {
         loadStats();
         loadUsers(null);
+    }
+
+    @FXML
+    private void handleToggleScreen() {
+        Stage stage = SceneHelper.stageOf(usersTable);
+        if (stage.isMaximized() || stage.isFullScreen()) {
+            stage.setFullScreen(false);
+            stage.setMaximized(false);
+            stage.setWidth(1200);
+            stage.setHeight(750);
+            stage.centerOnScreen();
+        } else {
+            stage.setMaximized(true);
+        }
     }
 }

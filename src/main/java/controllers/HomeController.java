@@ -3,9 +3,10 @@ package controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import tools.SceneHelper;
 import models.User;
 import services.*;
 
@@ -15,6 +16,7 @@ import services.*;
 public class HomeController {
 
     @FXML private Label welcomeLabel;
+    @FXML private Button btnToggleScreen;
     @FXML private Label roleLabel;
     @FXML private Label followersCountLabel;
     @FXML private Label followingCountLabel;
@@ -46,10 +48,7 @@ public class HomeController {
             Parent root = loader.load();
             ProfilController ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
-            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,10 +61,7 @@ public class HomeController {
             Parent root = loader.load();
             NetworkController ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
-            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,10 +74,7 @@ public class HomeController {
             Parent root = loader.load();
             ChangePasswordController ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
-            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,12 +87,23 @@ public class HomeController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/SignIn.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleToggleScreen() {
+        Stage stage = SceneHelper.stageOf(welcomeLabel);
+        if (stage.isMaximized() || stage.isFullScreen()) {
+            stage.setFullScreen(false);
+            stage.setMaximized(false);
+            stage.setWidth(1200);
+            stage.setHeight(750);
+            stage.centerOnScreen();
+        } else {
+            stage.setMaximized(true);
         }
     }
 }

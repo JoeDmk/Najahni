@@ -43,8 +43,8 @@ public class UserService implements UserInterface {
         validateUserFields(user, true);
 
         String request = "INSERT INTO user (firstname, lastname, email, phone, password, role, bio, profile_picture, " +
-                "company_name, linkedin_url, address, date_of_birth, verified, is_active, is_banned, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "company_name, linkedin_url, address, date_of_birth, verified, phone_verified, is_active, is_banned, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(request, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getFirstname());
@@ -60,10 +60,11 @@ public class UserService implements UserInterface {
             ps.setString(11, user.getAddress());
             ps.setDate(12, user.getDateOfBirth() != null ? Date.valueOf(user.getDateOfBirth()) : null);
             ps.setBoolean(13, false); // not verified yet
-            ps.setBoolean(14, true);  // active
-            ps.setBoolean(15, false); // not banned
-            ps.setTimestamp(16, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setBoolean(14, false); // phone not verified
+            ps.setBoolean(15, true);  // active
+            ps.setBoolean(16, false); // not banned
             ps.setTimestamp(17, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setTimestamp(18, Timestamp.valueOf(LocalDateTime.now()));
 
             ps.executeUpdate();
 
@@ -291,6 +292,48 @@ public class UserService implements UserInterface {
         }
     }
 
+    /**
+     * Marks the user's email as unverified (e.g. after changing email).
+     */
+    public void unverifyEmail(int userId) {
+        String request = "UPDATE user SET verified = false, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(request)) {
+            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error unverifying email: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Marks the user's phone number as verified.
+     */
+    public void verifyPhone(int userId) {
+        String request = "UPDATE user SET phone_verified = true, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(request)) {
+            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error verifying phone: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Marks the user's phone as unverified (e.g. after changing phone number).
+     */
+    public void unverifyPhone(int userId) {
+        String request = "UPDATE user SET phone_verified = false, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(request)) {
+            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error unverifying phone: " + ex.getMessage());
+        }
+    }
+
     // ==================== Ban/Unban ====================
 
     public void banUser(int userId) throws PermissionException, UserNotFoundException {
@@ -392,6 +435,121 @@ public class UserService implements UserInterface {
         return users;
     }
 
+    // ==================== Google OAuth ====================
+
+    /**
+     * Find a user by their Google Provider ID.
+     * Used to check if a Google account is already linked to an existing user.
+     *
+     * @param googleId the Google unique user ID
+     * @return the User if found, or null if no match
+     */
+    public User getUserByGoogleId(String googleId) {
+        try {
+            String query = "SELECT * FROM user WHERE google_provider_id = ?";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, googleId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return createUserFromResultSet(rs);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error retrieving user by Google ID: " + ex.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Finds an existing user linked to the given Google account, or creates a new one.
+     *
+     * LOGIC:
+     * 1. First, check if a user with this google_provider_id already exists → return that user.
+     * 2. If not, check if a user with the same email exists:
+     *    - If yes → link the Google ID to that existing account and return the user.
+     *    - If no  → create a brand-new user with the Google profile info.
+     *
+     * @param googleId   Google's unique user ID
+     * @param email      Gmail address
+     * @param firstName  given name from Google
+     * @param lastName   family name from Google
+     * @param pictureUrl profile picture URL from Google
+     * @return the matched or newly created User
+     */
+    public User findOrCreateGoogleUser(String googleId, String email, String firstName,
+                                        String lastName, String pictureUrl) {
+        // 1. Check by Google provider ID
+        User user = getUserByGoogleId(googleId);
+        if (user != null) {
+            System.out.println("Found existing user by Google ID: " + email);
+            return user;
+        }
+
+        // 2. Check by email
+        try {
+            user = getUserbyEmail(email);
+            // User exists with this email — link Google ID to their account
+            linkGoogleId(user.getId(), googleId);
+            user.setGoogleProviderId(googleId);
+            System.out.println("Linked Google ID to existing user: " + email);
+            return user;
+        } catch (UserNotFoundException e) {
+            // No existing user — create a new one
+        }
+
+        // 3. Create a new user from Google profile information
+        String insertSql = "INSERT INTO user (firstname, lastname, email, phone, password, role, " +
+                "profile_picture, google_provider_id, verified, is_active, is_banned, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, firstName);
+            ps.setString(2, lastName);
+            ps.setString(3, email);
+            ps.setString(4, "");                       // No phone for Google signup
+            ps.setString(5, "GOOGLE_OAUTH_NO_PASSWORD"); // Placeholder — no password needed
+            ps.setString(6, Type.ENTREPRENEUR.name());  // Default role for new Google users
+            ps.setString(7, pictureUrl);
+            ps.setString(8, googleId);
+            ps.setBoolean(9, true);                    // Google emails are already verified
+            ps.setBoolean(10, true);                   // Active
+            ps.setBoolean(11, false);                  // Not banned
+            ps.setTimestamp(12, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setTimestamp(13, Timestamp.valueOf(LocalDateTime.now()));
+
+            ps.executeUpdate();
+
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int newId = generatedKeys.getInt(1);
+                System.out.println("Created new Google user with ID: " + newId + ", email: " + email);
+                try {
+                    return getUserbyID(newId);
+                } catch (exceptions.UserNotFoundException e) {
+                    System.err.println("Unexpected: newly created user not found: " + e.getMessage());
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error creating Google user: " + ex.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Links a Google provider ID to an existing user account.
+     */
+    private void linkGoogleId(int userId, String googleId) {
+        String sql = "UPDATE user SET google_provider_id = ?, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, googleId);
+            ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error linking Google ID: " + ex.getMessage());
+        }
+    }
+
     // ==================== Crypto Helpers ====================
 
     public String cryptPassword(String passwordToCrypt) {
@@ -463,8 +621,12 @@ public class UserService implements UserInterface {
         user.setDateOfBirth(dob != null ? dob.toLocalDate() : null);
 
         user.setVerified(rs.getBoolean("verified"));
+        user.setPhoneVerified(rs.getBoolean("phone_verified"));
         user.setIsActive(rs.getBoolean("is_active"));
         user.setIsBanned(rs.getBoolean("is_banned"));
+
+        // Google OAuth provider ID (may be null for non-Google users)
+        user.setGoogleProviderId(rs.getString("google_provider_id"));
 
         Timestamp createdAt = rs.getTimestamp("created_at");
         user.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);

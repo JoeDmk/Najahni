@@ -4,11 +4,10 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 import models.User;
+import tools.SceneHelper;
 import services.*;
 
 import java.util.List;
@@ -87,10 +86,7 @@ public class NetworkController {
             Parent root = loader.load();
             HomeController ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
-            Stage stage = (Stage) searchField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.show();
+            SceneHelper.switchScene(SceneHelper.stageOf(searchField), root);
         } catch (Exception e) {
             e.printStackTrace();
         }

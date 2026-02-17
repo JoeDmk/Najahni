@@ -4,8 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:controller="controllers.AjouterUserController"
-            prefHeight="500.0" prefWidth="600.0"
+<BorderPane fx:controller="controllers.ModifierUserController"
+            prefHeight="550.0" prefWidth="650.0"
             style="-fx-background-color: #ecf0f1;"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1">
@@ -13,7 +13,7 @@
         <HBox style="-fx-background-color: #2c3e50; -fx-padding: 15;">
             <Button text="← Retour" onAction="#handleBack"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;"/>
-            <Label text="  Ajouter un utilisateur" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;"/>
+            <Label text="  Modifier un utilisateur" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;"/>
         </HBox>
     </top>
     <center>
@@ -26,12 +26,15 @@
             </HBox>
             <TextField fx:id="emailField" promptText="Email" prefHeight="35" style="-fx-background-radius: 10;"/>
             <TextField fx:id="phoneField" promptText="Téléphone" prefHeight="35" style="-fx-background-radius: 10;"/>
-            <PasswordField fx:id="passwordField" promptText="Mot de passe" prefHeight="35" style="-fx-background-radius: 10;"/>
-            <ComboBox fx:id="roleComboBox" prefHeight="35" prefWidth="540" style="-fx-background-radius: 10;"/>
+            <ComboBox fx:id="roleComboBox" prefHeight="35" prefWidth="590" style="-fx-background-radius: 10;"/>
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <CheckBox fx:id="activeCheckBox" text="Actif"/>
+                <CheckBox fx:id="bannedCheckBox" text="Banni"/>
+            </HBox>
             <Label fx:id="errorLabel" visible="false" wrapText="true"/>
             <Label fx:id="successLabel" visible="false" wrapText="true"/>
-            <Button text="Ajouter" onAction="#handleAdd" prefHeight="38" prefWidth="300"
-                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14;"/>
+            <Button text="Enregistrer les modifications" onAction="#handleSave" prefHeight="38" prefWidth="300"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14;"/>
         </VBox>
     </center>
 </BorderPane>
@@ -41,7 +44,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:controller="controllers.AjouterUserController"
+<BorderPane fx:controller="controllers.ModifierUserController"
             stylesheets="@modern.css"
             style="-fx-background-color: #F0F2F5;"
             xmlns="http://javafx.com/javafx/23.0.1"
@@ -51,17 +54,17 @@
         <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="14">
             <padding><Insets top="14" right="24" bottom="14" left="24"/></padding>
             <Button text="← Retour" onAction="#handleBack" styleClass="btn-back"/>
-            <Label text="Ajouter un utilisateur" styleClass="page-header-title"/>
+            <Label text="Modifier un utilisateur" styleClass="page-header-title"/>
         </HBox>
     </top>
 
     <center>
         <VBox alignment="CENTER" style="-fx-padding: 35;">
-            <VBox styleClass="glass-card" spacing="18" alignment="CENTER" maxWidth="520">
+            <VBox styleClass="glass-card" spacing="18" alignment="CENTER" maxWidth="540">
                 <padding><Insets top="35" right="40" bottom="35" left="40"/></padding>
 
-                <Label text="Nouvel utilisateur" styleClass="page-title"/>
-                <Label text="Remplissez les informations ci-dessous" styleClass="page-subtitle"/>
+                <Label text="Modifier les informations" styleClass="page-title"/>
+                <Label text="Mettez à jour les données de l'utilisateur" styleClass="page-subtitle"/>
 
                 <HBox spacing="14">
                     <VBox spacing="6" HBox.hgrow="ALWAYS">
@@ -89,22 +92,21 @@
                 </VBox>
 
                 <VBox spacing="6">
-                    <Label text="Mot de passe" styleClass="field-label"/>
-                    <PasswordField fx:id="passwordField" promptText="Minimum 6 caractères"
-                                   styleClass="modern-field" prefHeight="44"/>
-                </VBox>
-
-                <VBox spacing="6">
                     <Label text="Rôle" styleClass="field-label"/>
                     <ComboBox fx:id="roleComboBox" styleClass="modern-combo"
                               prefHeight="44" maxWidth="Infinity"/>
                 </VBox>
 
+                <HBox spacing="24" alignment="CENTER_LEFT" style="-fx-padding: 8 0 4 0;">
+                    <CheckBox fx:id="activeCheckBox" text="Actif" styleClass="modern-check"/>
+                    <CheckBox fx:id="bannedCheckBox" text="Banni" styleClass="modern-check"/>
+                </HBox>
+
                 <Label fx:id="errorLabel" visible="false" wrapText="true" styleClass="error-label"/>
                 <Label fx:id="successLabel" visible="false" wrapText="true" styleClass="success-label"/>
 
-                <Button text="Ajouter l'utilisateur" onAction="#handleAdd"
-                        styleClass="btn-success-gradient" prefHeight="48" prefWidth="320"/>
+                <Button text="Enregistrer les modifications" onAction="#handleSave"
+                        styleClass="btn-primary-gradient" prefHeight="48" prefWidth="340"/>
             </VBox>
         </VBox>
     </center>
