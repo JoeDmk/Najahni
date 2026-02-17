@@ -7,7 +7,7 @@
 <BorderPane fx:controller="controllers.ModifierUserController"
             prefHeight="550.0" prefWidth="650.0"
             style="-fx-background-color: #ecf0f1;"
-            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns="http://javafx.com/javafx/17.0.14"
             xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <HBox style="-fx-background-color: #2c3e50; -fx-padding: 15;">
@@ -47,7 +47,7 @@
 <BorderPane fx:controller="controllers.ModifierUserController"
             stylesheets="@modern.css"
             style="-fx-background-color: #F0F2F5;"
-            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns="http://javafx.com/javafx/17.0.14"
             xmlns:fx="http://javafx.com/fxml/1">
 
     <top>
