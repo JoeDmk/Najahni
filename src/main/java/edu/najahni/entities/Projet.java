@@ -1,30 +1,36 @@
 package edu.najahni.entities;
 
-
-
 import java.time.LocalDate;
 
 public class Projet {
+
     private int id;
+    private int userId; // 🔥 relation avec table user
+
     private String titre;
     private String description;
-    private String secteur;      // ex. "FinTech", "GreenTech"
-    private String etape;        // "BROUILLON", "SOUMIS", "EVALUE"
+    private String secteur;
+    private String etape;
     private String statut;
     private LocalDate dateCreation;
-    private donneesBusiness donneesBusiness;  // relation 1-1
 
-    // Constructeurs
+    private donneesBusiness donneesBusiness;
+
     public Projet() {}
-    public Projet(String titre, String description, String secteur, String etape) {
+
+    public Projet(int userId, String titre, String description,
+                  String secteur, String etape, String statut,
+                  LocalDate dateCreation) {
+        this.userId = userId;
         this.titre = titre;
         this.description = description;
         this.secteur = secteur;
         this.etape = etape;
-        this.dateCreation = LocalDate.now();
+        this.statut = statut;
+        this.dateCreation = dateCreation;
     }
 
-    // Getters / Setters obligatoires (pour PropertyValueFactory dans TableView)
+    // ================= GETTERS / SETTERS =================
 
     public int getId() {
         return id;
@@ -34,6 +40,16 @@ public class Projet {
         this.id = id;
     }
 
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+
     public String getTitre() {
         return titre;
     }
@@ -41,6 +57,7 @@ public class Projet {
     public void setTitre(String titre) {
         this.titre = titre;
     }
+
 
     public String getDescription() {
         return description;
@@ -50,6 +67,7 @@ public class Projet {
         this.description = description;
     }
 
+
     public String getSecteur() {
         return secteur;
     }
@@ -57,6 +75,7 @@ public class Projet {
     public void setSecteur(String secteur) {
         this.secteur = secteur;
     }
+
 
     public String getEtape() {
         return etape;
@@ -66,6 +85,7 @@ public class Projet {
         this.etape = etape;
     }
 
+
     public String getStatut() {
         return statut;
     }
@@ -73,6 +93,7 @@ public class Projet {
     public void setStatut(String statut) {
         this.statut = statut;
     }
+
 
     public LocalDate getDateCreation() {
         return dateCreation;
@@ -82,8 +103,12 @@ public class Projet {
         this.dateCreation = dateCreation;
     }
 
-    // ... idem pour tous les autres champs
 
-    public donneesBusiness getDonneesBusiness() { return donneesBusiness; }
-    public void setDonneesBusiness(donneesBusiness db) { this.donneesBusiness = db; }
+    public donneesBusiness getDonneesBusiness() {
+        return donneesBusiness;
+    }
+
+    public void setDonneesBusiness(donneesBusiness donneesBusiness) {
+        this.donneesBusiness = donneesBusiness;
+    }
 }

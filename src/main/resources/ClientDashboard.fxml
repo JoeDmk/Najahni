@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.najahni.controllers.ClientDashboardController"
+            styleClass="root">
+
+    <!-- ========== HEADER UNIQUE ========== -->
+    <top>
+        <VBox styleClass="header" spacing="15">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Ligne 1 : Bouton Déconnecter aligné à droite -->
+            <HBox alignment="CENTER_RIGHT">
+                <Button text="← Déconnecter"
+                        onAction="#retourAccueil"
+                        styleClass="btn-retour"
+                        prefWidth="180"
+                        prefHeight="40"/>
+            </HBox>
+
+            <!-- Ligne 2 : Titres centrés -->
+            <VBox alignment="CENTER" spacing="5">
+                <Label text="Dashboard Najahni" styleClass="header-title"/>
+                <Label text="Espace Client" styleClass="header-subtitle"/>
+            </VBox>
+        </VBox>
+    </top>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <center>
+        <VBox spacing="20" styleClass="content-area">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- ========== CARTE TABLEAU ========== -->
+            <VBox styleClass="card" spacing="10">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <Label text="📋 Mes Projets" styleClass="card-title"/>
+
+                <!-- ========== BARRE D'ACTIONS ========== -->
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 10 0;">
+                    <Button text="➕ Nouveau Projet"
+                            onAction="#ouvrirAjout"
+                            styleClass="btn-primary"
+                            prefWidth="180"
+                            prefHeight="40"/>
+
+                    <Button text="🔄 Rafraîchir"
+                            onAction="#rafraichir"
+                            styleClass="btn-secondary"
+                            prefWidth="150"
+                            prefHeight="40"/>
+                </HBox>
+
+                <!-- ========== BARRE DE RECHERCHE ET TRI ========== -->
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 10 0;">
+                    <Label text="🔍 Rechercher :" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <TextField fx:id="champRecherche"
+                               promptText="Titre, description, secteur, statut..."
+                               prefWidth="350"
+                               style="-fx-font-size: 14px; -fx-padding: 8;"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Label text="📊 Trier par :" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="comboTri"
+                              prefWidth="220"
+                              style="-fx-font-size: 14px;"/>
+                </HBox>
+
+                <!-- ========== TABLEAU ========== -->
+                <TableView fx:id="projetsTable" styleClass="table-view" prefHeight="400">
+                    <columns>
+                        <TableColumn fx:id="colTitre" text="Titre" prefWidth="160"/>
+                        <TableColumn fx:id="colDescription" text="Description" prefWidth="220"/>
+                        <TableColumn fx:id="colSecteur" text="Secteur" prefWidth="130"/>
+                        <TableColumn fx:id="colEtape" text="Étape" prefWidth="130"/>
+                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="130"/>
+                        <TableColumn fx:id="colDate" text="Date création" prefWidth="130"/>
+                        <TableColumn fx:id="colCouts" text="Coûts estimés" prefWidth="120"/>
+                        <TableColumn fx:id="colRevenus" text="Revenus attendus" prefWidth="130"/>
+                        <TableColumn fx:id="actions" text="Actions" prefWidth="270" sortable="false"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Aucun projet pour le moment"
+                               styleClass="placeholder-label"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

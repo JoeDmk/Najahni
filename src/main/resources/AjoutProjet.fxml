@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.najahni.controllers.AjouterProjet"
+            styleClass="root">
+
+    <center>
+        <!-- Conteneur principal FULL WIDTH -->
+        <VBox spacing="40" styleClass="card">
+
+            <padding>
+                <Insets top="50" right="80" bottom="50" left="80"/>
+            </padding>
+
+            <!-- Titre -->
+            <Label text="Ajouter un Projet"
+                   styleClass="card-title"
+                   maxWidth="Infinity"
+                   alignment="CENTER"/>
+
+            <!-- Deux colonnes -->
+            <HBox spacing="80" HBox.hgrow="ALWAYS">
+
+                <!-- Colonne Projet -->
+                <VBox spacing="20" HBox.hgrow="ALWAYS">
+                    <Label text="Projet" styleClass="form-label"/>
+                    <TextField fx:id="userIdField"  promptText="ID User *" styleClass="form-field"/>
+                    <TextField fx:id="titre" promptText="Titre *" styleClass="form-field"/>
+                    <TextArea fx:id="description" promptText="Description"
+                              prefHeight="140"
+                              styleClass="form-field"/>
+                    <TextField fx:id="secteur" promptText="Secteur *" styleClass="form-field"/>
+                    <TextField fx:id="etape" promptText="Étape *" styleClass="form-field"/>
+                    <TextField fx:id="statut" promptText="Statut *" styleClass="form-field"/>
+                </VBox>
+
+                <!-- Colonne Business -->
+                <VBox spacing="20" HBox.hgrow="ALWAYS">
+                    <Label text="Données Business (obligatoires)" styleClass="form-label"/>
+
+                    <TextField fx:id="tailleMarche" promptText="Taille marché *" styleClass="form-field"/>
+                    <TextField fx:id="modeleRevenu" promptText="Modèle revenu *" styleClass="form-field"/>
+                    <TextField fx:id="couts" promptText="Coûts estimés *" styleClass="form-field"/>
+                    <TextField fx:id="revenus" promptText="Revenus attendus *" styleClass="form-field"/>
+                    <TextField fx:id="risque" promptText="Niveau risque *" styleClass="form-field"/>
+                    <TextField fx:id="forceEquipe" promptText="Force équipe (1-10) *" styleClass="form-field"/>
+                </VBox>
+
+            </HBox>
+
+            <!-- Boutons -->
+            <HBox alignment="CENTER_RIGHT" spacing="30">
+                <Button text="Valider"
+                        onAction="#AjouterProjet"
+                        styleClass="btn-primary"/>
+
+                <Button text="Annuler"
+                        onAction="#annuler"
+                        styleClass="btn-secondary"/>
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>
