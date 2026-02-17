@@ -14,7 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Service layer for User business logic.
+ * Handles all JDBC database access and business rules.
+ */
 public class UserService implements UserInterface {
+
     private Connection connection = MyConnection.getInstance().getConnection();
     private ValidationService validationService = new ValidationService();
     private static UserService instance;
@@ -42,16 +47,19 @@ public class UserService implements UserInterface {
 
         validateUserFields(user, true);
 
-        String request = "INSERT INTO user (firstname, lastname, email, phone, password, role, bio, profile_picture, " +
+        // Hash the password
+        user.setPassword(cryptPassword(user.getPassword()));
+
+        String sql = "INSERT INTO user (firstname, lastname, email, phone, password, role, bio, profile_picture, " +
                 "company_name, linkedin_url, address, date_of_birth, verified, phone_verified, is_active, is_banned, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement ps = connection.prepareStatement(request, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getFirstname());
             ps.setString(2, user.getLastname());
             ps.setString(3, user.getEmail());
             ps.setString(4, user.getPhone());
-            ps.setString(5, cryptPassword(user.getPassword()));
+            ps.setString(5, user.getPassword());
             ps.setString(6, user.getRole().name());
             ps.setString(7, user.getBio());
             ps.setString(8, user.getProfilePicture());
@@ -59,10 +67,10 @@ public class UserService implements UserInterface {
             ps.setString(10, user.getLinkedinUrl());
             ps.setString(11, user.getAddress());
             ps.setDate(12, user.getDateOfBirth() != null ? Date.valueOf(user.getDateOfBirth()) : null);
-            ps.setBoolean(13, false); // not verified yet
-            ps.setBoolean(14, false); // phone not verified
-            ps.setBoolean(15, true);  // active
-            ps.setBoolean(16, false); // not banned
+            ps.setBoolean(13, false);
+            ps.setBoolean(14, false);
+            ps.setBoolean(15, true);
+            ps.setBoolean(16, false);
             ps.setTimestamp(17, Timestamp.valueOf(LocalDateTime.now()));
             ps.setTimestamp(18, Timestamp.valueOf(LocalDateTime.now()));
 
@@ -87,10 +95,10 @@ public class UserService implements UserInterface {
 
         validateUserFields(user, false);
 
-        String request = "UPDATE user SET firstname=?, lastname=?, email=?, phone=?, role=?, bio=?, profile_picture=?, " +
+        String sql = "UPDATE user SET firstname=?, lastname=?, email=?, phone=?, role=?, bio=?, profile_picture=?, " +
                 "company_name=?, linkedin_url=?, address=?, date_of_birth=?, is_banned=?, is_active=?, updated_at=? WHERE id=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getFirstname());
             ps.setString(2, user.getLastname());
             ps.setString(3, user.getEmail());
@@ -108,11 +116,10 @@ public class UserService implements UserInterface {
             ps.setInt(15, user.getId());
 
             int rows = ps.executeUpdate();
-            if (rows > 0) {
-                System.out.println("User updated successfully!");
-            } else {
+            if (rows == 0) {
                 throw new UserNotFoundException("Aucun utilisateur trouvé avec l'ID: " + user.getId());
             }
+            System.out.println("User updated successfully!");
         } catch (SQLException ex) {
             System.err.println("Error updating user: " + ex.getMessage());
         }
@@ -129,10 +136,10 @@ public class UserService implements UserInterface {
             throw new InvalidPhoneNumberException("Le numéro de téléphone est invalide.");
         }
 
-        String request = "UPDATE user SET firstname=?, lastname=?, email=?, phone=?, bio=?, profile_picture=?, " +
+        String sql = "UPDATE user SET firstname=?, lastname=?, email=?, phone=?, bio=?, profile_picture=?, " +
                 "company_name=?, linkedin_url=?, address=?, date_of_birth=?, updated_at=? WHERE id=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getFirstname());
             ps.setString(2, user.getLastname());
             ps.setString(3, user.getEmail());
@@ -156,13 +163,48 @@ public class UserService implements UserInterface {
     @Override
     public void deleteUser(int id) throws UserNotFoundException {
         getUserbyID(id); // verify exists
-        String request = "DELETE FROM user WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
+
+        try {
+            connection.setAutoCommit(false);
+
+            // Find all tables that have a foreign key referencing the user table
+            String fkQuery = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE " +
+                    "WHERE REFERENCED_TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME = 'user' AND REFERENCED_COLUMN_NAME = 'id'";
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery(fkQuery)) {
+                while (rs.next()) {
+                    String childTable = rs.getString("TABLE_NAME");
+                    String childColumn = rs.getString("COLUMN_NAME");
+                    String deleteSql = "DELETE FROM `" + childTable + "` WHERE `" + childColumn + "` = ?";
+                    try (PreparedStatement ps = connection.prepareStatement(deleteSql)) {
+                        ps.setInt(1, id);
+                        ps.executeUpdate();
+                    }
+                }
+            }
+
+            // Now delete the user
+            String sql = "DELETE FROM user WHERE id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            connection.commit();
             System.out.println("User deleted successfully!");
         } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error during rollback: " + rollbackEx.getMessage());
+            }
             System.err.println("Error deleting user: " + ex.getMessage());
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                System.err.println("Error resetting auto-commit: " + ex.getMessage());
+            }
         }
     }
 
@@ -170,11 +212,11 @@ public class UserService implements UserInterface {
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
         try {
-            String request = "SELECT * FROM user ORDER BY created_at DESC";
+            String sql = "SELECT * FROM user ORDER BY created_at DESC";
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(request);
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                users.add(createUserFromResultSet(rs));
+                users.add(mapResultSet(rs));
             }
         } catch (SQLException ex) {
             System.err.println("Error retrieving users: " + ex.getMessage());
@@ -185,12 +227,12 @@ public class UserService implements UserInterface {
     public List<User> getUsersByRole(Type role) {
         List<User> users = new ArrayList<>();
         try {
-            String request = "SELECT * FROM user WHERE role = ? ORDER BY created_at DESC";
-            PreparedStatement ps = connection.prepareStatement(request);
+            String sql = "SELECT * FROM user WHERE role = ? ORDER BY created_at DESC";
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, role.name());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                users.add(createUserFromResultSet(rs));
+                users.add(mapResultSet(rs));
             }
         } catch (SQLException ex) {
             System.err.println("Error retrieving users by role: " + ex.getMessage());
@@ -201,12 +243,12 @@ public class UserService implements UserInterface {
     @Override
     public User getUserbyID(int id) throws UserNotFoundException {
         try {
-            String query = "SELECT * FROM user WHERE id = ?";
-            PreparedStatement ps = connection.prepareStatement(query);
+            String sql = "SELECT * FROM user WHERE id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return createUserFromResultSet(rs);
+                return mapResultSet(rs);
             }
         } catch (SQLException ex) {
             System.err.println("Error retrieving user by ID: " + ex.getMessage());
@@ -217,12 +259,12 @@ public class UserService implements UserInterface {
     @Override
     public User getUserbyEmail(String email) throws UserNotFoundException {
         try {
-            String query = "SELECT * FROM user WHERE email = ?";
-            PreparedStatement ps = connection.prepareStatement(query);
+            String sql = "SELECT * FROM user WHERE email = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return createUserFromResultSet(rs);
+                return mapResultSet(rs);
             }
         } catch (SQLException ex) {
             System.err.println("Error retrieving user by email: " + ex.getMessage());
@@ -240,8 +282,8 @@ public class UserService implements UserInterface {
             throw new IncorrectPasswordException("Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et faire au moins 6 caractères.");
         }
 
-        String request = "UPDATE user SET password = ?, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
+        String sql = "UPDATE user SET password = ?, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, cryptPassword(newPassword));
             ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             ps.setInt(3, userId);
@@ -254,16 +296,27 @@ public class UserService implements UserInterface {
         }
     }
 
+    public void updatePasswordByEmail(String email, String hashedPassword) {
+        String sql = "UPDATE user SET password = ? WHERE email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, hashedPassword);
+            ps.setString(2, email);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error resetting password by email: " + ex.getMessage());
+        }
+    }
+
     public void updateEmail(int userId, String newEmail) throws UserNotFoundException, InvalidEmailException {
         if (!validationService.isValidEmail(newEmail)) {
             throw new InvalidEmailException("L'adresse email est invalide.");
         }
-        if (isEmailExists(newEmail)) {
+        if (emailExists(newEmail)) {
             throw new InvalidEmailException("Cet email est déjà utilisé.");
         }
 
-        String request = "UPDATE user SET email = ?, verified = false, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
+        String sql = "UPDATE user SET email = ?, verified = false, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, newEmail);
             ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             ps.setInt(3, userId);
@@ -279,58 +332,43 @@ public class UserService implements UserInterface {
     // ==================== Email Verification ====================
 
     public void verifyUser(int userId) throws UserNotFoundException {
-        String request = "UPDATE user SET verified = true, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
-            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setInt(2, userId);
-            int rows = ps.executeUpdate();
-            if (rows == 0) {
-                throw new UserNotFoundException("Aucun utilisateur trouvé avec l'ID: " + userId);
-            }
-        } catch (SQLException ex) {
-            System.err.println("Error verifying user: " + ex.getMessage());
-        }
+        getUserbyID(userId); // verify exists
+        setVerified(userId, true);
     }
 
-    /**
-     * Marks the user's email as unverified (e.g. after changing email).
-     */
     public void unverifyEmail(int userId) {
-        String request = "UPDATE user SET verified = false, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
-            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setInt(2, userId);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            System.err.println("Error unverifying email: " + ex.getMessage());
-        }
+        setVerified(userId, false);
     }
 
-    /**
-     * Marks the user's phone number as verified.
-     */
     public void verifyPhone(int userId) {
-        String request = "UPDATE user SET phone_verified = true, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
-            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setInt(2, userId);
+        setPhoneVerified(userId, true);
+    }
+
+    public void unverifyPhone(int userId) {
+        setPhoneVerified(userId, false);
+    }
+
+    private void setVerified(int userId, boolean verified) {
+        String sql = "UPDATE user SET verified = ?, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, verified);
+            ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(3, userId);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            System.err.println("Error verifying phone: " + ex.getMessage());
+            System.err.println("Error updating verified status: " + ex.getMessage());
         }
     }
 
-    /**
-     * Marks the user's phone as unverified (e.g. after changing phone number).
-     */
-    public void unverifyPhone(int userId) {
-        String request = "UPDATE user SET phone_verified = false, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(request)) {
-            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setInt(2, userId);
+    private void setPhoneVerified(int userId, boolean verified) {
+        String sql = "UPDATE user SET phone_verified = ?, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, verified);
+            ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(3, userId);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            System.err.println("Error unverifying phone: " + ex.getMessage());
+            System.err.println("Error updating phone verified status: " + ex.getMessage());
         }
     }
 
@@ -341,37 +379,34 @@ public class UserService implements UserInterface {
         if (user.getRole() == Type.ADMIN) {
             throw new PermissionException("Impossible de bannir un administrateur.");
         }
-
-        String query = "UPDATE user SET is_banned = true, is_active = false, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setInt(2, userId);
-            ps.executeUpdate();
-            System.out.println("User " + userId + " has been banned.");
-        } catch (SQLException ex) {
-            System.err.println("Error banning user: " + ex.getMessage());
-        }
+        setBanStatus(userId, true, false);
+        System.out.println("User " + userId + " has been banned.");
     }
 
     public void unbanUser(int userId) throws PermissionException, UserNotFoundException {
         getUserbyID(userId); // verify exists
+        setBanStatus(userId, false, true);
+        System.out.println("User " + userId + " has been unbanned.");
+    }
 
-        String query = "UPDATE user SET is_banned = false, is_active = true, updated_at = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setInt(2, userId);
+    private void setBanStatus(int userId, boolean banned, boolean active) {
+        String sql = "UPDATE user SET is_banned = ?, is_active = ?, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, banned);
+            ps.setBoolean(2, active);
+            ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(4, userId);
             ps.executeUpdate();
-            System.out.println("User " + userId + " has been unbanned.");
         } catch (SQLException ex) {
-            System.err.println("Error unbanning user: " + ex.getMessage());
+            System.err.println("Error updating ban status: " + ex.getMessage());
         }
     }
 
     // ==================== Statistics ====================
 
     public int countByRole(Type role) {
-        String query = "SELECT COUNT(*) FROM user WHERE role = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT COUNT(*) FROM user WHERE role = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, role.name());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
@@ -382,8 +417,8 @@ public class UserService implements UserInterface {
     }
 
     public int countActive() {
-        String query = "SELECT COUNT(*) FROM user WHERE is_active = true";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT COUNT(*) FROM user WHERE is_active = true";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
         } catch (SQLException ex) {
@@ -393,8 +428,8 @@ public class UserService implements UserInterface {
     }
 
     public int countBanned() {
-        String query = "SELECT COUNT(*) FROM user WHERE is_banned = true";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT COUNT(*) FROM user WHERE is_banned = true";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
         } catch (SQLException ex) {
@@ -404,8 +439,8 @@ public class UserService implements UserInterface {
     }
 
     public int countTotal() {
-        String query = "SELECT COUNT(*) FROM user";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT COUNT(*) FROM user";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
         } catch (SQLException ex) {
@@ -418,8 +453,8 @@ public class UserService implements UserInterface {
 
     public List<User> searchUsers(String keyword) {
         List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM user WHERE firstname LIKE ? OR lastname LIKE ? OR email LIKE ? OR company_name LIKE ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT * FROM user WHERE firstname LIKE ? OR lastname LIKE ? OR email LIKE ? OR company_name LIKE ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             String pattern = "%" + keyword + "%";
             ps.setString(1, pattern);
             ps.setString(2, pattern);
@@ -427,7 +462,7 @@ public class UserService implements UserInterface {
             ps.setString(4, pattern);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                users.add(createUserFromResultSet(rs));
+                users.add(mapResultSet(rs));
             }
         } catch (SQLException ex) {
             System.err.println("Error searching users: " + ex.getMessage());
@@ -437,21 +472,14 @@ public class UserService implements UserInterface {
 
     // ==================== Google OAuth ====================
 
-    /**
-     * Find a user by their Google Provider ID.
-     * Used to check if a Google account is already linked to an existing user.
-     *
-     * @param googleId the Google unique user ID
-     * @return the User if found, or null if no match
-     */
     public User getUserByGoogleId(String googleId) {
         try {
-            String query = "SELECT * FROM user WHERE google_provider_id = ?";
-            PreparedStatement ps = connection.prepareStatement(query);
+            String sql = "SELECT * FROM user WHERE google_provider_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, googleId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return createUserFromResultSet(rs);
+                return mapResultSet(rs);
             }
         } catch (SQLException ex) {
             System.err.println("Error retrieving user by Google ID: " + ex.getMessage());
@@ -461,19 +489,6 @@ public class UserService implements UserInterface {
 
     /**
      * Finds an existing user linked to the given Google account, or creates a new one.
-     *
-     * LOGIC:
-     * 1. First, check if a user with this google_provider_id already exists → return that user.
-     * 2. If not, check if a user with the same email exists:
-     *    - If yes → link the Google ID to that existing account and return the user.
-     *    - If no  → create a brand-new user with the Google profile info.
-     *
-     * @param googleId   Google's unique user ID
-     * @param email      Gmail address
-     * @param firstName  given name from Google
-     * @param lastName   family name from Google
-     * @param pictureUrl profile picture URL from Google
-     * @return the matched or newly created User
      */
     public User findOrCreateGoogleUser(String googleId, String email, String firstName,
                                         String lastName, String pictureUrl) {
@@ -486,58 +501,29 @@ public class UserService implements UserInterface {
 
         // 2. Check by email
         try {
-            user = getUserbyEmail(email);
-            // User exists with this email — link Google ID to their account
-            linkGoogleId(user.getId(), googleId);
-            user.setGoogleProviderId(googleId);
+            User existingByEmail = getUserbyEmail(email);
+            linkGoogleId(existingByEmail.getId(), googleId);
+            existingByEmail.setGoogleProviderId(googleId);
             System.out.println("Linked Google ID to existing user: " + email);
-            return user;
-        } catch (UserNotFoundException e) {
-            // No existing user — create a new one
+            return existingByEmail;
+        } catch (UserNotFoundException ignored) {
+            // No existing user with that email, continue to create
         }
 
-        // 3. Create a new user from Google profile information
-        String insertSql = "INSERT INTO user (firstname, lastname, email, phone, password, role, " +
-                "profile_picture, google_provider_id, verified, is_active, is_banned, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, firstName);
-            ps.setString(2, lastName);
-            ps.setString(3, email);
-            ps.setString(4, "");                       // No phone for Google signup
-            ps.setString(5, "GOOGLE_OAUTH_NO_PASSWORD"); // Placeholder — no password needed
-            ps.setString(6, Type.ENTREPRENEUR.name());  // Default role for new Google users
-            ps.setString(7, pictureUrl);
-            ps.setString(8, googleId);
-            ps.setBoolean(9, true);                    // Google emails are already verified
-            ps.setBoolean(10, true);                   // Active
-            ps.setBoolean(11, false);                  // Not banned
-            ps.setTimestamp(12, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setTimestamp(13, Timestamp.valueOf(LocalDateTime.now()));
-
-            ps.executeUpdate();
-
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int newId = generatedKeys.getInt(1);
-                System.out.println("Created new Google user with ID: " + newId + ", email: " + email);
-                try {
-                    return getUserbyID(newId);
-                } catch (exceptions.UserNotFoundException e) {
-                    System.err.println("Unexpected: newly created user not found: " + e.getMessage());
-                }
+        // 3. Create a new user from Google profile
+        int newId = insertGoogleUser(firstName, lastName, email, pictureUrl, googleId, Type.ENTREPRENEUR);
+        if (newId > 0) {
+            System.out.println("Created new Google user with ID: " + newId + ", email: " + email);
+            try {
+                return getUserbyID(newId);
+            } catch (UserNotFoundException e) {
+                System.err.println("Error retrieving newly created Google user: " + e.getMessage());
             }
-        } catch (SQLException ex) {
-            System.err.println("Error creating Google user: " + ex.getMessage());
         }
 
         return null;
     }
 
-    /**
-     * Links a Google provider ID to an existing user account.
-     */
     private void linkGoogleId(int userId, String googleId) {
         String sql = "UPDATE user SET google_provider_id = ?, updated_at = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -548,6 +534,103 @@ public class UserService implements UserInterface {
         } catch (SQLException ex) {
             System.err.println("Error linking Google ID: " + ex.getMessage());
         }
+    }
+
+    private int insertGoogleUser(String firstName, String lastName, String email,
+                                 String pictureUrl, String googleId, Type role) {
+        String sql = "INSERT INTO user (firstname, lastname, email, phone, password, role, " +
+                "profile_picture, google_provider_id, verified, is_active, is_banned, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, firstName);
+            ps.setString(2, lastName);
+            ps.setString(3, email);
+            ps.setString(4, "");
+            ps.setString(5, "GOOGLE_OAUTH_NO_PASSWORD");
+            ps.setString(6, role.name());
+            ps.setString(7, pictureUrl);
+            ps.setString(8, googleId);
+            ps.setBoolean(9, true);
+            ps.setBoolean(10, true);
+            ps.setBoolean(11, false);
+            ps.setTimestamp(12, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setTimestamp(13, Timestamp.valueOf(LocalDateTime.now()));
+
+            ps.executeUpdate();
+
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error creating Google user: " + ex.getMessage());
+        }
+        return -1;
+    }
+
+    // ==================== Account Lock ====================
+
+    public void lockAccountByEmail(String email) {
+        String sqlCheck = "SELECT role FROM user WHERE email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sqlCheck)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String role = rs.getString("role");
+                if (!Type.ADMIN.name().equals(role)) {
+                    String sqlUpdate = "UPDATE user SET is_active = false, is_banned = true WHERE email = ?";
+                    try (PreparedStatement ups = connection.prepareStatement(sqlUpdate)) {
+                        ups.setString(1, email);
+                        ups.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error locking account: " + e.getMessage());
+        }
+    }
+
+    public void unlockAccountByEmail(String email) {
+        String sql = "UPDATE user SET is_active = true, is_banned = false WHERE email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.executeUpdate();
+            System.out.println("Account unlocked: " + email);
+        } catch (SQLException e) {
+            System.err.println("Error unlocking account: " + e.getMessage());
+        }
+    }
+
+    public boolean isAccountLockedByEmail(String email) {
+        String sql = "SELECT is_banned, role FROM user WHERE email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                if (Type.ADMIN.name().equals(rs.getString("role"))) {
+                    return false;
+                }
+                return rs.getBoolean("is_banned");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking lock status: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // ==================== Helper: Email Exists ====================
+
+    public boolean emailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM user WHERE email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) return true;
+        } catch (SQLException ex) {
+            System.err.println("Error checking email: " + ex.getMessage());
+        }
+        return false;
     }
 
     // ==================== Crypto Helpers ====================
@@ -564,18 +647,6 @@ public class UserService implements UserInterface {
 
     // ==================== Private Helpers ====================
 
-    private boolean isEmailExists(String email) {
-        String query = "SELECT COUNT(*) FROM user WHERE email = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) return true;
-        } catch (SQLException ex) {
-            System.err.println("Error checking email: " + ex.getMessage());
-        }
-        return false;
-    }
-
     private void validateUserFields(User user, boolean checkPassword) throws EmptyFieldException,
             InvalidEmailException, InvalidPhoneNumberException, IncorrectPasswordException {
         if (user.getFirstname() == null || user.getFirstname().isEmpty() ||
@@ -586,7 +657,7 @@ public class UserService implements UserInterface {
         if (!validationService.isValidEmail(user.getEmail())) {
             throw new InvalidEmailException("Adresse email invalide.");
         }
-        if (checkPassword && isEmailExists(user.getEmail())) {
+        if (checkPassword && emailExists(user.getEmail())) {
             throw new InvalidEmailException("Cet email est déjà utilisé.");
         }
         if (user.getPhone() != null && !user.getPhone().isEmpty() && !validationService.isValidPhoneNumber(user.getPhone())) {
@@ -602,7 +673,13 @@ public class UserService implements UserInterface {
         }
     }
 
-    public User createUserFromResultSet(ResultSet rs) throws SQLException {
+    // ==================== ResultSet Mapping ====================
+
+    /**
+     * Maps a ResultSet row to a User object.
+     * Public so other services (e.g. ConnectionService) can reuse it.
+     */
+    public User mapResultSet(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));
         user.setFirstname(rs.getString("firstname"));
@@ -625,7 +702,6 @@ public class UserService implements UserInterface {
         user.setIsActive(rs.getBoolean("is_active"));
         user.setIsBanned(rs.getBoolean("is_banned"));
 
-        // Google OAuth provider ID (may be null for non-Google users)
         user.setGoogleProviderId(rs.getString("google_provider_id"));
 
         Timestamp createdAt = rs.getTimestamp("created_at");

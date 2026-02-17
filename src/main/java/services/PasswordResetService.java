@@ -1,17 +1,18 @@
 package services;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import tools.MyConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Handles password reset flow: code generation, verification, and password change.
+ */
 public class PasswordResetService {
 
     private static PasswordResetService instance;
+    private UserService userService = UserService.getInstance();
     private Map<String, CodeWithTimestamp> verificationCodes = new HashMap<>();
 
     private PasswordResetService() {
@@ -47,18 +48,9 @@ public class PasswordResetService {
      * Change password for a user by email.
      */
     public void changePassword(String newPassword, String email) {
-        try {
-            Connection connection = MyConnection.getInstance().getConnection();
-            String query = "UPDATE user SET password = ? WHERE email = ?";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, hashPassword(newPassword));
-            ps.setString(2, email);
-            ps.executeUpdate();
-            // Remove used code
-            verificationCodes.remove(email);
-        } catch (Exception e) {
-            System.err.println("Error resetting password: " + e.getMessage());
-        }
+        String hashedPassword = hashPassword(newPassword);
+        userService.updatePasswordByEmail(email, hashedPassword);
+        verificationCodes.remove(email);
     }
 
     private String generateVerificationCode() {

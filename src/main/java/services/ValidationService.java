@@ -9,7 +9,6 @@ public class ValidationService {
     }
 
     public boolean isValidPassword(String password) {
-        // At least 6 chars, 1 uppercase, 1 lowercase, 1 digit
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$";
         return password.matches(passwordRegex);
     }

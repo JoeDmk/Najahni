@@ -88,6 +88,8 @@
     </top>
 
     <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" styleClass="modern-scroll"
+                    style="-fx-background-color: transparent;">
         <VBox alignment="CENTER" spacing="35">
             <padding><Insets top="50" right="50" bottom="50" left="50"/></padding>
 
@@ -116,5 +118,6 @@
                    styleClass="text-muted" style="-fx-font-size: 15px;" wrapText="true"
                    textAlignment="CENTER" maxWidth="500"/>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

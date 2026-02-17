@@ -12,9 +12,7 @@ import tools.SceneHelper;
 import services.*;
 import util.Type;
 
-/**
- * Statistics controller for admin dashboard.
- */
+
 public class StatsController {
 
     @FXML private PieChart rolesPieChart;

@@ -147,7 +147,9 @@
 
     <!-- Right Side - Glass Login Form -->
     <center>
-        <VBox alignment="CENTER" styleClass="form-panel-bg">
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" styleClass="modern-scroll"
+                    style="-fx-background-color: transparent;">
+        <VBox alignment="CENTER" styleClass="form-panel-bg" style="-fx-padding: 20 0;">
             <VBox fx:id="loginContainer" styleClass="glass-card" spacing="22"
                   alignment="CENTER" maxWidth="400">
                 <padding><Insets top="45" right="42" bottom="45" left="42"/></padding>
@@ -222,5 +224,6 @@
                 </HBox>
             </VBox>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

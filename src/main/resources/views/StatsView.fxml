@@ -27,6 +27,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:controller="controllers.StatsController"
@@ -44,6 +45,8 @@
     </top>
 
     <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" styleClass="modern-scroll"
+                    style="-fx-background-color: transparent;">
         <VBox spacing="22" style="-fx-padding: 24;">
 
             <!-- Summary Cards -->
@@ -81,5 +84,6 @@
                 </VBox>
             </HBox>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

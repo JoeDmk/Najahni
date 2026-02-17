@@ -207,6 +207,13 @@
                         <Button text="Changer mot de passe" onAction="#handleChangePassword"
                                 styleClass="btn-primary-gradient" prefHeight="46" prefWidth="220"/>
                     </HBox>
+
+                    <!-- Delete Account -->
+                    <HBox alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                        <Button text="Supprimer mon compte" onAction="#handleDeleteAccount"
+                                prefHeight="40" prefWidth="220"
+                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                    </HBox>
                 </VBox>
             </VBox>
         </ScrollPane>

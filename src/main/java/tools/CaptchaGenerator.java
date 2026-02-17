@@ -11,20 +11,6 @@ import javafx.scene.text.FontWeight;
 import java.util.Optional;
 import java.util.Random;
 
-/**
- * CaptchaGenerator implements a "I'm not a robot" checkbox-style CAPTCHA.
- *
- * HOW IT WORKS:
- * 1. The login form shows a styled panel with a checkbox and "Je ne suis pas un robot" text.
- * 2. When the user clicks the checkbox, a popup dialog appears with a simple math challenge
- *    (e.g. "What is 7 + 4 ?"). This is easy for humans but blocks simple automated scripts.
- * 3. If the user answers correctly, the panel turns green with a checkmark (✓ Vérifié),
- *    and the `verified` flag is set to true.
- * 4. If wrong, the panel shows a red X and the user can try again.
- * 5. The controller checks `isVerified()` before allowing login.
- *
- * The challenge rotates between addition, subtraction, and multiplication to add variety.
- */
 public class CaptchaGenerator {
 
     private static final Random random = new Random();
@@ -34,10 +20,7 @@ public class CaptchaGenerator {
     private String challengeQuestion;
     private int challengeAnswer;
 
-    /**
-     * Generates a new random math challenge.
-     * Types: addition (a + b), subtraction (a - b, always positive), multiplication (a × b).
-     */
+
     public void generateChallenge() {
         int type = random.nextInt(3); // 0 = add, 1 = subtract, 2 = multiply
         int a, b;

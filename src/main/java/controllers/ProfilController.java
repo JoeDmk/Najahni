@@ -274,6 +274,31 @@ public class ProfilController {
     }
 
     @FXML
+    private void handleDeleteAccount() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Suppression du compte");
+        confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer votre compte ?");
+        confirm.setContentText("Cette action est irréversible. Toutes vos données seront perdues.");
+        confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    userService.deleteUser(currentUser.getId());
+                    SessionManager.clearSession();
+                    SessionService.getInstance().logout();
+
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/SignIn.fxml"));
+                    Parent root = loader.load();
+                    SceneHelper.switchScene(SceneHelper.stageOf(firstnameField), root);
+                } catch (Exception e) {
+                    showError("Erreur lors de la suppression du compte : " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    @FXML
     private void handleBack() {
         try {
             FXMLLoader loader;

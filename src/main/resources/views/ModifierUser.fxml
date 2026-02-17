@@ -59,6 +59,8 @@
     </top>
 
     <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" styleClass="modern-scroll"
+                    style="-fx-background-color: transparent;">
         <VBox alignment="CENTER" style="-fx-padding: 35;">
             <VBox styleClass="glass-card" spacing="18" alignment="CENTER" maxWidth="540">
                 <padding><Insets top="35" right="40" bottom="35" left="40"/></padding>
@@ -109,5 +111,6 @@
                         styleClass="btn-primary-gradient" prefHeight="48" prefWidth="340"/>
             </VBox>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

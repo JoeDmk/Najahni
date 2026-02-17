@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages follow-style connections between users.
+ * Service layer for user connections (follow/unfollow).
+ * Handles all JDBC database access directly.
  */
 public class ConnectionService {
+
     private Connection connection = MyConnection.getInstance().getConnection();
     private static ConnectionService instance;
 
@@ -36,9 +38,8 @@ public class ConnectionService {
             System.out.println("Already following this user.");
             return;
         }
-
-        String query = "INSERT INTO user_connection (follower_id, followed_id, created_at) VALUES (?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "INSERT INTO user_connection (follower_id, followed_id, created_at) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, followerId);
             ps.setInt(2, followedId);
             ps.setTimestamp(3, Timestamp.valueOf(java.time.LocalDateTime.now()));
@@ -53,8 +54,8 @@ public class ConnectionService {
      * Unfollow a user.
      */
     public void unfollow(int followerId, int followedId) {
-        String query = "DELETE FROM user_connection WHERE follower_id = ? AND followed_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "DELETE FROM user_connection WHERE follower_id = ? AND followed_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, followerId);
             ps.setInt(2, followedId);
             int rows = ps.executeUpdate();
@@ -70,8 +71,8 @@ public class ConnectionService {
      * Check if follower is following followed.
      */
     public boolean isFollowing(int followerId, int followedId) {
-        String query = "SELECT COUNT(*) FROM user_connection WHERE follower_id = ? AND followed_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT COUNT(*) FROM user_connection WHERE follower_id = ? AND followed_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, followerId);
             ps.setInt(2, followedId);
             ResultSet rs = ps.executeQuery();
@@ -87,12 +88,12 @@ public class ConnectionService {
      */
     public List<User> getFollowing(int userId) {
         List<User> users = new ArrayList<>();
-        String query = "SELECT u.* FROM user u INNER JOIN user_connection uc ON u.id = uc.followed_id WHERE uc.follower_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT u.* FROM user u INNER JOIN user_connection uc ON u.id = uc.followed_id WHERE uc.follower_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                users.add(UserService.getInstance().createUserFromResultSet(rs));
+                users.add(UserService.getInstance().mapResultSet(rs));
             }
         } catch (SQLException ex) {
             System.err.println("Error getting following list: " + ex.getMessage());
@@ -105,12 +106,12 @@ public class ConnectionService {
      */
     public List<User> getFollowers(int userId) {
         List<User> users = new ArrayList<>();
-        String query = "SELECT u.* FROM user u INNER JOIN user_connection uc ON u.id = uc.follower_id WHERE uc.followed_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT u.* FROM user u INNER JOIN user_connection uc ON u.id = uc.follower_id WHERE uc.followed_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                users.add(UserService.getInstance().createUserFromResultSet(rs));
+                users.add(UserService.getInstance().mapResultSet(rs));
             }
         } catch (SQLException ex) {
             System.err.println("Error getting followers list: " + ex.getMessage());
@@ -122,8 +123,8 @@ public class ConnectionService {
      * Count following.
      */
     public int countFollowing(int userId) {
-        String query = "SELECT COUNT(*) FROM user_connection WHERE follower_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT COUNT(*) FROM user_connection WHERE follower_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
@@ -137,8 +138,8 @@ public class ConnectionService {
      * Count followers.
      */
     public int countFollowers(int userId) {
-        String query = "SELECT COUNT(*) FROM user_connection WHERE followed_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        String sql = "SELECT COUNT(*) FROM user_connection WHERE followed_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
@@ -153,16 +154,16 @@ public class ConnectionService {
      */
     public List<User> getSuggestions(int userId, int limit) {
         List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM user WHERE id != ? AND id NOT IN " +
+        String sql = "SELECT * FROM user WHERE id != ? AND id NOT IN " +
                 "(SELECT followed_id FROM user_connection WHERE follower_id = ?) " +
                 "ORDER BY RAND() LIMIT ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ps.setInt(2, userId);
             ps.setInt(3, limit);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                users.add(UserService.getInstance().createUserFromResultSet(rs));
+                users.add(UserService.getInstance().mapResultSet(rs));
             }
         } catch (SQLException ex) {
             System.err.println("Error getting suggestions: " + ex.getMessage());
