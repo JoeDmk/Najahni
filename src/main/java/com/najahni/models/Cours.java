@@ -33,6 +33,7 @@ public class Cours {
 
     // Constructeur sans ID (pour création)
     public Cours(String titre, String description, TypeCours type, NiveauCours niveau, boolean certification) {
+        this();
         this.titre = titre;
         this.description = description;
         this.type = type;

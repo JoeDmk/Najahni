@@ -2,7 +2,6 @@ package com.najahni.controllers;
 
 import com.najahni.models.Project;
 import com.najahni.models.ProjectStatus;
-import com.najahni.models.Role;
 import com.najahni.models.User;
 import com.najahni.services.ProjectService;
 import com.najahni.services.UserService;

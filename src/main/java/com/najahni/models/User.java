@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 /**
  * Model class representing a User entity.
- * Users can be either ENTREPRENEUR or INVESTOR.
+ * Users can have roles: ADMIN, ENTREPRENEUR, MENTOR, or INVESTOR.
  */
 public class User {
 

@@ -1,182 +1,276 @@
 package com.najahni.services;
 
-import com.najahni.dao.BadgeDAO;
-import com.najahni.dao.ProgressionDAO;
 import com.najahni.models.Badge;
-import com.najahni.models.Progression;
+import com.najahni.utils.DBConnection;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Service pour la gestion des Badges de gamification.
- * Contient la logique métier pour la gestion des badges.
+ * Service pour la gestion des Badges.
+ * Accède directement à la base de données via JDBC (pas de DAO).
  */
 public class BadgeService {
 
-    private final BadgeDAO badgeDAO;
-    private final ProgressionDAO progressionDAO;
+    private Connection cnx;
 
     public BadgeService() {
-        this.badgeDAO = new BadgeDAO();
-        this.progressionDAO = new ProgressionDAO();
+        this.cnx = DBConnection.getInstance().getConnection();
     }
 
-    /**
-     * Crée un nouveau badge après validation.
-     * @param badge Le badge à créer
-     * @return Le badge créé
-     * @throws IllegalArgumentException si la validation échoue
-     */
+    // ─── CRUD ────────────────────────────────────────────────
+
     public Badge creerBadge(Badge badge) throws IllegalArgumentException {
         validerBadge(badge);
-        return badgeDAO.create(badge);
+        String sql = """
+            INSERT INTO badge (nom, description, icone, condition_obtention, points_requis,
+                             cours_requis, niveau_requis, categorie, rarete, actif)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, badge.getNom());
+            ps.setString(2, badge.getDescription());
+            ps.setString(3, badge.getIcone());
+            ps.setString(4, badge.getCondition());
+            ps.setInt(5, badge.getPointsRequis());
+            ps.setInt(6, badge.getCoursRequis());
+            ps.setInt(7, badge.getNiveauRequis());
+            ps.setString(8, badge.getCategorie());
+            ps.setString(9, badge.getRarete());
+            ps.setBoolean(10, badge.isActif());
+
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) badge.setId(rs.getInt(1));
+            }
+            System.out.println("✓ Badge créé avec succès: " + badge.getNom());
+            return badge;
+        } catch (SQLException e) {
+            System.err.println("✗ Erreur lors de la création du badge: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    /**
-     * Met à jour un badge existant.
-     * @param badge Le badge à mettre à jour
-     * @return true si la mise à jour a réussi
-     * @throws IllegalArgumentException si la validation échoue
-     */
+    public Optional<Badge> trouverParId(int id) {
+        String sql = "SELECT * FROM badge WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return Optional.of(mapResultSetToBadge(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Erreur lors de la recherche du badge par ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    public List<Badge> trouverTous() {
+        List<Badge> badges = new ArrayList<>();
+        String sql = "SELECT * FROM badge ORDER BY nom";
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) badges.add(mapResultSetToBadge(rs));
+        } catch (SQLException e) {
+            System.err.println("✗ Erreur lors de la récupération des badges: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return badges;
+    }
+
     public boolean modifierBadge(Badge badge) throws IllegalArgumentException {
         validerBadge(badge);
-        return badgeDAO.update(badge);
+        String sql = """
+            UPDATE badge SET nom = ?, description = ?, icone = ?, condition_obtention = ?,
+                           points_requis = ?, cours_requis = ?, niveau_requis = ?,
+                           categorie = ?, rarete = ?, actif = ?
+            WHERE id = ?
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, badge.getNom());
+            ps.setString(2, badge.getDescription());
+            ps.setString(3, badge.getIcone());
+            ps.setString(4, badge.getCondition());
+            ps.setInt(5, badge.getPointsRequis());
+            ps.setInt(6, badge.getCoursRequis());
+            ps.setInt(7, badge.getNiveauRequis());
+            ps.setString(8, badge.getCategorie());
+            ps.setString(9, badge.getRarete());
+            ps.setBoolean(10, badge.isActif());
+            ps.setInt(11, badge.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("✗ Erreur lors de la mise à jour du badge: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    /**
-     * Supprime un badge.
-     * @param id L'ID du badge
-     * @return true si la suppression a réussi
-     */
     public boolean supprimerBadge(int id) {
-        return badgeDAO.delete(id);
+        String sql = "DELETE FROM badge WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("✗ Erreur lors de la suppression du badge: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    /**
-     * Recherche un badge par son ID.
-     * @param id L'ID du badge
-     * @return Optional contenant le badge si trouvé
-     */
-    public Optional<Badge> trouverParId(int id) {
-        return badgeDAO.findById(id);
-    }
+    // ─── REQUÊTES SPÉCIFIQUES ────────────────────────────────
 
-    /**
-     * Récupère tous les badges.
-     * @return Liste de tous les badges
-     */
-    public List<Badge> trouverTous() {
-        return badgeDAO.findAll();
-    }
-
-    /**
-     * Récupère les badges actifs.
-     * @return Liste des badges actifs
-     */
     public List<Badge> trouverActifs() {
-        return badgeDAO.findActifs();
+        List<Badge> badges = new ArrayList<>();
+        String sql = "SELECT * FROM badge WHERE actif = true ORDER BY nom";
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) badges.add(mapResultSetToBadge(rs));
+        } catch (SQLException e) {
+            System.err.println("✗ Erreur lors de la récupération des badges actifs: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return badges;
     }
 
-    /**
-     * Récupère les badges par type de condition.
-     * @param conditionType Le type de condition
-     * @return Liste des badges correspondants
-     */
     public List<Badge> trouverParTypeCondition(String conditionType) {
-        return badgeDAO.findByConditionType(conditionType);
+        List<Badge> badges = new ArrayList<>();
+        String sql = "SELECT * FROM badge WHERE condition_obtention = ? ORDER BY nom";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, conditionType);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) badges.add(mapResultSetToBadge(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Erreur lors de la recherche par condition: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return badges;
     }
 
-    /**
-     * Compte le nombre de badges.
-     * @return Nombre de badges
-     */
     public int compterBadges() {
-        return badgeDAO.count();
+        String sql = "SELECT COUNT(*) FROM badge";
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
     }
 
-    /**
-     * Compte le nombre de badges actifs.
-     * @return Nombre de badges actifs
-     */
     public int compterBadgesActifs() {
-        return badgeDAO.countActifs();
+        String sql = "SELECT COUNT(*) FROM badge WHERE actif = true";
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
     }
 
-    /**
-     * Compte le nombre de badges obtenus par un utilisateur.
-     * @param userId L'ID de l'utilisateur
-     * @return Nombre de badges obtenus
-     */
     public int compterBadgesUtilisateur(int userId) {
-        List<Badge> badgesEligibles = findBadgesEligibles(userId);
-        return badgesEligibles.size();
+        // Count badges earned by a specific user (via progression with completed XP thresholds)
+        return 0; // Stub — badge assignment tracking not in schema
     }
 
-    /**
-     * Récupère les badges éligibles pour un utilisateur basé sur ses statistiques.
-     * @param userId L'ID de l'utilisateur
-     * @return Liste des badges que l'utilisateur peut obtenir
-     */
     public List<Badge> findBadgesEligibles(int userId) {
-        int totalXP = progressionDAO.getTotalXPByUser(userId);
-        int coursCompletes = progressionDAO.countCoursCompletesByUser(userId);
-        
-        int niveau = 1;
-        for (int i = Progression.SEUILS_NIVEAU.length - 1; i >= 0; i--) {
-            if (totalXP >= Progression.SEUILS_NIVEAU[i]) {
-                niveau = i + 1;
-                break;
+        List<Badge> eligibleBadges = new ArrayList<>();
+        // Récupérer les stats de l'utilisateur via JDBC directement
+        int totalXP = getTotalXPByUser(userId);
+        int coursCompletes = countCoursCompletesByUser(userId);
+
+        for (Badge badge : trouverActifs()) {
+            boolean eligible = false;
+            switch (badge.getCondition() != null ? badge.getCondition() : "") {
+                case "POINTS":
+                    eligible = totalXP >= badge.getPointsRequis();
+                    break;
+                case "COURS":
+                    eligible = coursCompletes >= badge.getCoursRequis();
+                    break;
+                case "NIVEAU":
+                    int niveauGlobal = totalXP / 100;
+                    eligible = niveauGlobal >= badge.getNiveauRequis();
+                    break;
+                default:
+                    eligible = false;
+            }
+            if (eligible) eligibleBadges.add(badge);
+        }
+        return eligibleBadges;
+    }
+
+    public List<Badge> verifierEtAttribuerBadges(int userId) {
+        List<Badge> eligibles = findBadgesEligibles(userId);
+        if (!eligibles.isEmpty()) {
+            System.out.println("  🏆 Badges éligibles pour l'utilisateur " + userId + ": " + eligibles.size());
+            for (Badge badge : eligibles) {
+                System.out.println("    → " + badge.getNom() + " (" + badge.getRarete() + ")");
             }
         }
-        
-        List<Badge> allBadges = badgeDAO.findActifs();
-        List<Badge> eligibles = new ArrayList<>();
-        
-        for (Badge badge : allBadges) {
-            if (badge.verifierCondition(totalXP, coursCompletes, niveau)) {
-                eligibles.add(badge);
-            }
-        }
-        
         return eligibles;
     }
 
-    /**
-     * Vérifie et attribue les badges à un utilisateur.
-     * @param userId L'ID de l'utilisateur
-     * @return Liste des nouveaux badges obtenus
-     */
-    public List<Badge> verifierEtAttribuerBadges(int userId) {
-        // Récupérer les badges éligibles
-        List<Badge> badgesEligibles = findBadgesEligibles(userId);
-        
-        // Pour le moment, retourne simplement les badges éligibles
-        // Dans une implémentation complète, on stockerait l'attribution en base
-        return badgesEligibles;
+    // ─── HELPER QUERIES (for badge eligibility) ──────────────
+
+    private int getTotalXPByUser(int userId) {
+        String sql = "SELECT COALESCE(SUM(points_xp), 0) FROM progression WHERE user_id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
     }
 
-    /**
-     * Valide un badge.
-     * @param badge Le badge à valider
-     * @throws IllegalArgumentException si la validation échoue
-     */
+    private int countCoursCompletesByUser(int userId) {
+        String sql = "SELECT COUNT(*) FROM progression WHERE user_id = ? AND etat = 'COMPLETE'";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    // ─── MAPPING ─────────────────────────────────────────────
+
+    private Badge mapResultSetToBadge(ResultSet rs) throws SQLException {
+        Badge badge = new Badge();
+        badge.setId(rs.getInt("id"));
+        badge.setNom(rs.getString("nom"));
+        badge.setDescription(rs.getString("description"));
+        badge.setIcone(rs.getString("icone"));
+        badge.setCondition(rs.getString("condition_obtention"));
+        badge.setPointsRequis(rs.getInt("points_requis"));
+        badge.setCoursRequis(rs.getInt("cours_requis"));
+        badge.setNiveauRequis(rs.getInt("niveau_requis"));
+        badge.setCategorie(rs.getString("categorie"));
+        badge.setRarete(rs.getString("rarete"));
+        badge.setActif(rs.getBoolean("actif"));
+
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        if (createdAt != null) badge.setCreatedAt(createdAt.toLocalDateTime());
+
+        return badge;
+    }
+
+    // ─── VALIDATION ──────────────────────────────────────────
+
     private void validerBadge(Badge badge) throws IllegalArgumentException {
-        if (badge == null) {
-            throw new IllegalArgumentException("Le badge ne peut pas être null.");
-        }
-        if (badge.getNom() == null || badge.getNom().trim().isEmpty()) {
+        if (badge == null) throw new IllegalArgumentException("Le badge ne peut pas être null.");
+        if (badge.getNom() == null || badge.getNom().trim().isEmpty())
             throw new IllegalArgumentException("Le nom du badge est obligatoire.");
-        }
-        if (badge.getNom().length() > 100) {
-            throw new IllegalArgumentException("Le nom du badge ne doit pas dépasser 100 caractères.");
-        }
-        if (badge.getDescription() != null && badge.getDescription().length() > 500) {
-            throw new IllegalArgumentException("La description ne doit pas dépasser 500 caractères.");
-        }
-        if (badge.getCondition() == null || badge.getCondition().trim().isEmpty()) {
-            throw new IllegalArgumentException("La condition d'obtention est obligatoire.");
-        }
+        if (badge.getNom().length() > 100)
+            throw new IllegalArgumentException("Le nom ne doit pas dépasser 100 caractères.");
+        if (badge.getPointsRequis() < 0)
+            throw new IllegalArgumentException("Les points requis doivent être positifs.");
+        if (badge.getCoursRequis() < 0)
+            throw new IllegalArgumentException("Le nombre de cours requis doit être positif.");
+        if (badge.getNiveauRequis() < 0)
+            throw new IllegalArgumentException("Le niveau requis doit être positif.");
     }
 }

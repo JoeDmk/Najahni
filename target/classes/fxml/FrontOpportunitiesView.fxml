@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.najahni.controllers.FrontOpportunitiesController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="front-scroll"
+            style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="20" styleClass="front-page">
+    <padding>
+        <Insets top="15" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- ═══ HERO SECTION ═══ -->
+    <VBox styleClass="front-hero" alignment="CENTER" spacing="8">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+        <Label text="💰 Opportunités d'Investissement" styleClass="front-hero-title"/>
+        <Label text="Découvrez les projets qui recherchent un financement et investissez dès maintenant."
+               styleClass="front-hero-subtitle" wrapText="true"/>
+    </VBox>
+
+    <!-- ═══ STATS BAR ═══ -->
+    <HBox spacing="15" alignment="CENTER">
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblTotalOpps" text="0" styleClass="front-stat-value"/>
+            <Label text="Opportunités" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblOpenOpps" text="0" styleClass="front-stat-value-green"/>
+            <Label text="Ouvertes" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblTotalTarget" text="0 €" styleClass="front-stat-value-blue"/>
+            <Label text="Montant Total" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblFundedOpps" text="0" styleClass="front-stat-value-purple"/>
+            <Label text="Financées" styleClass="front-stat-label"/>
+        </VBox>
+    </HBox>
+
+    <!-- ═══ FILTER BAR ═══ -->
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="front-filter-bar">
+        <padding>
+            <Insets top="10" right="15" bottom="10" left="15"/>
+        </padding>
+        <Label text="🔍" style="-fx-font-size: 16px;"/>
+        <TextField fx:id="txtSearch" promptText="Rechercher par projet ou description..." 
+                   HBox.hgrow="ALWAYS" styleClass="front-search-field"/>
+        <ComboBox fx:id="cboStatusFilter" promptText="Statut" prefWidth="140" styleClass="front-combo"/>
+        <Button text="Filtrer" onAction="#applyFilter" styleClass="front-btn-primary"/>
+        <Button text="Effacer" onAction="#clearFilter" styleClass="front-btn-secondary"/>
+    </HBox>
+
+    <!-- ═══ OPPORTUNITIES GRID (Cards) ═══ -->
+    <FlowPane fx:id="cardsContainer" hgap="18" vgap="18" alignment="CENTER" 
+              VBox.vgrow="ALWAYS" prefWrapLength="900"/>
+
+    <!-- ═══ EMPTY STATE ═══ -->
+    <VBox fx:id="emptyState" alignment="CENTER" spacing="10" visible="false" managed="false"
+          style="-fx-padding: 50;">
+        <Label text="📭" style="-fx-font-size: 48px;"/>
+        <Label text="Aucune opportunité disponible" style="-fx-font-size: 18px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+        <Label text="Revenez plus tard ou modifiez vos filtres." style="-fx-font-size: 13px; -fx-text-fill: #95a5a6;"/>
+    </VBox>
+
+</VBox>
+</content>
+</ScrollPane>

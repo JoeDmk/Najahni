@@ -59,13 +59,7 @@ public class WrappedTextCellFactory<S> implements Callback<TableColumn<S, String
                 } else {
                     text.setText(item);
                     setGraphic(text);
-                    
-                    // Apply style from parent row
-                    if (getTableRow() != null && getTableRow().isSelected()) {
-                        text.setStyle("-fx-fill: #2c3e50;");
-                    } else {
-                        text.setStyle("-fx-fill: #2c3e50;");
-                    }
+                    text.setStyle("-fx-fill: #2c3e50;");
                 }
             }
         };

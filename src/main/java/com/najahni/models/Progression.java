@@ -51,6 +51,7 @@ public class Progression {
         this.pointsXP = pointsXP;
         this.niveau = niveau;
         this.etat = etat;
+        this.dateDebut = LocalDateTime.now();
     }
 
     // Getters et Setters

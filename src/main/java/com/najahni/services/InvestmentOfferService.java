@@ -1,211 +1,299 @@
 package com.najahni.services;
 
-import com.najahni.dao.InvestmentOfferDAO;
-import com.najahni.dao.InvestmentOpportunityDAO;
-import com.najahni.dao.UserDAO;
 import com.najahni.models.InvestmentOffer;
-import com.najahni.models.InvestmentOpportunity;
 import com.najahni.models.OfferStatus;
-import com.najahni.models.OpportunityStatus;
-import com.najahni.models.Role;
-import com.najahni.models.User;
+import com.najahni.utils.DBConnection;
 
 import java.math.BigDecimal;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Service métier pour les Offres d'Investissement.
- * 
- * Contient TOUTE la logique métier et les validations.
- * Aucune logique UI (pas d'Alert, pas de FXML).
- * 
- * Règles métier :
- * - Seul un INVESTOR peut créer une offre.
- * - Une offre ne peut être faite que sur une opportunité OPEN.
- * - Le montant proposé doit être > 0.
- * 
- * Architecture : Controller → Service → DAO → Database
+ * Service pour la gestion des Offres d'Investissement.
+ * Accède directement à la base de données via JDBC (pas de DAO).
  */
 public class InvestmentOfferService {
 
-    private final InvestmentOfferDAO offerDAO;
-    private final InvestmentOpportunityDAO opportunityDAO;
-    private final UserDAO userDAO;
+    private Connection cnx;
 
-    /** Constructeur par défaut (instancie les DAO). */
     public InvestmentOfferService() {
-        this.offerDAO = new InvestmentOfferDAO();
-        this.opportunityDAO = new InvestmentOpportunityDAO();
-        this.userDAO = new UserDAO();
+        this.cnx = DBConnection.getInstance().getConnection();
     }
 
-    /**
-     * Constructeur avec injection de dépendances (pour les tests unitaires).
-     */
-    public InvestmentOfferService(InvestmentOfferDAO offerDAO,
-                                   InvestmentOpportunityDAO opportunityDAO,
-                                   UserDAO userDAO) {
-        this.offerDAO = offerDAO;
-        this.opportunityDAO = opportunityDAO;
-        this.userDAO = userDAO;
+    /** Constructeur pour les tests unitaires. */
+    public InvestmentOfferService(Connection cnx) {
+        this.cnx = cnx;
     }
 
     // ─── CRUD ────────────────────────────────────────────────
 
-    /**
-     * Crée une nouvelle offre après validation complète.
-     * @throws IllegalArgumentException si la validation échoue
-     */
-    public InvestmentOffer createOffer(InvestmentOffer offer) {
+    public InvestmentOffer createOffer(InvestmentOffer offer) throws IllegalArgumentException {
         validateOffer(offer);
         validateInvestorRole(offer.getInvestorId());
-        validateOpportunityIsOpen(offer.getOpportunityId());
-        return offerDAO.create(offer);
+        validateOpportunityOpen(offer.getOpportunityId());
+
+        String sql = "INSERT INTO investment_offer (proposed_amount, status, investor_id, opportunity_id) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setBigDecimal(1, offer.getProposedAmount());
+            ps.setString(2, offer.getStatus() != null ? offer.getStatus().name() : "PENDING");
+            ps.setInt(3, offer.getInvestorId());
+            ps.setInt(4, offer.getOpportunityId());
+
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) offer.setId(rs.getInt(1));
+            }
+            System.out.println("✓ Investment offer created: " + offer.getProposedAmount() + " €");
+            return offer;
+        } catch (SQLException e) {
+            System.err.println("✗ Error creating investment offer: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    /**
-     * Met à jour une offre existante après validation.
-     * @throws IllegalArgumentException si la validation échoue
-     */
-    public boolean updateOffer(InvestmentOffer offer) {
-        validateOffer(offer);
-        return offerDAO.update(offer);
-    }
-
-    /**
-     * Supprime une offre par son ID.
-     */
-    public boolean deleteOffer(int id) {
-        return offerDAO.delete(id);
-    }
-
-    /** Trouve une offre par ID. */
     public Optional<InvestmentOffer> findById(int id) {
-        return offerDAO.findById(id);
+        String sql = """
+            SELECT io.*,
+                   CONCAT(u.firstname, ' ', u.lastname) AS investor_name,
+                   iop.description AS opportunity_description
+            FROM investment_offer io
+            LEFT JOIN user u ON io.investor_id = u.id
+            LEFT JOIN investment_opportunity iop ON io.opportunity_id = iop.id
+            WHERE io.id = ?
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return Optional.of(mapResultSetToOffer(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding offer by ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
-    /** Retourne toutes les offres. */
     public List<InvestmentOffer> findAll() {
-        return offerDAO.findAll();
+        List<InvestmentOffer> offers = new ArrayList<>();
+        String sql = """
+            SELECT io.*,
+                   CONCAT(u.firstname, ' ', u.lastname) AS investor_name,
+                   iop.description AS opportunity_description
+            FROM investment_offer io
+            LEFT JOIN user u ON io.investor_id = u.id
+            LEFT JOIN investment_opportunity iop ON io.opportunity_id = iop.id
+            ORDER BY io.created_at DESC
+            """;
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) offers.add(mapResultSetToOffer(rs));
+        } catch (SQLException e) {
+            System.err.println("✗ Error fetching all offers: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return offers;
     }
 
-    /** Retourne les offres liées à une opportunité. */
-    public List<InvestmentOffer> findByOpportunity(int opportunityId) {
-        return offerDAO.findByOpportunityId(opportunityId);
-    }
-
-    /** Retourne les offres d'un investisseur. */
-    public List<InvestmentOffer> findByInvestor(int investorId) {
-        return offerDAO.findByInvestorId(investorId);
-    }
-
-    // ─── STATISTIQUES ────────────────────────────────────────
-
-    /** Compte les offres par statut. */
-    public int countByStatus(OfferStatus status) {
-        return offerDAO.countByStatus(status);
-    }
-
-    /** Retourne le montant total accepté pour une opportunité. */
-    public BigDecimal getTotalAcceptedForOpportunity(int opportunityId) {
-        return offerDAO.getTotalAcceptedForOpportunity(opportunityId);
-    }
-
-    // ─── OPÉRATIONS MÉTIER ───────────────────────────────────
-
-    /**
-     * Accepte une offre (passe son statut à ACCEPTED).
-     */
-    public boolean acceptOffer(int offerId) {
-        return updateStatus(offerId, OfferStatus.ACCEPTED);
-    }
-
-    /**
-     * Rejette une offre (passe son statut à REJECTED).
-     */
-    public boolean rejectOffer(int offerId) {
-        return updateStatus(offerId, OfferStatus.REJECTED);
-    }
-
-    /**
-     * Met à jour le statut d'une offre.
-     */
-    private boolean updateStatus(int offerId, OfferStatus newStatus) {
-        Optional<InvestmentOffer> offerOpt = offerDAO.findById(offerId);
-        if (offerOpt.isPresent()) {
-            InvestmentOffer offer = offerOpt.get();
-            offer.setStatus(newStatus);
-            return offerDAO.update(offer);
+    public boolean updateOffer(InvestmentOffer offer) throws IllegalArgumentException {
+        validateOffer(offer);
+        String sql = "UPDATE investment_offer SET proposed_amount = ?, status = ?, investor_id = ?, opportunity_id = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setBigDecimal(1, offer.getProposedAmount());
+            ps.setString(2, offer.getStatus() != null ? offer.getStatus().name() : "PENDING");
+            ps.setInt(3, offer.getInvestorId());
+            ps.setInt(4, offer.getOpportunityId());
+            ps.setInt(5, offer.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("✗ Error updating offer: " + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
 
-    // ─── VALIDATIONS ─────────────────────────────────────────
+    public boolean deleteOffer(int id) {
+        String sql = "DELETE FROM investment_offer WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("✗ Error deleting offer: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-    /**
-     * Valide les données d'une offre.
-     * @throws IllegalArgumentException si une règle est violée
-     */
-    private void validateOffer(InvestmentOffer offer) {
-        if (offer == null) {
-            throw new IllegalArgumentException("L'offre ne peut pas être null.");
-        }
+    // ─── REQUÊTES SPÉCIFIQUES ────────────────────────────────
 
-        // Validation du montant proposé
-        if (offer.getProposedAmount() == null) {
-            throw new IllegalArgumentException("Le montant proposé est obligatoire.");
+    public List<InvestmentOffer> findByOpportunity(int opportunityId) {
+        List<InvestmentOffer> offers = new ArrayList<>();
+        String sql = """
+            SELECT io.*,
+                   CONCAT(u.firstname, ' ', u.lastname) AS investor_name,
+                   iop.description AS opportunity_description
+            FROM investment_offer io
+            LEFT JOIN user u ON io.investor_id = u.id
+            LEFT JOIN investment_opportunity iop ON io.opportunity_id = iop.id
+            WHERE io.opportunity_id = ?
+            ORDER BY io.created_at DESC
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, opportunityId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) offers.add(mapResultSetToOffer(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding offers by opportunity: " + e.getMessage());
+            e.printStackTrace();
         }
-        if (offer.getProposedAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Le montant proposé doit être supérieur à zéro.");
-        }
-        if (offer.getProposedAmount().compareTo(new BigDecimal("999999999999.99")) > 0) {
-            throw new IllegalArgumentException("Le montant proposé dépasse la valeur maximale autorisée.");
-        }
+        return offers;
+    }
 
-        // Validation du statut
-        if (offer.getStatus() == null) {
-            throw new IllegalArgumentException("Le statut est obligatoire.");
+    public List<InvestmentOffer> findByInvestor(int investorId) {
+        List<InvestmentOffer> offers = new ArrayList<>();
+        String sql = """
+            SELECT io.*,
+                   CONCAT(u.firstname, ' ', u.lastname) AS investor_name,
+                   iop.description AS opportunity_description
+            FROM investment_offer io
+            LEFT JOIN user u ON io.investor_id = u.id
+            LEFT JOIN investment_opportunity iop ON io.opportunity_id = iop.id
+            WHERE io.investor_id = ?
+            ORDER BY io.created_at DESC
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, investorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) offers.add(mapResultSetToOffer(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding offers by investor: " + e.getMessage());
+            e.printStackTrace();
         }
+        return offers;
+    }
 
-        // Validation de l'investisseur
-        if (offer.getInvestorId() <= 0) {
-            throw new IllegalArgumentException("Un investisseur valide est requis.");
+    public int countByStatus(OfferStatus status) {
+        String sql = "SELECT COUNT(*) FROM investment_offer WHERE status = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, status.name());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public BigDecimal getTotalAcceptedForOpportunity(int opportunityId) {
+        String sql = "SELECT COALESCE(SUM(proposed_amount), 0) FROM investment_offer WHERE opportunity_id = ? AND status = 'ACCEPTED'";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, opportunityId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBigDecimal(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return BigDecimal.ZERO;
+    }
+
+    // ─── STATUS MANAGEMENT ───────────────────────────────────
+
+    public boolean acceptOffer(int offerId) {
+        return updateOfferStatus(offerId, OfferStatus.ACCEPTED);
+    }
+
+    public boolean rejectOffer(int offerId) {
+        return updateOfferStatus(offerId, OfferStatus.REJECTED);
+    }
+
+    private boolean updateOfferStatus(int offerId, OfferStatus newStatus) {
+        Optional<InvestmentOffer> offerOpt = findById(offerId);
+        if (offerOpt.isEmpty()) {
+            throw new IllegalArgumentException("Offer not found with ID: " + offerId);
         }
+        InvestmentOffer offer = offerOpt.get();
+        offer.setStatus(newStatus);
+        return updateOffer(offer);
+    }
 
-        // Validation de l'opportunité
-        if (offer.getOpportunityId() <= 0) {
-            throw new IllegalArgumentException("Une opportunité valide est requise.");
+    // ─── VALIDATION ──────────────────────────────────────────
+
+    private void validateOffer(InvestmentOffer offer) throws IllegalArgumentException {
+        if (offer == null) throw new IllegalArgumentException("Offer cannot be null");
+        if (offer.getProposedAmount() == null || offer.getProposedAmount().compareTo(BigDecimal.ZERO) <= 0)
+            throw new IllegalArgumentException("Proposed amount must be greater than zero");
+        if (offer.getInvestorId() <= 0)
+            throw new IllegalArgumentException("Investor ID is required");
+        if (offer.getOpportunityId() <= 0)
+            throw new IllegalArgumentException("Opportunity ID is required");
+    }
+
+    private void validateInvestorRole(int investorId) throws IllegalArgumentException {
+        String sql = "SELECT role FROM user WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, investorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new IllegalArgumentException("Investor not found with ID: " + investorId);
+                }
+                String role = rs.getString("role");
+                if (!"INVESTISSEUR".equals(role)) {
+                    throw new IllegalArgumentException("User is not an investor");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error validating investor: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Vérifie que l'utilisateur a le rôle INVESTOR.
-     * @throws IllegalArgumentException si l'utilisateur n'est pas un INVESTOR
-     */
-    private void validateInvestorRole(int userId) {
-        Optional<User> userOpt = userDAO.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new IllegalArgumentException("L'utilisateur n'existe pas.");
-        }
-        User user = userOpt.get();
-        if (user.getRole() != Role.INVESTOR) {
-            throw new IllegalArgumentException("Seul un INVESTOR peut créer une offre d'investissement.");
+    private void validateOpportunityOpen(int opportunityId) throws IllegalArgumentException {
+        String sql = "SELECT status FROM investment_opportunity WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, opportunityId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new IllegalArgumentException("Investment opportunity not found with ID: " + opportunityId);
+                }
+                String status = rs.getString("status");
+                if (!"OPEN".equals(status)) {
+                    throw new IllegalArgumentException("Investment opportunity is not open for offers");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error validating opportunity: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Vérifie que l'opportunité est ouverte (statut OPEN).
-     * @throws IllegalArgumentException si l'opportunité n'est pas OPEN
-     */
-    private void validateOpportunityIsOpen(int opportunityId) {
-        Optional<InvestmentOpportunity> oppOpt = opportunityDAO.findById(opportunityId);
-        if (oppOpt.isEmpty()) {
-            throw new IllegalArgumentException("L'opportunité d'investissement n'existe pas.");
+    // ─── MAPPING ─────────────────────────────────────────────
+
+    private InvestmentOffer mapResultSetToOffer(ResultSet rs) throws SQLException {
+        InvestmentOffer offer = new InvestmentOffer();
+        offer.setId(rs.getInt("id"));
+        offer.setProposedAmount(rs.getBigDecimal("proposed_amount"));
+
+        String status = rs.getString("status");
+        if (status != null) {
+            try { offer.setStatus(OfferStatus.valueOf(status.toUpperCase())); }
+            catch (IllegalArgumentException e) { offer.setStatus(OfferStatus.PENDING); }
         }
-        InvestmentOpportunity opp = oppOpt.get();
-        if (opp.getStatus() != OpportunityStatus.OPEN) {
-            throw new IllegalArgumentException("Impossible de faire une offre : l'opportunité n'est pas ouverte (statut actuel : " + opp.getStatus() + ").");
-        }
+
+        offer.setInvestorId(rs.getInt("investor_id"));
+        offer.setOpportunityId(rs.getInt("opportunity_id"));
+
+        try { offer.setInvestorName(rs.getString("investor_name")); }
+        catch (SQLException ignored) { }
+        try { offer.setOpportunityDescription(rs.getString("opportunity_description")); }
+        catch (SQLException ignored) { }
+
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        if (createdAt != null) offer.setCreatedAt(createdAt.toLocalDateTime());
+        Timestamp updatedAt = rs.getTimestamp("updated_at");
+        if (updatedAt != null) offer.setUpdatedAt(updatedAt.toLocalDateTime());
+
+        return offer;
     }
 }

@@ -1,0 +1,96 @@
+% ============================================
+% NAJAHNI — Investment Risk ML Dataset
+% ============================================
+% Dataset d'entraînement pour le modèle RandomForest
+% de prédiction du niveau de risque d'investissement.
+%
+% Attributs :
+%   - montant      : Montant cible en euros (numeric)
+%   - duree        : Durée restante en jours (numeric)
+%   - secteur      : Secteur d'activité (nominal)
+%   - success_rate : Taux de succès historique du projet (0–100)
+%   - funding_ratio: Ratio financement obtenu / montant cible (0–1)
+%   - risk_label   : Niveau de risque (classe cible)
+%
+% Créé pour un projet universitaire — Najahni Platform
+% ============================================
+
+@RELATION investment_risk
+
+@ATTRIBUTE montant NUMERIC
+@ATTRIBUTE duree NUMERIC
+@ATTRIBUTE secteur {tech,immobilier,sante,industrie}
+@ATTRIBUTE success_rate NUMERIC
+@ATTRIBUTE funding_ratio NUMERIC
+@ATTRIBUTE risk_label {faible,moyen,eleve}
+
+@DATA
+
+% ── Classe FAIBLE (risque faible) ──────────────────────
+% Petits montants, longues durées, bons indicateurs
+5000,365,tech,85,0.90,faible
+8000,300,sante,90,0.85,faible
+10000,350,tech,80,0.80,faible
+12000,280,sante,88,0.75,faible
+15000,400,tech,92,0.95,faible
+7000,320,immobilier,78,0.70,faible
+6000,500,sante,95,0.88,faible
+9000,270,tech,82,0.72,faible
+11000,360,sante,86,0.82,faible
+13000,450,tech,91,0.93,faible
+20000,300,immobilier,75,0.65,faible
+8500,380,sante,89,0.78,faible
+14000,290,tech,83,0.71,faible
+18000,340,sante,87,0.76,faible
+6500,310,tech,94,0.92,faible
+16000,260,immobilier,77,0.68,faible
+7500,420,sante,93,0.87,faible
+9500,330,tech,81,0.73,faible
+11500,370,sante,84,0.79,faible
+17000,350,tech,76,0.66,faible
+
+% ── Classe MOYEN (risque modéré) ──────────────────────
+% Montants intermédiaires, durées moyennes, indicateurs moyens
+50000,180,tech,55,0.45,moyen
+60000,150,immobilier,50,0.40,moyen
+45000,200,industrie,60,0.50,moyen
+70000,120,sante,48,0.38,moyen
+55000,170,tech,52,0.42,moyen
+80000,160,immobilier,45,0.35,moyen
+40000,140,industrie,58,0.48,moyen
+65000,190,tech,53,0.43,moyen
+75000,130,sante,47,0.37,moyen
+35000,210,industrie,62,0.52,moyen
+90000,110,immobilier,42,0.32,moyen
+48000,175,tech,56,0.46,moyen
+58000,145,industrie,51,0.41,moyen
+72000,165,sante,49,0.39,moyen
+42000,195,tech,59,0.49,moyen
+85000,125,immobilier,44,0.34,moyen
+52000,185,industrie,54,0.44,moyen
+68000,155,tech,46,0.36,moyen
+38000,205,sante,61,0.51,moyen
+95000,100,immobilier,40,0.30,moyen
+
+% ── Classe ELEVE (risque élevé) ───────────────────────
+% Gros montants, courtes durées, mauvais indicateurs
+200000,30,industrie,15,0.05,eleve
+250000,20,immobilier,10,0.08,eleve
+300000,45,industrie,18,0.10,eleve
+180000,25,immobilier,12,0.06,eleve
+350000,15,industrie,8,0.03,eleve
+220000,35,immobilier,20,0.12,eleve
+400000,40,industrie,22,0.15,eleve
+280000,10,immobilier,5,0.02,eleve
+150000,50,industrie,25,0.18,eleve
+320000,28,immobilier,14,0.07,eleve
+450000,18,industrie,9,0.04,eleve
+170000,55,immobilier,28,0.20,eleve
+260000,22,industrie,11,0.09,eleve
+380000,38,immobilier,16,0.11,eleve
+190000,32,industrie,19,0.13,eleve
+500000,12,immobilier,6,0.01,eleve
+230000,42,industrie,21,0.14,eleve
+310000,26,immobilier,13,0.08,eleve
+160000,48,industrie,26,0.17,eleve
+420000,35,immobilier,17,0.10,eleve

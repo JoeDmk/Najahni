@@ -221,9 +221,8 @@ public class InvestmentOfferController {
     }
 
     private void loadInvestors() {
-        List<User> investors = userService.findAll().stream()
-            .filter(u -> u.getRole() == Role.INVESTOR)
-            .collect(Collectors.toList());
+        // Le rôle INVESTOR dans Java correspond à INVESTISSEUR dans la DB
+        List<User> investors = userService.findByRole(Role.INVESTOR);
         cboInvestor.setItems(FXCollections.observableArrayList(investors));
         cboInvestor.setConverter(new StringConverter<>() {
             @Override public String toString(User u) { return u == null ? "" : u.getName() + " (" + u.getEmail() + ")"; }

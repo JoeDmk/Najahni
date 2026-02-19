@@ -881,3 +881,368 @@
     -fx-border-width: 1px;
 }
 
+/* ============================================
+   FRONT OFFICE - Card-Based UI
+   ============================================ */
+
+/* Page background */
+.front-page {
+    -fx-background-color: #f0f2f5;
+}
+
+.front-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+/* ── Hero Banner ── */
+.front-hero {
+    -fx-background-color: linear-gradient(to right, #1a5276, #2e86c1, #3498db);
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(26, 82, 118, 0.35), 18, 0, 0, 6);
+}
+
+.front-hero-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.front-hero-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #d6eaf8;
+    -fx-opacity: 0.95;
+}
+
+/* ── Stats Bar ── */
+.front-stat {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-padding: 18px 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);
+}
+
+.front-stat-value {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.front-stat-value-green {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #27ae60;
+}
+
+.front-stat-value-blue {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2980b9;
+}
+
+.front-stat-value-purple {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #8e44ad;
+}
+
+.front-stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #95a5a6;
+    -fx-font-weight: bold;
+}
+
+/* ── Filter Bar ── */
+.front-filter-bar {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);
+}
+
+.front-search-field {
+    -fx-padding: 10px 14px;
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1.5px;
+    -fx-font-size: 13px;
+}
+
+.front-search-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.15), 6, 0, 0, 0);
+}
+
+.front-combo {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 6px 10px;
+}
+
+/* ── Cards ── */
+.front-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+    -fx-border-color: transparent;
+    -fx-border-radius: 14px;
+    -fx-cursor: hand;
+}
+
+.front-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.2), 18, 0, 0, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.front-card-project {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.front-card-amount {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #27ae60;
+}
+
+.front-card-desc {
+    -fx-font-size: 13px;
+    -fx-text-fill: #7f8c8d;
+    -fx-line-spacing: 2;
+}
+
+.front-card-meta {
+    -fx-font-size: 12px;
+    -fx-text-fill: #95a5a6;
+}
+
+/* ── Badges ── */
+.front-badge {
+    -fx-padding: 4px 12px;
+    -fx-background-radius: 20px;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.front-badge-green {
+    -fx-background-color: #d5f5e3;
+    -fx-text-fill: #1e8449;
+}
+
+.front-badge-red {
+    -fx-background-color: #fadbd8;
+    -fx-text-fill: #c0392b;
+}
+
+.front-badge-blue {
+    -fx-background-color: #d4e6f1;
+    -fx-text-fill: #2471a3;
+}
+
+.front-badge-orange {
+    -fx-background-color: #fdebd0;
+    -fx-text-fill: #d68910;
+}
+
+/* ── Front-Office Buttons ── */
+.front-btn-primary {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.front-btn-primary:hover {
+    -fx-background-color: #2980b9;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.front-btn-secondary {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.front-btn-secondary:hover {
+    -fx-background-color: #d5dbdb;
+    -fx-text-fill: #2c3e50;
+}
+
+.front-btn-invest {
+    -fx-background-color: linear-gradient(to right, #27ae60, #2ecc71);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 24px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(39, 174, 96, 0.3), 6, 0, 0, 2);
+}
+
+.front-btn-invest:hover {
+    -fx-background-color: linear-gradient(to right, #219a52, #27ae60);
+    -fx-effect: dropshadow(gaussian, rgba(39, 174, 96, 0.5), 10, 0, 0, 4);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+
+.front-btn-danger {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.front-btn-danger:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* ── TitledPane (collapsible form) ── */
+.front-titled-pane {
+    -fx-background-color: transparent;
+}
+
+.front-titled-pane > .title {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 18px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);
+}
+
+.front-titled-pane > .title:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.front-titled-pane > *.content {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 12px 12px;
+    -fx-border-color: #e8e8e8;
+    -fx-border-width: 0 1px 1px 1px;
+    -fx-border-radius: 0 0 12px 12px;
+}
+
+.front-form-inner {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 12px 12px;
+}
+
+/* ============================================
+   FRONT OFFICE - SEPARATE PAGE LAYOUT
+   ============================================ */
+
+/* ── Back Office → Front Office Button ── */
+.nav-button-front-office {
+    -fx-background-color: linear-gradient(to right, #e67e22, #f39c12);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 14px 20px;
+    -fx-cursor: hand;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-alignment: CENTER;
+    -fx-effect: dropshadow(gaussian, rgba(230,126,34,0.35), 8, 0, 0, 2);
+}
+
+.nav-button-front-office:hover {
+    -fx-background-color: linear-gradient(to right, #d35400, #e67e22);
+    -fx-effect: dropshadow(gaussian, rgba(230,126,34,0.5), 12, 0, 0, 3);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.nav-button-front-office:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ── Front Office Root ── */
+.fo-root {
+    -fx-background-color: #f0f2f5;
+}
+
+/* ── Front Office Navbar ── */
+.fo-navbar {
+    -fx-background-color: linear-gradient(to right, #1a1a2e, #16213e, #0f3460);
+    -fx-padding: 12px 30px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 4);
+}
+
+.fo-navbar-brand {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e94560;
+}
+
+.fo-navbar-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255,255,255,0.6);
+    -fx-padding: 0 0 0 5px;
+}
+
+/* ── Front Office Nav Links ── */
+.fo-nav-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(255,255,255,0.7);
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+    -fx-background-radius: 8px;
+}
+
+.fo-nav-link:hover {
+    -fx-background-color: rgba(255,255,255,0.1);
+    -fx-text-fill: white;
+}
+
+.fo-nav-link-active {
+    -fx-background-color: rgba(233,69,96,0.2);
+    -fx-text-fill: #e94560;
+    -fx-border-color: transparent transparent #e94560 transparent;
+    -fx-border-width: 0 0 3px 0;
+}
+
+/* ── Back to Back Office Button ── */
+.fo-btn-back {
+    -fx-background-color: rgba(255,255,255,0.1);
+    -fx-text-fill: rgba(255,255,255,0.8);
+    -fx-font-size: 13px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(255,255,255,0.2);
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+}
+
+.fo-btn-back:hover {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-text-fill: white;
+    -fx-border-color: rgba(255,255,255,0.4);
+}
+
+/* ── Front Office Content Area ── */
+.fo-content {
+    -fx-background-color: #f0f2f5;
+    -fx-padding: 0;
+}

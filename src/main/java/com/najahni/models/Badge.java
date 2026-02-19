@@ -11,27 +11,30 @@ public class Badge {
     private int id;
     private String nom;
     private String description;
-    private String condition;       // Condition textuelle pour obtenir le badge
-    private String conditionType;   // Type de condition (XP, COURS, QUIZ, STREAK, etc.)
-    private int conditionValeur;    // Valeur numérique de la condition
     private String icone;           // Emoji ou icône du badge
-    private String couleur;         // Couleur du badge (HEX)
-    private int pointsBonus;        // Points XP bonus attribués avec le badge
+    private String condition;       // Condition textuelle (condition_obtention)
+    private int pointsRequis;       // Points XP requis pour débloquer
+    private int coursRequis;        // Nombre de cours à compléter
+    private int niveauRequis;       // Niveau minimum requis
+    private String categorie;       // Catégorie du badge (Progression, XP, Niveau, etc.)
+    private String rarete;          // Rareté: COMMUN, RARE, EPIQUE, LEGENDAIRE
     private boolean actif;
     private LocalDateTime createdAt;
 
-    // Types de conditions prédéfinis
-    public static final String CONDITION_XP_TOTAL = "XP_TOTAL";
-    public static final String CONDITION_COURS_COMPLETE = "COURS_COMPLETE";
-    public static final String CONDITION_NIVEAU_ATTEINT = "NIVEAU_ATTEINT";
-    public static final String CONDITION_PREMIER_COURS = "PREMIER_COURS";
-    public static final String CONDITION_CERTIFICATION = "CERTIFICATION";
+    // Catégories de badges prédéfinies
+    public static final String CATEGORIE_PROGRESSION = "Progression";
+    public static final String CATEGORIE_XP = "XP";
+    public static final String CATEGORIE_NIVEAU = "Niveau";
+    public static final String CATEGORIE_CERTIFICATION = "Certification";
 
     // Constructeur par défaut
     public Badge() {
         this.actif = true;
-        this.pointsBonus = 50;
-        this.couleur = "#3498db";
+        this.pointsRequis = 0;
+        this.coursRequis = 0;
+        this.niveauRequis = 0;
+        this.categorie = "Général";
+        this.rarete = "COMMUN";
     }
 
     // Constructeur sans ID
@@ -45,18 +48,19 @@ public class Badge {
 
     // Constructeur complet
     public Badge(int id, String nom, String description, String condition, 
-                 String conditionType, int conditionValeur, String icone, 
-                 String couleur, int pointsBonus) {
+                 String icone, int pointsRequis, int coursRequis, int niveauRequis,
+                 String categorie, String rarete) {
+        this();
         this.id = id;
         this.nom = nom;
         this.description = description;
         this.condition = condition;
-        this.conditionType = conditionType;
-        this.conditionValeur = conditionValeur;
         this.icone = icone;
-        this.couleur = couleur;
-        this.pointsBonus = pointsBonus;
-        this.actif = true;
+        this.pointsRequis = pointsRequis;
+        this.coursRequis = coursRequis;
+        this.niveauRequis = niveauRequis;
+        this.categorie = categorie;
+        this.rarete = rarete;
     }
 
     // Getters et Setters
@@ -92,20 +96,28 @@ public class Badge {
         this.condition = condition;
     }
 
-    public String getConditionType() {
-        return conditionType;
+    public int getPointsRequis() {
+        return pointsRequis;
     }
 
-    public void setConditionType(String conditionType) {
-        this.conditionType = conditionType;
+    public void setPointsRequis(int pointsRequis) {
+        this.pointsRequis = pointsRequis;
     }
 
-    public int getConditionValeur() {
-        return conditionValeur;
+    public int getCoursRequis() {
+        return coursRequis;
     }
 
-    public void setConditionValeur(int conditionValeur) {
-        this.conditionValeur = conditionValeur;
+    public void setCoursRequis(int coursRequis) {
+        this.coursRequis = coursRequis;
+    }
+
+    public int getNiveauRequis() {
+        return niveauRequis;
+    }
+
+    public void setNiveauRequis(int niveauRequis) {
+        this.niveauRequis = niveauRequis;
     }
 
     public String getIcone() {
@@ -116,20 +128,20 @@ public class Badge {
         this.icone = icone;
     }
 
-    public String getCouleur() {
-        return couleur;
+    public String getCategorie() {
+        return categorie;
     }
 
-    public void setCouleur(String couleur) {
-        this.couleur = couleur;
+    public void setCategorie(String categorie) {
+        this.categorie = categorie;
     }
 
-    public int getPointsBonus() {
-        return pointsBonus;
+    public String getRarete() {
+        return rarete;
     }
 
-    public void setPointsBonus(int pointsBonus) {
-        this.pointsBonus = pointsBonus;
+    public void setRarete(String rarete) {
+        this.rarete = rarete;
     }
 
     public boolean isActif() {
@@ -152,16 +164,19 @@ public class Badge {
      * Vérifie si un utilisateur remplit la condition pour obtenir ce badge.
      */
     public boolean verifierCondition(int xpTotal, int coursCompletes, int niveau) {
-        if (conditionType == null) return false;
-        
-        return switch (conditionType) {
-            case CONDITION_XP_TOTAL -> xpTotal >= conditionValeur;
-            case CONDITION_COURS_COMPLETE -> coursCompletes >= conditionValeur;
-            case CONDITION_NIVEAU_ATTEINT -> niveau >= conditionValeur;
-            case CONDITION_PREMIER_COURS -> coursCompletes >= 1;
-            case CONDITION_CERTIFICATION -> coursCompletes >= conditionValeur;
-            default -> false;
-        };
+        // Check points XP condition
+        if (pointsRequis > 0 && xpTotal < pointsRequis) {
+            return false;
+        }
+        // Check cours completed condition
+        if (coursRequis > 0 && coursCompletes < coursRequis) {
+            return false;
+        }
+        // Check niveau condition
+        if (niveauRequis > 0 && niveau < niveauRequis) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -172,10 +187,16 @@ public class Badge {
     }
 
     /**
-     * Retourne le style CSS pour le badge.
+     * Retourne le style CSS pour le badge basé sur la rareté.
      */
     public String getStyle() {
-        return "-fx-background-color: " + couleur + "; -fx-text-fill: white; " +
+        String color = switch (rarete != null ? rarete : "COMMUN") {
+            case "RARE" -> "#3498db";
+            case "EPIQUE" -> "#9b59b6";
+            case "LEGENDAIRE" -> "#f39c12";
+            default -> "#2ecc71"; // COMMUN
+        };
+        return "-fx-background-color: " + color + "; -fx-text-fill: white; " +
                "-fx-padding: 5 10; -fx-background-radius: 15;";
     }
 

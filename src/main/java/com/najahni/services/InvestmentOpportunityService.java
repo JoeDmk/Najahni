@@ -1,181 +1,339 @@
 package com.najahni.services;
 
-import com.najahni.dao.InvestmentOpportunityDAO;
-import com.najahni.dao.ProjectDAO;
 import com.najahni.models.InvestmentOpportunity;
 import com.najahni.models.OpportunityStatus;
-import com.najahni.models.Project;
-import com.najahni.models.ProjectStatus;
+import com.najahni.utils.DBConnection;
 
 import java.math.BigDecimal;
+import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Service métier pour les Opportunités d'Investissement.
- * 
- * Contient TOUTE la logique métier et les validations.
- * Aucune logique UI (pas d'Alert, pas de FXML).
- * 
- * Architecture : Controller → Service → DAO → Database
+ * Service pour la gestion des Opportunités d'Investissement.
+ * Accède directement à la base de données via JDBC (pas de DAO).
  */
 public class InvestmentOpportunityService {
 
-    private final InvestmentOpportunityDAO opportunityDAO;
-    private final ProjectDAO projectDAO;
+    private Connection cnx;
 
-    /** Constructeur par défaut (instancie les DAO). */
     public InvestmentOpportunityService() {
-        this.opportunityDAO = new InvestmentOpportunityDAO();
-        this.projectDAO = new ProjectDAO();
+        this.cnx = DBConnection.getInstance().getConnection();
     }
 
-    /**
-     * Constructeur avec injection de dépendances (pour les tests unitaires).
-     */
-    public InvestmentOpportunityService(InvestmentOpportunityDAO opportunityDAO, ProjectDAO projectDAO) {
-        this.opportunityDAO = opportunityDAO;
-        this.projectDAO = projectDAO;
+    /** Constructeur pour les tests unitaires. */
+    public InvestmentOpportunityService(Connection cnx) {
+        this.cnx = cnx;
     }
 
     // ─── CRUD ────────────────────────────────────────────────
 
-    /**
-     * Crée une nouvelle opportunité après validation complète.
-     * @throws IllegalArgumentException si la validation échoue
-     */
-    public InvestmentOpportunity createOpportunity(InvestmentOpportunity opp) {
-        validateOpportunity(opp);
-        validateProjectExists(opp.getProjectId());
-        return opportunityDAO.create(opp);
+    public InvestmentOpportunity createOpportunity(InvestmentOpportunity opportunity) throws IllegalArgumentException {
+        validateOpportunity(opportunity);
+        validateProjectExists(opportunity.getProjectId());
+
+        String sql = "INSERT INTO investment_opportunity (target_amount, description, deadline, status, project_id, risk_score, risk_label) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setBigDecimal(1, opportunity.getTargetAmount());
+            ps.setString(2, opportunity.getDescription());
+            ps.setDate(3, opportunity.getDeadline() != null ? java.sql.Date.valueOf(opportunity.getDeadline()) : null);
+            ps.setString(4, opportunity.getStatus() != null ? opportunity.getStatus().name() : "OPEN");
+            ps.setInt(5, opportunity.getProjectId());
+            if (opportunity.getRiskScore() != null) {
+                ps.setDouble(6, opportunity.getRiskScore());
+            } else {
+                ps.setNull(6, java.sql.Types.DOUBLE);
+            }
+            ps.setString(7, opportunity.getRiskLabel());
+
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) opportunity.setId(rs.getInt(1));
+            }
+            System.out.println("✓ Investment opportunity created: " + opportunity.getTargetAmount() + " €");
+            return opportunity;
+        } catch (SQLException e) {
+            System.err.println("✗ Error creating opportunity: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    /**
-     * Met à jour une opportunité existante après validation.
-     * @throws IllegalArgumentException si la validation échoue
-     */
-    public boolean updateOpportunity(InvestmentOpportunity opp) {
-        validateOpportunity(opp);
-        validateProjectExists(opp.getProjectId());
-        return opportunityDAO.update(opp);
-    }
-
-    /**
-     * Supprime une opportunité par son ID.
-     * La suppression en cascade supprimera aussi les offres liées.
-     */
-    public boolean deleteOpportunity(int id) {
-        return opportunityDAO.delete(id);
-    }
-
-    /** Trouve une opportunité par ID. */
     public Optional<InvestmentOpportunity> findById(int id) {
-        return opportunityDAO.findById(id);
+        String sql = """
+            SELECT io.*, p.titre AS project_title
+            FROM investment_opportunity io
+            LEFT JOIN projet p ON io.project_id = p.id
+            WHERE io.id = ?
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return Optional.of(mapResultSetToOpportunity(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding opportunity by ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
-    /** Retourne toutes les opportunités. */
     public List<InvestmentOpportunity> findAll() {
-        return opportunityDAO.findAll();
+        List<InvestmentOpportunity> list = new ArrayList<>();
+        String sql = """
+            SELECT io.*, p.titre AS project_title
+            FROM investment_opportunity io
+            LEFT JOIN projet p ON io.project_id = p.id
+            ORDER BY io.created_at DESC
+            """;
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) list.add(mapResultSetToOpportunity(rs));
+        } catch (SQLException e) {
+            System.err.println("✗ Error fetching all opportunities: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
     }
 
-    /** Retourne les opportunités liées à un projet. */
-    public List<InvestmentOpportunity> findByProject(int projectId) {
-        return opportunityDAO.findByProjectId(projectId);
-    }
-
-    /** Retourne les opportunités avec un statut donné. */
-    public List<InvestmentOpportunity> findByStatus(OpportunityStatus status) {
-        return opportunityDAO.findByStatus(status);
-    }
-
-    // ─── STATISTIQUES ────────────────────────────────────────
-
-    /** Compte les opportunités par statut. */
-    public int countByStatus(OpportunityStatus status) {
-        return opportunityDAO.countByStatus(status);
-    }
-
-    /** Retourne le montant total cible des opportunités ouvertes. */
-    public BigDecimal getTotalTargetAmount() {
-        return opportunityDAO.getTotalTargetAmount();
-    }
-
-    // ─── OPÉRATIONS MÉTIER ───────────────────────────────────
-
-    /**
-     * Ferme une opportunité (passe son statut à CLOSED).
-     */
-    public boolean closeOpportunity(int opportunityId) {
-        return updateStatus(opportunityId, OpportunityStatus.CLOSED);
-    }
-
-    /**
-     * Marque une opportunité comme financée (FUNDED).
-     */
-    public boolean markAsFunded(int opportunityId) {
-        return updateStatus(opportunityId, OpportunityStatus.FUNDED);
-    }
-
-    /**
-     * Met à jour le statut d'une opportunité.
-     */
-    private boolean updateStatus(int opportunityId, OpportunityStatus newStatus) {
-        Optional<InvestmentOpportunity> oppOpt = opportunityDAO.findById(opportunityId);
-        if (oppOpt.isPresent()) {
-            InvestmentOpportunity opp = oppOpt.get();
-            opp.setStatus(newStatus);
-            return opportunityDAO.update(opp);
+    public boolean updateOpportunity(InvestmentOpportunity opportunity) throws IllegalArgumentException {
+        validateOpportunity(opportunity);
+        String sql = "UPDATE investment_opportunity SET target_amount = ?, description = ?, deadline = ?, status = ?, project_id = ?, risk_score = ?, risk_label = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setBigDecimal(1, opportunity.getTargetAmount());
+            ps.setString(2, opportunity.getDescription());
+            ps.setDate(3, opportunity.getDeadline() != null ? java.sql.Date.valueOf(opportunity.getDeadline()) : null);
+            ps.setString(4, opportunity.getStatus() != null ? opportunity.getStatus().name() : "OPEN");
+            ps.setInt(5, opportunity.getProjectId());
+            if (opportunity.getRiskScore() != null) {
+                ps.setDouble(6, opportunity.getRiskScore());
+            } else {
+                ps.setNull(6, java.sql.Types.DOUBLE);
+            }
+            ps.setString(7, opportunity.getRiskLabel());
+            ps.setInt(8, opportunity.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("✗ Error updating opportunity: " + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
 
-    // ─── VALIDATIONS ─────────────────────────────────────────
+    public boolean deleteOpportunity(int id) {
+        String sql = "DELETE FROM investment_opportunity WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("✗ Error deleting opportunity: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ─── REQUÊTES SPÉCIFIQUES ────────────────────────────────
+
+    public List<InvestmentOpportunity> findByProject(int projectId) {
+        List<InvestmentOpportunity> list = new ArrayList<>();
+        String sql = """
+            SELECT io.*, p.titre AS project_title
+            FROM investment_opportunity io
+            LEFT JOIN projet p ON io.project_id = p.id
+            WHERE io.project_id = ?
+            ORDER BY io.created_at DESC
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, projectId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapResultSetToOpportunity(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding opportunities by project: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<InvestmentOpportunity> findByStatus(OpportunityStatus status) {
+        List<InvestmentOpportunity> list = new ArrayList<>();
+        String sql = """
+            SELECT io.*, p.titre AS project_title
+            FROM investment_opportunity io
+            LEFT JOIN projet p ON io.project_id = p.id
+            WHERE io.status = ?
+            ORDER BY io.created_at DESC
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, status.name());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapResultSetToOpportunity(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding opportunities by status: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int countByStatus(OpportunityStatus status) {
+        String sql = "SELECT COUNT(*) FROM investment_opportunity WHERE status = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, status.name());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public BigDecimal getTotalTargetAmount() {
+        String sql = "SELECT COALESCE(SUM(target_amount), 0) FROM investment_opportunity";
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getBigDecimal(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return BigDecimal.ZERO;
+    }
+
+    // ─── STATUS MANAGEMENT ───────────────────────────────────
+
+    public boolean closeOpportunity(int opportunityId) {
+        return updateOpportunityStatus(opportunityId, OpportunityStatus.CLOSED);
+    }
+
+    public boolean markAsFunded(int opportunityId) {
+        return updateOpportunityStatus(opportunityId, OpportunityStatus.FUNDED);
+    }
+
+    private boolean updateOpportunityStatus(int opportunityId, OpportunityStatus newStatus) {
+        Optional<InvestmentOpportunity> oppOpt = findById(opportunityId);
+        if (oppOpt.isEmpty()) {
+            throw new IllegalArgumentException("Opportunity not found with ID: " + opportunityId);
+        }
+        InvestmentOpportunity opp = oppOpt.get();
+        opp.setStatus(newStatus);
+        return updateOpportunity(opp);
+    }
+
+    // ─── RISK SCORE IA ──────────────────────────────────────
 
     /**
-     * Valide les données d'une opportunité.
-     * @throws IllegalArgumentException si une règle est violée
+     * Met à jour le score de risque IA pour une opportunité.
+     *
+     * @param opportunityId ID de l'opportunité
+     * @param riskScore     Score de risque (0–100)
+     * @return true si la mise à jour a réussi
      */
-    private void validateOpportunity(InvestmentOpportunity opp) {
-        if (opp == null) {
-            throw new IllegalArgumentException("L'opportunité ne peut pas être null.");
+    public boolean updateRiskScore(int opportunityId, double riskScore) {
+        String sql = "UPDATE investment_opportunity SET risk_score = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setDouble(1, riskScore);
+            ps.setInt(2, opportunityId);
+            boolean updated = ps.executeUpdate() > 0;
+            if (updated) {
+                System.out.println("✓ Risk score updated for opportunity #" + opportunityId + " → " + riskScore);
+            }
+            return updated;
+        } catch (SQLException e) {
+            System.err.println("✗ Error updating risk score: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        // Validation du montant cible
-        if (opp.getTargetAmount() == null) {
-            throw new IllegalArgumentException("Le montant cible est obligatoire.");
-        }
-        if (opp.getTargetAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Le montant cible doit être supérieur à zéro.");
-        }
-        if (opp.getTargetAmount().compareTo(new BigDecimal("999999999999.99")) > 0) {
-            throw new IllegalArgumentException("Le montant cible dépasse la valeur maximale autorisée.");
-        }
-
-        // Validation du statut
-        if (opp.getStatus() == null) {
-            throw new IllegalArgumentException("Le statut est obligatoire.");
-        }
-
-        // Validation du projet
-        if (opp.getProjectId() <= 0) {
-            throw new IllegalArgumentException("Un projet valide est requis.");
-        }
-
-        // Validation de la deadline (si fournie)
-        if (opp.getDeadline() != null && opp.getDeadline().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("La deadline ne peut pas être dans le passé.");
-        }
+        return false;
     }
 
     /**
-     * Vérifie que le projet existe.
-     * @throws IllegalArgumentException si le projet n'existe pas
+     * Met à jour le label de risque ML pour une opportunité.
+     *
+     * @param opportunityId ID de l'opportunité
+     * @param riskLabel     Label prédit ("faible", "moyen", "eleve")
+     * @return true si la mise à jour a réussi
      */
-    private void validateProjectExists(int projectId) {
-        Optional<Project> projectOpt = projectDAO.findById(projectId);
-        if (projectOpt.isEmpty()) {
-            throw new IllegalArgumentException("Le projet sélectionné n'existe pas.");
+    public boolean updateRiskLabel(int opportunityId, String riskLabel) {
+        String sql = "UPDATE investment_opportunity SET risk_label = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, riskLabel);
+            ps.setInt(2, opportunityId);
+            boolean updated = ps.executeUpdate() > 0;
+            if (updated) {
+                System.out.println("✓ Risk label updated for opportunity #" + opportunityId + " → " + riskLabel);
+            }
+            return updated;
+        } catch (SQLException e) {
+            System.err.println("✗ Error updating risk label: " + e.getMessage());
+            e.printStackTrace();
         }
+        return false;
+    }
+
+    // ─── VALIDATION ──────────────────────────────────────────
+
+    private void validateOpportunity(InvestmentOpportunity opportunity) throws IllegalArgumentException {
+        if (opportunity == null)
+            throw new IllegalArgumentException("Opportunity cannot be null");
+        if (opportunity.getTargetAmount() == null || opportunity.getTargetAmount().compareTo(BigDecimal.ZERO) <= 0)
+            throw new IllegalArgumentException("Target amount must be greater than zero");
+        if (opportunity.getDescription() == null || opportunity.getDescription().trim().isEmpty())
+            throw new IllegalArgumentException("Description is required");
+        if (opportunity.getDeadline() != null && opportunity.getDeadline().isBefore(LocalDate.now()))
+            throw new IllegalArgumentException("Deadline cannot be in the past");
+        if (opportunity.getProjectId() <= 0)
+            throw new IllegalArgumentException("Project ID is required");
+    }
+
+    private void validateProjectExists(int projectId) throws IllegalArgumentException {
+        String sql = "SELECT COUNT(*) FROM projet WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, projectId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    throw new IllegalArgumentException("Project not found with ID: " + projectId);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error validating project: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ─── MAPPING ─────────────────────────────────────────────
+
+    private InvestmentOpportunity mapResultSetToOpportunity(ResultSet rs) throws SQLException {
+        InvestmentOpportunity opp = new InvestmentOpportunity();
+        opp.setId(rs.getInt("id"));
+        opp.setTargetAmount(rs.getBigDecimal("target_amount"));
+        opp.setDescription(rs.getString("description"));
+
+        java.sql.Date deadline = rs.getDate("deadline");
+        if (deadline != null) opp.setDeadline(deadline.toLocalDate());
+
+        String status = rs.getString("status");
+        if (status != null) {
+            try { opp.setStatus(OpportunityStatus.valueOf(status.toUpperCase())); }
+            catch (IllegalArgumentException e) { opp.setStatus(OpportunityStatus.OPEN); }
+        }
+
+        opp.setProjectId(rs.getInt("project_id"));
+
+        // Score de risque IA (peut être NULL)
+        double riskScore = rs.getDouble("risk_score");
+        if (!rs.wasNull()) {
+            opp.setRiskScore(riskScore);
+        }
+
+        // Label ML (peut être NULL)
+        opp.setRiskLabel(rs.getString("risk_label"));
+
+        try { opp.setProjectTitle(rs.getString("project_title")); }
+        catch (SQLException ignored) { }
+
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        if (createdAt != null) opp.setCreatedAt(createdAt.toLocalDateTime());
+        Timestamp updatedAt = rs.getTimestamp("updated_at");
+        if (updatedAt != null) opp.setUpdatedAt(updatedAt.toLocalDateTime());
+
+        return opp;
     }
 }

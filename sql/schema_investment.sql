@@ -23,11 +23,13 @@ CREATE TABLE investment_opportunity (
     deadline DATE,
     status ENUM('OPEN', 'CLOSED', 'FUNDED') DEFAULT 'OPEN',
     project_id INT NOT NULL,
+    risk_score DOUBLE DEFAULT NULL COMMENT 'Score de risque IA (0-100)',
+    risk_label VARCHAR(20) DEFAULT NULL COMMENT 'Label ML: faible, moyen, eleve',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_opportunity_project
-        FOREIGN KEY (project_id) REFERENCES project(id)
+        FOREIGN KEY (project_id) REFERENCES projet(id)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -68,6 +70,13 @@ CREATE INDEX idx_offer_status ON investment_offer(status);
 -- ============================================
 -- Données d'exemple
 -- ============================================
+
+-- ============================================
+-- MIGRATION : Ajout du risk_score (exécuter si la table existe déjà)
+-- ALTER TABLE investment_opportunity ADD COLUMN risk_score DOUBLE DEFAULT NULL COMMENT 'Score de risque IA (0-100)';
+-- ALTER TABLE investment_opportunity ADD COLUMN risk_label VARCHAR(20) DEFAULT NULL COMMENT 'Label ML: faible, moyen, eleve';
+-- ============================================
+
 INSERT INTO investment_opportunity (target_amount, description, deadline, status, project_id) VALUES
 (100000.00, 'Financement initial pour le lancement de la plateforme technologique', '2026-06-30', 'OPEN', 1),
 (50000.00, 'Recherche et développement en énergie renouvelable', '2026-09-15', 'OPEN', 2),

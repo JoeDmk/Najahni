@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.najahni.controllers.FrontOffersController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="front-scroll"
+            style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="20" styleClass="front-page">
+    <padding>
+        <Insets top="15" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- ═══ HERO SECTION ═══ -->
+    <VBox styleClass="front-hero" alignment="CENTER" spacing="8">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+        <Label text="🤝 Mes Offres d'Investissement" styleClass="front-hero-title"/>
+        <Label text="Suivez l'état de vos offres de financement et soumettez de nouvelles propositions."
+               styleClass="front-hero-subtitle" wrapText="true"/>
+    </VBox>
+
+    <!-- ═══ STATS BAR ═══ -->
+    <HBox spacing="15" alignment="CENTER">
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblTotalOffers" text="0" styleClass="front-stat-value"/>
+            <Label text="Total Offres" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblPendingOffers" text="0" styleClass="front-stat-value" style="-fx-text-fill: #f39c12;"/>
+            <Label text="En attente" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblAcceptedOffers" text="0" styleClass="front-stat-value-green"/>
+            <Label text="Acceptées" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblRejectedOffers" text="0" styleClass="front-stat-value" style="-fx-text-fill: #e74c3c;"/>
+            <Label text="Rejetées" styleClass="front-stat-label"/>
+        </VBox>
+    </HBox>
+
+    <!-- ═══ NEW OFFER FORM (collapsible) ═══ -->
+    <TitledPane fx:id="newOfferPane" text="➕ Soumettre une nouvelle offre" expanded="false" 
+                styleClass="front-titled-pane" animated="true">
+        <VBox spacing="15" styleClass="front-form-inner">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+
+            <HBox spacing="15">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Opportunité *" styleClass="form-label"/>
+                    <ComboBox fx:id="cboOpportunity" promptText="Choisir une opportunité ouverte" 
+                              maxWidth="Infinity" styleClass="front-combo"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Montant proposé (€) *" styleClass="form-label"/>
+                    <TextField fx:id="txtAmount" promptText="Ex: 25000.00" styleClass="front-search-field"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="💰 Soumettre l'offre" onAction="#submitOffer" styleClass="front-btn-invest"/>
+                <Button text="Annuler" onAction="#clearOfferForm" styleClass="front-btn-secondary"/>
+                <Label fx:id="lblFormMsg" text="" style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- ═══ FILTER BAR ═══ -->
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="front-filter-bar">
+        <padding>
+            <Insets top="10" right="15" bottom="10" left="15"/>
+        </padding>
+        <Label text="🔍" style="-fx-font-size: 16px;"/>
+        <ComboBox fx:id="cboStatusFilter" promptText="Filtrer par statut" prefWidth="160" styleClass="front-combo"/>
+        <Button text="Filtrer" onAction="#applyFilter" styleClass="front-btn-primary"/>
+        <Button text="Effacer" onAction="#clearFilter" styleClass="front-btn-secondary"/>
+    </HBox>
+
+    <!-- ═══ OFFERS LIST (Cards) ═══ -->
+    <FlowPane fx:id="offersContainer" hgap="18" vgap="18" alignment="CENTER"
+              VBox.vgrow="ALWAYS" prefWrapLength="900"/>
+
+    <!-- ═══ EMPTY STATE ═══ -->
+    <VBox fx:id="emptyState" alignment="CENTER" spacing="10" visible="false" managed="false"
+          style="-fx-padding: 50;">
+        <Label text="📭" style="-fx-font-size: 48px;"/>
+        <Label text="Aucune offre trouvée" style="-fx-font-size: 18px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+        <Label text="Soumettez votre première offre en cliquant ci-dessus !" style="-fx-font-size: 13px; -fx-text-fill: #95a5a6;"/>
+    </VBox>
+
+</VBox>
+</content>
+</ScrollPane>

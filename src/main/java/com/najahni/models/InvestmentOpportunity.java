@@ -23,6 +23,12 @@ public class InvestmentOpportunity {
     private OpportunityStatus status;
     private int projectId;
 
+    /** Score de risque IA calculé (0–100). Null si pas encore calculé. */
+    private Double riskScore;
+
+    /** Label de risque ML prédit ("faible", "moyen", "eleve"). Null si pas encore prédit. */
+    private String riskLabel;
+
     // Champs transients pour l'affichage (issus de JOIN SQL)
     private String projectTitle;
 
@@ -85,6 +91,59 @@ public class InvestmentOpportunity {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public Double getRiskScore() { return riskScore; }
+    public void setRiskScore(Double riskScore) { this.riskScore = riskScore; }
+
+    public String getRiskLabel() { return riskLabel; }
+    public void setRiskLabel(String riskLabel) { this.riskLabel = riskLabel; }
+
+    /**
+     * Retourne le label ML formaté pour affichage.
+     * @return ex: "🟢 Faible" ou "Non prédit"
+     */
+    public String getFormattedRiskLabel() {
+        if (riskLabel == null || riskLabel.isBlank()) return "Non prédit";
+        String emoji = switch (riskLabel.toLowerCase()) {
+            case "faible" -> "🟢";
+            case "moyen" -> "🟡";
+            case "eleve", "élevé" -> "🔴";
+            default -> "⚪";
+        };
+        String display = switch (riskLabel.toLowerCase()) {
+            case "faible" -> "Faible";
+            case "moyen" -> "Moyen";
+            case "eleve", "élevé" -> "Élevé";
+            default -> riskLabel;
+        };
+        return emoji + " " + display;
+    }
+
+    /**
+     * Retourne le niveau de risque textuel basé sur le score IA.
+     * @return "Faible", "Moyen", "Élevé" ou "—" si non calculé
+     */
+    public String getRiskLevel() {
+        if (riskScore == null) return "—";
+        int score = (int) Math.round(riskScore);
+        if (score <= 33) return "Faible";
+        if (score <= 66) return "Moyen";
+        return "Élevé";
+    }
+
+    /**
+     * Retourne l'affichage formaté du score de risque.
+     * @return ex: "🟢 25/100 (Faible)" ou "Non calculé"
+     */
+    public String getFormattedRiskScore() {
+        if (riskScore == null) return "Non calculé";
+        int score = (int) Math.round(riskScore);
+        String emoji;
+        if (score <= 33) emoji = "🟢";
+        else if (score <= 66) emoji = "🟡";
+        else emoji = "🔴";
+        return emoji + " " + score + "/100 (" + getRiskLevel() + ")";
+    }
 
     // ─── Méthodes utilitaires ────────────────────────────────
 

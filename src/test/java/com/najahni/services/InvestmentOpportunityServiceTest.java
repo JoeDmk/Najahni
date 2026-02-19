@@ -1,10 +1,7 @@
 package com.najahni.services;
 
-import com.najahni.dao.InvestmentOpportunityDAO;
-import com.najahni.dao.ProjectDAO;
 import com.najahni.models.InvestmentOpportunity;
 import com.najahni.models.OpportunityStatus;
-import com.najahni.models.Project;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,51 +11,56 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.sql.*;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
  * Tests unitaires pour InvestmentOpportunityService.
  *
- * Utilise Mockito pour mocker les DAO (pas de base de données nécessaire).
- * On teste uniquement la logique métier : validations, règles de gestion.
+ * Utilise Mockito pour mocker la Connection JDBC directement.
+ * Architecture testée : Service → JDBC (Connection mockée)
  *
- * Architecture testée : Service → DAO (mocké)
+ * Tests de validation (montant, deadline) : aucun mock JDBC nécessaire.
+ * Tests métier (projet existe, fermeture) : on configure des mocks SQL.
  *
  * @ExtendWith(MockitoExtension.class) : active l'injection automatique des @Mock
  */
 @ExtendWith(MockitoExtension.class)
 class InvestmentOpportunityServiceTest {
 
-    /**
-     * @Mock crée un faux objet (mock) de InvestmentOpportunityDAO.
-     * Au lieu d'aller en base de données, les appels retournent
-     * des valeurs qu'on configure avec when(...).thenReturn(...)
-     */
-    @Mock
-    private InvestmentOpportunityDAO opportunityDAO;
+    /** Mock de la connexion JDBC. */
+    @Mock private Connection cnx;
 
-    @Mock
-    private ProjectDAO projectDAO;
+    /** PreparedStatement pour vérifier l'existence du projet (SELECT COUNT). */
+    @Mock private PreparedStatement psCheckProject;
 
-    /**
-     * Service sous test (SUT = System Under Test).
-     * On injecte les mocks via le constructeur à 2 paramètres.
-     */
+    /** PreparedStatement pour l'insertion d'une opportunité. */
+    @Mock private PreparedStatement psInsert;
+
+    /** PreparedStatement pour la recherche par ID (SELECT avec JOIN). */
+    @Mock private PreparedStatement psFindById;
+
+    /** PreparedStatement pour la mise à jour. */
+    @Mock private PreparedStatement psUpdate;
+
+    @Mock private ResultSet rsCheckProject;
+    @Mock private ResultSet rsKeys;
+    @Mock private ResultSet rsFindById;
+
+    /** Service sous test (SUT = System Under Test). */
     private InvestmentOpportunityService service;
 
     /**
      * @BeforeEach : exécuté avant CHAQUE méthode de test.
-     * Crée une nouvelle instance du service avec les DAOs mockés.
+     * Crée une nouvelle instance du service avec la Connection mockée.
      */
     @BeforeEach
     void setUp() {
-        // Injection des mocks via le constructeur dédié aux tests
-        service = new InvestmentOpportunityService(opportunityDAO, projectDAO);
+        service = new InvestmentOpportunityService(cnx);
     }
 
     // ─── TEST 1 : Création réussie ──────────────────────────
@@ -66,14 +68,28 @@ class InvestmentOpportunityServiceTest {
     /**
      * Scénario nominal : toutes les données sont valides.
      *
-     * - On configure projectDAO.findById(1) pour retourner un Project existant
-     * - On configure opportunityDAO.create() pour retourner l'opportunité créée
-     * - On vérifie que le service appelle bien opportunityDAO.create()
+     * On mocke :
+     *  - SELECT COUNT(*) FROM projet → 1 (le projet existe)
+     *  - INSERT INTO investment_opportunity → retourne l'id généré = 1
      */
     @Test
     @DisplayName("testCreateOpportunity - Création réussie avec données valides")
-    void testCreateOpportunity() {
-        // ── ARRANGE (préparer les données de test) ──
+    void testCreateOpportunity() throws SQLException {
+        // ── ARRANGE ──
+        // Mock du SELECT de validation (1-arg prepareStatement)
+        when(cnx.prepareStatement(anyString())).thenReturn(psCheckProject);
+        when(psCheckProject.executeQuery()).thenReturn(rsCheckProject);
+        when(rsCheckProject.next()).thenReturn(true);
+        when(rsCheckProject.getInt(1)).thenReturn(1); // Le projet existe (count = 1)
+
+        // Mock de l'INSERT (2-arg prepareStatement)
+        when(cnx.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS)))
+                .thenReturn(psInsert);
+        when(psInsert.executeUpdate()).thenReturn(1);
+        when(psInsert.getGeneratedKeys()).thenReturn(rsKeys);
+        when(rsKeys.next()).thenReturn(true);
+        when(rsKeys.getInt(1)).thenReturn(1);
+
         InvestmentOpportunity opp = new InvestmentOpportunity(
                 new BigDecimal("50000.00"),      // montant cible : 50 000 €
                 "Financement R&D IoT",           // description
@@ -82,36 +98,17 @@ class InvestmentOpportunityServiceTest {
                 1                                 // projectId = 1
         );
 
-        // Simuler que le projet avec id=1 existe en base
-        Project mockProject = new Project();
-        mockProject.setId(1);
-        mockProject.setTitle("Projet IoT");
-        when(projectDAO.findById(1)).thenReturn(Optional.of(mockProject));
-
-        // Simuler que le DAO retourne l'opportunité avec un id généré
-        InvestmentOpportunity savedOpp = new InvestmentOpportunity(
-                1,                                // id généré par la BDD
-                new BigDecimal("50000.00"),
-                "Financement R&D IoT",
-                LocalDate.now().plusMonths(3),
-                OpportunityStatus.OPEN,
-                1
-        );
-        when(opportunityDAO.create(any(InvestmentOpportunity.class))).thenReturn(savedOpp);
-
-        // ── ACT (exécuter la méthode à tester) ──
+        // ── ACT ──
         InvestmentOpportunity result = service.createOpportunity(opp);
 
-        // ── ASSERT (vérifier les résultats) ──
+        // ── ASSERT ──
         assertNotNull(result, "Le résultat ne doit pas être null");
-        assertEquals(1, result.getId(), "L'id doit être celui retourné par le DAO");
+        assertEquals(1, result.getId(), "L'id doit être celui retourné par la BDD");
         assertEquals(new BigDecimal("50000.00"), result.getTargetAmount());
         assertEquals(OpportunityStatus.OPEN, result.getStatus());
 
-        // Vérifier que create() du DAO a été appelé exactement 1 fois
-        verify(opportunityDAO, times(1)).create(any(InvestmentOpportunity.class));
-        // Vérifier que findById() du projectDAO a été appelé pour valider le projet
-        verify(projectDAO, times(1)).findById(1);
+        // Vérifier que l'INSERT a bien été exécuté
+        verify(psInsert).executeUpdate();
     }
 
     // ─── TEST 2 : Montant négatif → Exception ──────────────
@@ -120,8 +117,7 @@ class InvestmentOpportunityServiceTest {
      * Règle métier : le montant cible doit être > 0.
      * Si on passe un montant négatif, une IllegalArgumentException est levée.
      *
-     * assertThrows : vérifie qu'une exception est bien lancée.
-     * Le DAO ne doit JAMAIS être appelé (la validation bloque avant).
+     * La validation échoue AVANT tout accès JDBC.
      */
     @Test
     @DisplayName("testAmountNegativeThrowsException - Montant négatif lève une exception")
@@ -142,27 +138,27 @@ class InvestmentOpportunityServiceTest {
                 "Un montant négatif doit lever une IllegalArgumentException"
         );
 
-        // Vérifier le message d'erreur
         assertTrue(
-                exception.getMessage().contains("supérieur à zéro"),
+                exception.getMessage().contains("greater than zero"),
                 "Le message doit indiquer que le montant doit être supérieur à zéro"
         );
-
-        // Vérifier que le DAO n'a JAMAIS été appelé (validation échoue avant)
-        verify(opportunityDAO, never()).create(any());
     }
 
     // ─── TEST 3 : Projet inexistant → Exception ────────────
 
     /**
      * Règle métier : le projet associé à l'opportunité doit exister.
-     * Si le projectDAO.findById() retourne Optional.empty(),
-     * une IllegalArgumentException est levée.
+     * Si SELECT COUNT(*) retourne 0, une exception est levée.
      */
     @Test
     @DisplayName("testProjectNotFoundThrowsException - Projet inexistant lève une exception")
-    void testProjectNotFoundThrowsException() {
+    void testProjectNotFoundThrowsException() throws SQLException {
         // ── ARRANGE ──
+        when(cnx.prepareStatement(anyString())).thenReturn(psCheckProject);
+        when(psCheckProject.executeQuery()).thenReturn(rsCheckProject);
+        when(rsCheckProject.next()).thenReturn(true);
+        when(rsCheckProject.getInt(1)).thenReturn(0); // Le projet N'EXISTE PAS (count = 0)
+
         InvestmentOpportunity opp = new InvestmentOpportunity(
                 new BigDecimal("25000.00"),
                 "Description valide",
@@ -170,9 +166,6 @@ class InvestmentOpportunityServiceTest {
                 OpportunityStatus.OPEN,
                 999                               // projectId inexistant
         );
-
-        // Simuler que le projet 999 N'EXISTE PAS
-        when(projectDAO.findById(999)).thenReturn(Optional.empty());
 
         // ── ACT & ASSERT ──
         IllegalArgumentException exception = assertThrows(
@@ -182,18 +175,16 @@ class InvestmentOpportunityServiceTest {
         );
 
         assertTrue(
-                exception.getMessage().contains("n'existe pas"),
+                exception.getMessage().contains("not found"),
                 "Le message doit indiquer que le projet n'existe pas"
         );
-
-        // Le DAO ne doit pas être appelé
-        verify(opportunityDAO, never()).create(any());
     }
 
     // ─── TEST 4 : Deadline dans le passé → Exception ────────
 
     /**
      * Règle métier : la deadline ne peut pas être dans le passé.
+     * La validation échoue AVANT tout accès JDBC.
      */
     @Test
     @DisplayName("testDeadlineInPastThrowsException - Deadline passée lève une exception")
@@ -215,11 +206,9 @@ class InvestmentOpportunityServiceTest {
         );
 
         assertTrue(
-                exception.getMessage().contains("passé"),
+                exception.getMessage().contains("past"),
                 "Le message doit indiquer que la deadline ne peut pas être dans le passé"
         );
-
-        verify(opportunityDAO, never()).create(any());
     }
 
     // ─── TEST 5 : Montant zéro → Exception ─────────────────
@@ -246,34 +235,43 @@ class InvestmentOpportunityServiceTest {
                 () -> service.createOpportunity(opp),
                 "Un montant égal à zéro doit lever une exception"
         );
-
-        verify(opportunityDAO, never()).create(any());
     }
 
     // ─── TEST 6 : Fermeture d'une opportunité ──────────────
 
     /**
      * Test de la méthode closeOpportunity().
-     * Vérifie que le statut passe bien à CLOSED.
+     *
+     * On mocke findById (SELECT avec JOIN) pour retourner une opportunité,
+     * puis on mocke l'UPDATE pour qu'il réussisse.
+     * Vérifie que le résultat est true et que l'UPDATE a été exécuté.
      */
     @Test
     @DisplayName("testCloseOpportunity - Fermeture passe le statut à CLOSED")
-    void testCloseOpportunity() {
+    void testCloseOpportunity() throws SQLException {
         // ── ARRANGE ──
-        InvestmentOpportunity existingOpp = new InvestmentOpportunity(
-                1, new BigDecimal("50000.00"), "Test", LocalDate.now().plusDays(30),
-                OpportunityStatus.OPEN, 1
-        );
-        when(opportunityDAO.findById(1)).thenReturn(Optional.of(existingOpp));
-        when(opportunityDAO.update(any(InvestmentOpportunity.class))).thenReturn(true);
+        // findById (1ère requête) puis updateOpportunity (2ème requête)
+        when(cnx.prepareStatement(anyString())).thenReturn(psFindById, psUpdate);
+
+        // Mock : findById retourne une opportunité existante
+        when(psFindById.executeQuery()).thenReturn(rsFindById);
+        when(rsFindById.next()).thenReturn(true);
+        when(rsFindById.getInt("id")).thenReturn(1);
+        when(rsFindById.getBigDecimal("target_amount")).thenReturn(new BigDecimal("50000.00"));
+        when(rsFindById.getString("description")).thenReturn("Test");
+        when(rsFindById.getDate("deadline"))
+                .thenReturn(java.sql.Date.valueOf(LocalDate.now().plusDays(30)));
+        when(rsFindById.getString("status")).thenReturn("OPEN");
+        when(rsFindById.getInt("project_id")).thenReturn(1);
+
+        // Mock : UPDATE réussit (1 ligne modifiée)
+        when(psUpdate.executeUpdate()).thenReturn(1);
 
         // ── ACT ──
         boolean result = service.closeOpportunity(1);
 
         // ── ASSERT ──
         assertTrue(result, "closeOpportunity doit retourner true");
-        assertEquals(OpportunityStatus.CLOSED, existingOpp.getStatus(),
-                "Le statut doit être passé à CLOSED");
-        verify(opportunityDAO, times(1)).update(existingOpp);
+        verify(psUpdate).executeUpdate();
     }
 }

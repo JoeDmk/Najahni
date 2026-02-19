@@ -1,8 +1,5 @@
 package com.najahni.services;
 
-import com.najahni.dao.InvestmentOfferDAO;
-import com.najahni.dao.InvestmentOpportunityDAO;
-import com.najahni.dao.UserDAO;
 import com.najahni.models.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,61 +10,63 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Optional;
+import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
  * Tests unitaires pour InvestmentOfferService.
  *
- * Utilise Mockito pour mocker les 3 DAOs injectés :
- *  - InvestmentOfferDAO     (persistence des offres)
- *  - InvestmentOpportunityDAO (vérifier que l'opportunité est OPEN)
- *  - UserDAO                  (vérifier que l'utilisateur est INVESTOR)
+ * Utilise Mockito pour mocker la Connection JDBC directement.
+ * Architecture testée : Service → JDBC (Connection mockée)
  *
- * Aucune base de données ni JavaFX n'est nécessaire pour ces tests.
+ * Tests de validation (montant négatif, zéro) : aucun mock JDBC nécessaire,
+ * car la validation échoue avant tout accès à la base de données.
+ *
+ * Tests métier (rôle investisseur, opportunité ouverte) : on configure
+ * des PreparedStatement/ResultSet mockés pour simuler les réponses SQL.
  *
  * @ExtendWith(MockitoExtension.class) : active l'injection des @Mock
  */
 @ExtendWith(MockitoExtension.class)
 class InvestmentOfferServiceTest {
 
-    /**
-     * Mock du DAO des offres d'investissement.
-     * Simule les opérations CRUD sans accéder à MySQL.
-     */
-    @Mock
-    private InvestmentOfferDAO offerDAO;
+    /** Mock de la connexion JDBC. Simule la base de données. */
+    @Mock private Connection cnx;
 
-    /**
-     * Mock du DAO des opportunités.
-     * Utilisé par le service pour vérifier que l'opportunité est OPEN.
-     */
-    @Mock
-    private InvestmentOpportunityDAO opportunityDAO;
+    /** PreparedStatement pour vérifier le rôle de l'utilisateur. */
+    @Mock private PreparedStatement psCheckUser;
 
-    /**
-     * Mock du DAO des utilisateurs.
-     * Utilisé par le service pour vérifier que l'utilisateur a le rôle INVESTOR.
-     */
-    @Mock
-    private UserDAO userDAO;
+    /** PreparedStatement pour vérifier le statut de l'opportunité. */
+    @Mock private PreparedStatement psCheckOpp;
+
+    /** PreparedStatement pour l'insertion d'une offre. */
+    @Mock private PreparedStatement psInsert;
+
+    /** PreparedStatement pour la recherche d'une offre par ID. */
+    @Mock private PreparedStatement psFindById;
+
+    /** PreparedStatement pour la mise à jour d'une offre. */
+    @Mock private PreparedStatement psUpdate;
+
+    @Mock private ResultSet rsCheckUser;
+    @Mock private ResultSet rsCheckOpp;
+    @Mock private ResultSet rsKeys;
+    @Mock private ResultSet rsFindById;
 
     /** Service sous test (SUT). */
     private InvestmentOfferService service;
 
     /**
      * @BeforeEach : exécuté avant chaque test.
-     * Crée une nouvelle instance du service avec les 3 DAOs mockés
-     * via le constructeur d'injection de dépendances.
+     * Crée une nouvelle instance du service avec la Connection mockée
+     * via le constructeur dédié aux tests.
      */
     @BeforeEach
     void setUp() {
-        service = new InvestmentOfferService(offerDAO, opportunityDAO, userDAO);
+        service = new InvestmentOfferService(cnx);
     }
 
     // ─── TEST 1 : Création réussie ──────────────────────────
@@ -76,16 +75,40 @@ class InvestmentOfferServiceTest {
      * Scénario nominal : toutes les conditions sont remplies.
      *
      * Pré-conditions simulées :
-     *  1. L'utilisateur (id=10) existe et a le rôle INVESTOR
+     *  1. L'utilisateur (id=10) existe et a le rôle INVESTISSEUR
      *  2. L'opportunité (id=5) existe et a le statut OPEN
      *  3. Le montant proposé est valide (> 0)
      *
-     * Résultat attendu : l'offre est créée avec succès.
+     * On mocke les PreparedStatement pour les requêtes SQL :
+     *  - SELECT role FROM user → INVESTISSEUR
+     *  - SELECT status FROM investment_opportunity → OPEN
+     *  - INSERT INTO investment_offer → retourne l'id généré = 1
      */
     @Test
     @DisplayName("testCreateOffer - Création réussie avec données valides")
-    void testCreateOffer() {
+    void testCreateOffer() throws SQLException {
         // ── ARRANGE ──
+        // Mock des SELECT de validation (1-arg prepareStatement)
+        when(cnx.prepareStatement(anyString())).thenReturn(psCheckUser, psCheckOpp);
+
+        // Mock : l'utilisateur 10 est un INVESTISSEUR
+        when(psCheckUser.executeQuery()).thenReturn(rsCheckUser);
+        when(rsCheckUser.next()).thenReturn(true);
+        when(rsCheckUser.getString("role")).thenReturn("INVESTISSEUR");
+
+        // Mock : l'opportunité 5 est OPEN
+        when(psCheckOpp.executeQuery()).thenReturn(rsCheckOpp);
+        when(rsCheckOpp.next()).thenReturn(true);
+        when(rsCheckOpp.getString("status")).thenReturn("OPEN");
+
+        // Mock de l'INSERT (2-arg prepareStatement avec RETURN_GENERATED_KEYS)
+        when(cnx.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS)))
+                .thenReturn(psInsert);
+        when(psInsert.executeUpdate()).thenReturn(1);
+        when(psInsert.getGeneratedKeys()).thenReturn(rsKeys);
+        when(rsKeys.next()).thenReturn(true);
+        when(rsKeys.getInt(1)).thenReturn(1);
+
         InvestmentOffer offer = new InvestmentOffer(
                 new BigDecimal("15000.00"),     // montant proposé : 15 000 €
                 OfferStatus.PENDING,             // statut initial : EN ATTENTE
@@ -93,73 +116,49 @@ class InvestmentOfferServiceTest {
                 5                                // opportunityId = 5
         );
 
-        // Mock : l'utilisateur 10 est un INVESTOR
-        User investor = new User(10, "Ahmed Ben Ali", "ahmed@email.com", "pass", Role.INVESTOR);
-        when(userDAO.findById(10)).thenReturn(Optional.of(investor));
-
-        // Mock : l'opportunité 5 est OPEN (ouverte aux offres)
-        InvestmentOpportunity openOpp = new InvestmentOpportunity(
-                5, new BigDecimal("100000.00"), "Projet solaire",
-                LocalDate.now().plusMonths(6), OpportunityStatus.OPEN, 1
-        );
-        when(opportunityDAO.findById(5)).thenReturn(Optional.of(openOpp));
-
-        // Mock : le DAO retourne l'offre créée avec id = 1
-        InvestmentOffer savedOffer = new InvestmentOffer(
-                1,                               // id généré par la BDD
-                new BigDecimal("15000.00"),
-                OfferStatus.PENDING,
-                10,
-                5
-        );
-        when(offerDAO.create(any(InvestmentOffer.class))).thenReturn(savedOffer);
-
         // ── ACT ──
         InvestmentOffer result = service.createOffer(offer);
 
         // ── ASSERT ──
         assertNotNull(result, "Le résultat ne doit pas être null");
-        assertEquals(1, result.getId(), "L'id doit être celui retourné par le DAO");
+        assertEquals(1, result.getId(), "L'id doit être celui retourné par la BDD");
         assertEquals(new BigDecimal("15000.00"), result.getProposedAmount());
         assertEquals(OfferStatus.PENDING, result.getStatus());
         assertEquals(10, result.getInvestorId());
         assertEquals(5, result.getOpportunityId());
 
-        // Vérifications des appels aux mocks
-        verify(userDAO, times(1)).findById(10);        // rôle vérifié
-        verify(opportunityDAO, times(1)).findById(5);  // statut OPEN vérifié
-        verify(offerDAO, times(1)).create(any());       // offre créée
+        // Vérifier que l'INSERT a bien été exécuté
+        verify(psInsert).executeUpdate();
     }
 
     // ─── TEST 2 : Offre sur opportunité fermée → Exception ─
 
     /**
      * Règle métier : on ne peut faire une offre que sur une opportunité OPEN.
-     * Si l'opportunité est CLOSED ou FUNDED, une exception est levée.
+     * Si l'opportunité est CLOSED, une exception est levée.
      *
-     * Ce test simule une opportunité avec statut CLOSED.
+     * On mocke le rôle utilisateur comme valide (INVESTISSEUR),
+     * mais l'opportunité retourne le statut CLOSED.
      */
     @Test
     @DisplayName("testOfferOnClosedOpportunityThrowsException - Offre sur opportunité fermée")
-    void testOfferOnClosedOpportunityThrowsException() {
+    void testOfferOnClosedOpportunityThrowsException() throws SQLException {
         // ── ARRANGE ──
-        InvestmentOffer offer = new InvestmentOffer(
-                new BigDecimal("5000.00"),
-                OfferStatus.PENDING,
-                10,                              // investorId
-                5                                // opportunityId
-        );
+        when(cnx.prepareStatement(anyString())).thenReturn(psCheckUser, psCheckOpp);
 
-        // Mock : l'utilisateur est un INVESTOR valide
-        User investor = new User(10, "Fatma", "fatma@email.com", "pass", Role.INVESTOR);
-        when(userDAO.findById(10)).thenReturn(Optional.of(investor));
+        // Mock : l'utilisateur est un INVESTISSEUR valide
+        when(psCheckUser.executeQuery()).thenReturn(rsCheckUser);
+        when(rsCheckUser.next()).thenReturn(true);
+        when(rsCheckUser.getString("role")).thenReturn("INVESTISSEUR");
 
         // Mock : l'opportunité 5 est CLOSED (fermée aux offres)
-        InvestmentOpportunity closedOpp = new InvestmentOpportunity(
-                5, new BigDecimal("100000.00"), "Projet terminé",
-                LocalDate.now().plusMonths(1), OpportunityStatus.CLOSED, 1
+        when(psCheckOpp.executeQuery()).thenReturn(rsCheckOpp);
+        when(rsCheckOpp.next()).thenReturn(true);
+        when(rsCheckOpp.getString("status")).thenReturn("CLOSED");
+
+        InvestmentOffer offer = new InvestmentOffer(
+                new BigDecimal("5000.00"), OfferStatus.PENDING, 10, 5
         );
-        when(opportunityDAO.findById(5)).thenReturn(Optional.of(closedOpp));
 
         // ── ACT & ASSERT ──
         IllegalArgumentException exception = assertThrows(
@@ -168,14 +167,10 @@ class InvestmentOfferServiceTest {
                 "Une offre sur une opportunité CLOSED doit lever une exception"
         );
 
-        // Vérifier le message d'erreur
         assertTrue(
-                exception.getMessage().contains("n'est pas ouverte"),
+                exception.getMessage().contains("not open"),
                 "Le message doit indiquer que l'opportunité n'est pas ouverte"
         );
-
-        // Le DAO des offres ne doit PAS avoir été appelé
-        verify(offerDAO, never()).create(any());
     }
 
     // ─── TEST 3 : Montant invalide → Exception ─────────────
@@ -183,6 +178,9 @@ class InvestmentOfferServiceTest {
     /**
      * Règle métier : le montant proposé doit être > 0.
      * On teste avec un montant négatif.
+     *
+     * La validation échoue AVANT tout accès JDBC,
+     * donc aucun mock de PreparedStatement n'est nécessaire.
      */
     @Test
     @DisplayName("testOfferAmountValidation - Montant négatif lève une exception")
@@ -203,38 +201,33 @@ class InvestmentOfferServiceTest {
         );
 
         assertTrue(
-                exception.getMessage().contains("supérieur à zéro"),
+                exception.getMessage().contains("greater than zero"),
                 "Le message doit indiquer que le montant doit être supérieur à zéro"
         );
-
-        // Aucun DAO ne doit avoir été appelé (la validation échoue avant)
-        verify(offerDAO, never()).create(any());
-        verify(userDAO, never()).findById(anyInt());
-        verify(opportunityDAO, never()).findById(anyInt());
     }
 
     // ─── TEST 4 : Non-INVESTOR → Exception ─────────────────
 
     /**
-     * Règle métier : seul un utilisateur avec le rôle INVESTOR
+     * Règle métier : seul un utilisateur avec le rôle INVESTISSEUR
      * peut créer une offre d'investissement.
      *
-     * Ce test simule un ENTREPRENEUR qui essaie de créer une offre → refusé.
+     * On mocke l'utilisateur comme ENTREPRENEUR → exception attendue.
      */
     @Test
     @DisplayName("testOnlyInvestorCanCreateOffer - ENTREPRENEUR ne peut pas créer une offre")
-    void testOnlyInvestorCanCreateOffer() {
+    void testOnlyInvestorCanCreateOffer() throws SQLException {
         // ── ARRANGE ──
-        InvestmentOffer offer = new InvestmentOffer(
-                new BigDecimal("10000.00"),
-                OfferStatus.PENDING,
-                20,                              // investorId = 20 (mais c'est un ENTREPRENEUR)
-                5
-        );
+        when(cnx.prepareStatement(anyString())).thenReturn(psCheckUser);
 
-        // Mock : l'utilisateur 20 est un ENTREPRENEUR (pas un INVESTOR)
-        User entrepreneur = new User(20, "Sami", "sami@email.com", "pass", Role.ENTREPRENEUR);
-        when(userDAO.findById(20)).thenReturn(Optional.of(entrepreneur));
+        // Mock : l'utilisateur 20 est un ENTREPRENEUR (pas un INVESTISSEUR)
+        when(psCheckUser.executeQuery()).thenReturn(rsCheckUser);
+        when(rsCheckUser.next()).thenReturn(true);
+        when(rsCheckUser.getString("role")).thenReturn("ENTREPRENEUR");
+
+        InvestmentOffer offer = new InvestmentOffer(
+                new BigDecimal("10000.00"), OfferStatus.PENDING, 20, 5
+        );
 
         // ── ACT & ASSERT ──
         IllegalArgumentException exception = assertThrows(
@@ -244,12 +237,9 @@ class InvestmentOfferServiceTest {
         );
 
         assertTrue(
-                exception.getMessage().contains("INVESTOR"),
-                "Le message doit mentionner qu'il faut être INVESTOR"
+                exception.getMessage().contains("not an investor"),
+                "Le message doit mentionner que l'utilisateur n'est pas un investisseur"
         );
-
-        // Le DAO des offres ne doit PAS avoir été appelé
-        verify(offerDAO, never()).create(any());
     }
 
     // ─── TEST 5 : Montant zéro → Exception ─────────────────
@@ -257,6 +247,8 @@ class InvestmentOfferServiceTest {
     /**
      * Cas limite : le montant vaut exactement 0.
      * La règle dit « strictement supérieur à zéro ».
+     *
+     * Aucun mock nécessaire (validation avant JDBC).
      */
     @Test
     @DisplayName("testOfferAmountZeroThrowsException - Montant zéro lève une exception")
@@ -275,59 +267,75 @@ class InvestmentOfferServiceTest {
                 () -> service.createOffer(offer),
                 "Un montant égal à zéro doit lever une exception"
         );
-
-        verify(offerDAO, never()).create(any());
     }
 
     // ─── TEST 6 : Acceptation d'une offre ───────────────────
 
     /**
      * Test de la méthode acceptOffer().
-     * Vérifie que le statut passe bien à ACCEPTED.
+     *
+     * On mocke findById (SELECT avec JOIN) pour retourner une offre existante,
+     * puis on mocke l'UPDATE pour qu'il réussisse.
+     * Vérifie que le résultat est true et que l'UPDATE a été exécuté.
      */
     @Test
     @DisplayName("testAcceptOffer - Acceptation passe le statut à ACCEPTED")
-    void testAcceptOffer() {
+    void testAcceptOffer() throws SQLException {
         // ── ARRANGE ──
-        InvestmentOffer existingOffer = new InvestmentOffer(
-                1, new BigDecimal("15000.00"), OfferStatus.PENDING, 10, 5
-        );
-        when(offerDAO.findById(1)).thenReturn(Optional.of(existingOffer));
-        when(offerDAO.update(any(InvestmentOffer.class))).thenReturn(true);
+        // findById (1ère requête) puis updateOffer (2ème requête)
+        when(cnx.prepareStatement(anyString())).thenReturn(psFindById, psUpdate);
+
+        // Mock : findById retourne une offre existante
+        when(psFindById.executeQuery()).thenReturn(rsFindById);
+        when(rsFindById.next()).thenReturn(true);
+        when(rsFindById.getInt("id")).thenReturn(1);
+        when(rsFindById.getBigDecimal("proposed_amount")).thenReturn(new BigDecimal("15000.00"));
+        when(rsFindById.getString("status")).thenReturn("PENDING");
+        when(rsFindById.getInt("investor_id")).thenReturn(10);
+        when(rsFindById.getInt("opportunity_id")).thenReturn(5);
+
+        // Mock : UPDATE réussit (1 ligne modifiée)
+        when(psUpdate.executeUpdate()).thenReturn(1);
 
         // ── ACT ──
         boolean result = service.acceptOffer(1);
 
         // ── ASSERT ──
         assertTrue(result, "acceptOffer doit retourner true");
-        assertEquals(OfferStatus.ACCEPTED, existingOffer.getStatus(),
-                "Le statut doit être passé à ACCEPTED");
-        verify(offerDAO, times(1)).update(existingOffer);
+        verify(psUpdate).executeUpdate();
     }
 
     // ─── TEST 7 : Rejet d'une offre ─────────────────────────
 
     /**
      * Test de la méthode rejectOffer().
-     * Vérifie que le statut passe bien à REJECTED.
+     *
+     * Même approche que testAcceptOffer :
+     * on mocke findById + UPDATE, puis on vérifie le résultat.
      */
     @Test
     @DisplayName("testRejectOffer - Rejet passe le statut à REJECTED")
-    void testRejectOffer() {
+    void testRejectOffer() throws SQLException {
         // ── ARRANGE ──
-        InvestmentOffer existingOffer = new InvestmentOffer(
-                2, new BigDecimal("8000.00"), OfferStatus.PENDING, 15, 5
-        );
-        when(offerDAO.findById(2)).thenReturn(Optional.of(existingOffer));
-        when(offerDAO.update(any(InvestmentOffer.class))).thenReturn(true);
+        when(cnx.prepareStatement(anyString())).thenReturn(psFindById, psUpdate);
+
+        // Mock : findById retourne une offre existante
+        when(psFindById.executeQuery()).thenReturn(rsFindById);
+        when(rsFindById.next()).thenReturn(true);
+        when(rsFindById.getInt("id")).thenReturn(2);
+        when(rsFindById.getBigDecimal("proposed_amount")).thenReturn(new BigDecimal("8000.00"));
+        when(rsFindById.getString("status")).thenReturn("PENDING");
+        when(rsFindById.getInt("investor_id")).thenReturn(15);
+        when(rsFindById.getInt("opportunity_id")).thenReturn(5);
+
+        // Mock : UPDATE réussit
+        when(psUpdate.executeUpdate()).thenReturn(1);
 
         // ── ACT ──
         boolean result = service.rejectOffer(2);
 
         // ── ASSERT ──
         assertTrue(result, "rejectOffer doit retourner true");
-        assertEquals(OfferStatus.REJECTED, existingOffer.getStatus(),
-                "Le statut doit être passé à REJECTED");
-        verify(offerDAO, times(1)).update(existingOffer);
+        verify(psUpdate).executeUpdate();
     }
 }

@@ -6,8 +6,11 @@ import javafx.animation.ParallelTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -50,6 +53,15 @@ public class MainController {
      */
     @FXML
     public void initialize() {
+        // Store reference so child controllers can navigate via MainController
+        if (contentArea.getScene() != null) {
+            contentArea.getScene().getRoot().setUserData(this);
+        }
+        contentArea.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getRoot().setUserData(this);
+            }
+        });
         // Show dashboard by default
         showDashboard();
     }
@@ -115,6 +127,28 @@ public class MainController {
     public void showApprentissage() {
         loadView("/fxml/ApprentissageView.fxml");
         setActiveButton(btnApprentissage);
+    }
+
+    /**
+     * Opens the Front Office as a completely separate page.
+     * Replaces the current scene with the front-office layout.
+     */
+    @FXML
+    public void openFrontOffice() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FrontOfficeView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) contentArea.getScene().getWindow();
+            Scene scene = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
+            scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+
+            stage.setScene(scene);
+            stage.setTitle("NAJAHNI - Espace Investisseur");
+        } catch (IOException e) {
+            System.err.println("✗ Erreur lors de l'ouverture du Front Office: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**

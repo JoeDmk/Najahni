@@ -5,6 +5,11 @@ import com.najahni.models.OpportunityStatus;
 import com.najahni.models.Project;
 import com.najahni.services.InvestmentOpportunityService;
 import com.najahni.services.ProjectService;
+import com.najahni.services.RiskCalculator;
+import com.najahni.services.RiskResult;
+import com.najahni.services.RiskService;
+import com.najahni.services.ml.RiskAIService;
+import com.najahni.services.ml.RiskPrediction;
 import com.najahni.utils.AlertUtils;
 import com.najahni.utils.AnimationUtils;
 import com.najahni.utils.WrappedTextCellFactory;
@@ -54,6 +59,8 @@ public class InvestmentOpportunityController {
     @FXML private TableColumn<InvestmentOpportunity, String> colDeadline;
     @FXML private TableColumn<InvestmentOpportunity, String> colStatus;
     @FXML private TableColumn<InvestmentOpportunity, String> colProject;
+    @FXML private TableColumn<InvestmentOpportunity, String> colRiskScore;
+    @FXML private TableColumn<InvestmentOpportunity, String> colRiskLabel;
     @FXML private TableColumn<InvestmentOpportunity, Void> colActions;
 
     // ─── Filtres ─────────────────────────────────────────────
@@ -74,12 +81,16 @@ public class InvestmentOpportunityController {
     // ─── Services ────────────────────────────────────────────
     private final InvestmentOpportunityService opportunityService;
     private final ProjectService projectService;
+    private final RiskService riskService;
+    private final RiskAIService riskAIService;
     private ObservableList<InvestmentOpportunity> opportunitiesList;
     private boolean isEditMode = false;
 
     public InvestmentOpportunityController() {
         this.opportunityService = new InvestmentOpportunityService();
         this.projectService = new ProjectService();
+        this.riskService = new RiskService();
+        this.riskAIService = new RiskAIService();
     }
 
     // ─── INITIALISATION ──────────────────────────────────────
@@ -117,6 +128,61 @@ public class InvestmentOpportunityController {
 
         colProject.setCellValueFactory(new PropertyValueFactory<>("projectTitle"));
 
+        // ── Colonne Risk Score IA ──
+        colRiskScore.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getFormattedRiskScore()));
+
+        // Style coloré pour le risque
+        colRiskScore.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
+                    if (opp.getRiskScore() != null) {
+                        setStyle(RiskCalculator.getRiskStyle(opp.getRiskScore().intValue()));
+                    } else {
+                        setStyle("-fx-text-fill: #999; -fx-font-style: italic;");
+                    }
+                }
+            }
+        });
+
+        // ── Colonne Risk Label ML ──
+        if (colRiskLabel != null) {
+            colRiskLabel.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getFormattedRiskLabel()));
+            colRiskLabel.setCellFactory(column -> new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(item);
+                        InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
+                        String label = opp.getRiskLabel();
+                        if (label != null) {
+                            String bgColor = switch (label.toLowerCase()) {
+                                case "faible" -> "-fx-text-fill: #27ae60; -fx-font-weight: bold;";
+                                case "moyen" -> "-fx-text-fill: #f39c12; -fx-font-weight: bold;";
+                                case "eleve" -> "-fx-text-fill: #e74c3c; -fx-font-weight: bold;";
+                                default -> "-fx-text-fill: #999;";
+                            };
+                            setStyle(bgColor);
+                        } else {
+                            setStyle("-fx-text-fill: #999; -fx-font-style: italic;");
+                        }
+                    }
+                }
+            });
+        }
+
         // Application du text wrapping
         colTargetAmount.setCellFactory(new WrappedTextCellFactory<>());
         colDescription.setCellFactory(new WrappedTextCellFactory<>());
@@ -128,7 +194,9 @@ public class InvestmentOpportunityController {
             private final Button editBtn = new Button("✏️");
             private final Button deleteBtn = new Button("🗑️");
             private final Button closeBtn = new Button("🔒");
-            private final HBox pane = new HBox(5, editBtn, closeBtn, deleteBtn);
+            private final Button riskBtn = new Button("🎯");
+            private final Button mlBtn = new Button("🤖");
+            private final HBox pane = new HBox(5, editBtn, riskBtn, mlBtn, closeBtn, deleteBtn);
 
             {
                 editBtn.getStyleClass().add("btn-warning");
@@ -138,6 +206,12 @@ public class InvestmentOpportunityController {
                 closeBtn.getStyleClass().add("btn-secondary");
                 closeBtn.setStyle("-fx-padding: 5 8;");
                 closeBtn.setTooltip(new Tooltip("Fermer l'opportunité"));
+                riskBtn.getStyleClass().add("btn-primary");
+                riskBtn.setStyle("-fx-padding: 5 8;");
+                riskBtn.setTooltip(new Tooltip("Calculer le Risk Score IA"));
+                mlBtn.getStyleClass().add("btn-primary");
+                mlBtn.setStyle("-fx-padding: 5 8; -fx-background-color: #8e44ad; -fx-text-fill: white;");
+                mlBtn.setTooltip(new Tooltip("Prédire Risque IA (Machine Learning)"));
 
                 editBtn.setOnAction(event -> {
                     InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
@@ -150,6 +224,14 @@ public class InvestmentOpportunityController {
                 closeBtn.setOnAction(event -> {
                     InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
                     closeOpportunity(opp);
+                });
+                riskBtn.setOnAction(event -> {
+                    InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
+                    calculateRisk(opp);
+                });
+                mlBtn.setOnAction(event -> {
+                    InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
+                    predictRiskML(opp);
                 });
             }
 
@@ -310,6 +392,123 @@ public class InvestmentOpportunityController {
             } else {
                 AlertUtils.showError("Échec", "Impossible de fermer l'opportunité.");
             }
+        }
+    }
+
+    // ─── RISK SCORING IA ─────────────────────────────────────
+
+    /**
+     * Calcule le Risk Score IA pour une opportunité.
+     * Affiche un popup de confirmation avant de lancer le calcul.
+     * Le calcul appelle une API externe (Open-Meteo) et applique la formule :
+     * risk_score = (montant × 0.4) + (durée × 0.2) + (facteur API × 0.4)
+     */
+    private void calculateRisk(InvestmentOpportunity opp) {
+        // ── Popup de confirmation ──
+        String confirmMsg = "Calculer le Risk Score IA pour cette opportunité ?\n\n"
+            + "📊 Montant : " + opp.getFormattedAmount() + "\n"
+            + "📅 Deadline : " + (opp.getDeadline() != null ? opp.getDeadline().toString() : "Aucune") + "\n"
+            + "🏷️ Projet : " + (opp.getProjectTitle() != null ? opp.getProjectTitle() : "Projet #" + opp.getProjectId()) + "\n\n"
+            + "⚡ Cette action appelle une API externe (Open-Meteo)\n"
+            + "   pour obtenir un facteur économique en temps réel.";
+
+        if (!AlertUtils.showConfirmation("🎯 Calcul Risk Score IA", confirmMsg)) {
+            return; // L'utilisateur a annulé
+        }
+
+        try {
+            // ── Calcul via RiskService ──
+            RiskResult result = riskService.calculateRisk(opp);
+
+            // ── Sauvegarde en BDD ──
+            boolean saved = opportunityService.updateRiskScore(opp.getId(), result.getScore());
+
+            if (saved) {
+                // Mettre à jour l'objet local
+                opp.setRiskScore((double) result.getScore());
+                opportunitiesTable.refresh();
+
+                // ── Popup de résultat ──
+                AlertUtils.showInfo("🎯 Risk Score IA — Résultat",
+                    result.getEmoji() + " Score : " + result.getScore() + "/100\n"
+                    + "📊 Niveau : " + result.getLevel() + "\n\n"
+                    + "Formule : (montant × 0.4) + (durée × 0.2) + (facteur API × 0.4)\n\n"
+                    + "Le score a été sauvegardé en base de données.");
+            } else {
+                AlertUtils.showError("Erreur", "Le score a été calculé ("
+                    + result.getDisplay() + ") mais n'a pas pu être sauvegardé en BDD.");
+            }
+
+        } catch (IllegalArgumentException e) {
+            AlertUtils.showValidationError("Données invalides : " + e.getMessage());
+        } catch (Exception e) {
+            AlertUtils.showError("Erreur Risk Score",
+                "Erreur lors du calcul du Risk Score :\n" + e.getMessage()
+                + "\n\nVérifiez votre connexion internet (API Open-Meteo).");
+        }
+    }
+
+    // ─── PREDICTION ML (WEKA) ─────────────────────────────
+
+    /**
+     * Prédit le risque d'une opportunité via Machine Learning (Weka RandomForest).
+     * Affiche un popup de confirmation, lance la prédiction, affiche le résultat
+     * détaillé (label + probabilités) et sauvegarde le risk_label en BDD.
+     */
+    private void predictRiskML(InvestmentOpportunity opp) {
+        // ── Récupérer le secteur du projet associé ──
+        String projectSector = "tech"; // Défaut
+        try {
+            var project = projectService.findById(opp.getProjectId());
+            if (project.isPresent() && project.get().getSector() != null) {
+                projectSector = project.get().getSector();
+            }
+        } catch (Exception ignored) {}
+
+        // ── Popup de confirmation ──
+        String confirmMsg = "Prédire le risque ML pour cette opportunité ?\n\n"
+            + "📊 Montant : " + opp.getFormattedAmount() + "\n"
+            + "📅 Deadline : " + (opp.getDeadline() != null ? opp.getDeadline().toString() : "Aucune") + "\n"
+            + "🏷️ Projet : " + (opp.getProjectTitle() != null ? opp.getProjectTitle() : "Projet #" + opp.getProjectId()) + "\n"
+            + "🏭 Secteur : " + projectSector + "\n\n"
+            + "🤖 Modèle : RandomForest (Weka) — 100 arbres\n"
+            + "   Entraîné localement, aucune API externe.";
+
+        if (!AlertUtils.showConfirmation("🤖 Prédiction Risque ML", confirmMsg)) {
+            return;
+        }
+
+        try {
+            // ── Initialisation du service ML ──
+            riskAIService.initialize();
+
+            // ── Prédiction ──
+            RiskPrediction prediction = riskAIService.predictRisk(opp, projectSector);
+
+            // ── Sauvegarde du label en BDD ──
+            boolean saved = opportunityService.updateRiskLabel(opp.getId(), prediction.getLabel());
+
+            if (saved) {
+                opp.setRiskLabel(prediction.getLabel());
+                opportunitiesTable.refresh();
+
+                // ── Popup de résultat détaillé ──
+                AlertUtils.showInfo("🤖 Prédiction ML — Résultat",
+                    prediction.getDisplay() + "\n\n"
+                    + prediction.getDetailedDisplay() + "\n\n"
+                    + "Algorithme : RandomForest (100 arbres, seed=42)\n"
+                    + "Le label a été sauvegardé en base de données.");
+            } else {
+                AlertUtils.showError("Erreur",
+                    "Prédiction réussie (" + prediction.getDisplay() + ")\n"
+                    + "mais échec de sauvegarde en BDD.");
+            }
+
+        } catch (Exception e) {
+            AlertUtils.showError("Erreur Prédiction ML",
+                "Erreur lors de la prédiction ML :\n" + e.getMessage()
+                + "\n\nVérifiez que le dataset ARFF et le modèle sont accessibles.");
+            e.printStackTrace();
         }
     }
 

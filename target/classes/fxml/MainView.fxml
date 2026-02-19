@@ -3,7 +3,6 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="com.najahni.controllers.MainController"
@@ -63,6 +62,10 @@
             <Region VBox.vgrow="ALWAYS"/>
             
             <Separator/>
+            
+            <Button text="🌐 Accéder au Front Office" 
+                    onAction="#openFrontOffice"
+                    styleClass="nav-button-front-office" maxWidth="Infinity"/>
             
             <Label text="PIDEV - NAJAHNI v1.0" 
                    style="-fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-padding: 10 0 0 5;"/>

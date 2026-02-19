@@ -69,7 +69,9 @@
                     <TableColumn fx:id="colDeadline" text="Deadline" prefWidth="100" minWidth="90"/>
                     <TableColumn fx:id="colStatus" text="Statut" prefWidth="100" minWidth="80"/>
                     <TableColumn fx:id="colProject" text="Projet" prefWidth="150" minWidth="120"/>
-                    <TableColumn fx:id="colActions" text="Actions" prefWidth="140" minWidth="120"/>
+                    <TableColumn fx:id="colRiskScore" text="🎯 Risque IA" prefWidth="120" minWidth="100"/>
+                    <TableColumn fx:id="colRiskLabel" text="🤖 ML" prefWidth="110" minWidth="90"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="200" minWidth="180"/>
                 </columns>
                 <placeholder>
                     <Label text="Aucune opportunité trouvée"/>
