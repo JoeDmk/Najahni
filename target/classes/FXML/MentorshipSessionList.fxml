@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -24,7 +25,9 @@
         <VBox spacing="20" style="-fx-padding: 30;">
             <HBox alignment="CENTER_LEFT" spacing="20">
                 <Label styleClass="header-label" text="Mentorship Sessions" />
-                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_RIGHT" spacing="10" HBox.hgrow="ALWAYS">
+                    <DatePicker fx:id="searchDate" promptText="Search by date..." />
+                    <Button fx:id="btnExportPDF" styleClass="button" text="Export PDF" />
                     <Button fx:id="btnAdd" styleClass="button" text="+ New Session" />
                 </HBox>
             </HBox>

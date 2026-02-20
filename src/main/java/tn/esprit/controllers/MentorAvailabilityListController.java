@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import tn.esprit.models.MentorAvailability;
 import tn.esprit.services.ServiceMentorAvailability;
@@ -33,12 +34,21 @@ public class MentorAvailabilityListController implements Initializable {
     @FXML
     private Button btnSessions;
 
+    @FXML
+    private TextField searchField;
+    
     private ServiceMentorAvailability service;
+    private ObservableList<MentorAvailability> masterList;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         service = new ServiceMentorAvailability();
         loadData();
+
+        // Listen for changes in search field
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterData(newValue);
+        });
 
         btnAdd.setOnAction(e -> handleAdd());
         btnEdit.setOnAction(e -> handleEdit());
@@ -48,8 +58,23 @@ public class MentorAvailabilityListController implements Initializable {
     }
 
     private void loadData() {
-        ObservableList<MentorAvailability> list = FXCollections.observableArrayList(service.getAll());
-        tableView.setItems(list);
+        masterList = FXCollections.observableArrayList(service.getAll());
+        tableView.setItems(masterList);
+    }
+
+    private void filterData(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            tableView.setItems(masterList);
+            return;
+        }
+
+        ObservableList<MentorAvailability> filteredList = FXCollections.observableArrayList();
+        for (MentorAvailability item : masterList) {
+            if (item.getMentorName() != null && item.getMentorName().toLowerCase().contains(keyword.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        tableView.setItems(filteredList);
     }
 
     @FXML

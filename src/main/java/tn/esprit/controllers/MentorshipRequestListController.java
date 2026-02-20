@@ -10,12 +10,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import tn.esprit.models.MentorshipRequest;
 import tn.esprit.services.ServiceMentorshipRequest;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 
 public class MentorshipRequestListController implements Initializable {
@@ -32,14 +34,24 @@ public class MentorshipRequestListController implements Initializable {
     private Button btnSessions;
     @FXML
     private Button btnAvailability;
+    @FXML
+    private Button btnSort;
+
+    @FXML
+    private TextField searchField;
 
     private ServiceMentorshipRequest service;
-    private ObservableList<MentorshipRequest> requestList;
+    private ObservableList<MentorshipRequest> masterList;
+    private boolean sortAscending = true;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         service = new ServiceMentorshipRequest();
         loadData();
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterData(newValue);
+        });
 
         btnAdd.setOnAction(e -> navigateToForm(null));
         btnEdit.setOnAction(e -> {
@@ -63,11 +75,54 @@ public class MentorshipRequestListController implements Initializable {
 
         btnSessions.setOnAction(e -> navigateTo("/FXML/MentorshipSessionList.fxml"));
         btnAvailability.setOnAction(e -> navigateTo("/FXML/MentorAvailabilityList.fxml"));
+        btnSort.setOnAction(e -> sortByStatus());
     }
 
     private void loadData() {
-        requestList = FXCollections.observableArrayList(service.getAll());
-        tableView.setItems(requestList);
+        masterList = FXCollections.observableArrayList(service.getAll());
+        tableView.setItems(masterList);
+    }
+
+    private void sortByStatus() {
+        Comparator<MentorshipRequest> comparator = Comparator.comparing(
+                request -> request.getStatus() != null ? request.getStatus().name() : ""
+        );
+
+        if (!sortAscending) {
+            comparator = comparator.reversed();
+        }
+
+        ObservableList<MentorshipRequest> currentList = FXCollections.observableArrayList(tableView.getItems());
+        currentList.sort(comparator);
+        tableView.setItems(currentList);
+
+        sortAscending = !sortAscending;
+        btnSort.setText(sortAscending ? "Sort by Status ↑" : "Sort by Status ↓");
+    }
+
+    private void filterData(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            tableView.setItems(masterList);
+            return;
+        }
+
+        ObservableList<MentorshipRequest> filteredList = FXCollections.observableArrayList();
+        for (MentorshipRequest request : masterList) {
+            boolean matches = false;
+            // Search by Mentor Name
+            if (request.getMentorName() != null && request.getMentorName().toLowerCase().contains(keyword.toLowerCase())) {
+                matches = true;
+            }
+            // Search by Entrepreneur Name
+            if (request.getEntrepreneurName() != null && request.getEntrepreneurName().toLowerCase().contains(keyword.toLowerCase())) {
+                matches = true;
+            }
+            
+            if (matches) {
+                filteredList.add(request);
+            }
+        }
+        tableView.setItems(filteredList);
     }
 
     private void navigateToForm(MentorshipRequest request) {
