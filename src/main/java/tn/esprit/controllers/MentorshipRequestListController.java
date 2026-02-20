@@ -17,7 +17,7 @@ import tn.esprit.services.ServiceMentorshipRequest;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Comparator;
+
 import java.util.ResourceBundle;
 
 public class MentorshipRequestListController implements Initializable {
@@ -42,7 +42,8 @@ public class MentorshipRequestListController implements Initializable {
 
     private ServiceMentorshipRequest service;
     private ObservableList<MentorshipRequest> masterList;
-    private boolean sortAscending = true;
+    private int currentStatusIndex = 0;
+    private final MentorshipRequest.RequestStatus[] statuses = MentorshipRequest.RequestStatus.values();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -84,20 +85,30 @@ public class MentorshipRequestListController implements Initializable {
     }
 
     private void sortByStatus() {
-        Comparator<MentorshipRequest> comparator = Comparator.comparing(
-                request -> request.getStatus() != null ? request.getStatus().name() : ""
-        );
-
-        if (!sortAscending) {
-            comparator = comparator.reversed();
+        // currentStatusIndex: 0 = All, 1 = auto_accepted, 2 = pending_review, 3 = rejected, 4 = cancelled, 5 = completed
+        currentStatusIndex++;
+        if (currentStatusIndex > statuses.length) {
+            currentStatusIndex = 0;
         }
 
-        ObservableList<MentorshipRequest> currentList = FXCollections.observableArrayList(tableView.getItems());
-        currentList.sort(comparator);
-        tableView.setItems(currentList);
-
-        sortAscending = !sortAscending;
-        btnSort.setText(sortAscending ? "Sort by Status ↑" : "Sort by Status ↓");
+        if (currentStatusIndex == 0) {
+            // Show all requests
+            tableView.setItems(masterList);
+            btnSort.setText("Status: All");
+        } else {
+            MentorshipRequest.RequestStatus selectedStatus = statuses[currentStatusIndex - 1];
+            ObservableList<MentorshipRequest> filteredList = FXCollections.observableArrayList();
+            for (MentorshipRequest request : masterList) {
+                if (request.getStatus() == selectedStatus) {
+                    filteredList.add(request);
+                }
+            }
+            tableView.setItems(filteredList);
+            // Display a readable label for the status
+            String label = selectedStatus.name().replace("_", " ");
+            label = label.substring(0, 1).toUpperCase() + label.substring(1);
+            btnSort.setText("Status: " + label);
+        }
     }
 
     private void filterData(String keyword) {

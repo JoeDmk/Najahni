@@ -27,6 +27,7 @@
                 <Label styleClass="header-label" text="Mentorship Requests" />
                 <HBox alignment="CENTER_RIGHT" spacing="10" HBox.hgrow="ALWAYS">
                     <TextField fx:id="searchField" promptText="Search request..." />
+                    <Button fx:id="btnSort" styleClass="button-secondary" text="Status: All" />
                     <Button fx:id="btnAdd" styleClass="button" text="+ New Request" />
                 </HBox>
             </HBox>
