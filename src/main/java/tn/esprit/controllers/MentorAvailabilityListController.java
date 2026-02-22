@@ -33,10 +33,12 @@ public class MentorAvailabilityListController implements Initializable {
     private Button btnRequests;
     @FXML
     private Button btnSessions;
+    @FXML
+    private Button btnChatbot;
 
     @FXML
     private TextField searchField;
-    
+
     private ServiceMentorAvailability service;
     private ObservableList<MentorAvailability> masterList;
 
@@ -55,6 +57,7 @@ public class MentorAvailabilityListController implements Initializable {
         btnDelete.setOnAction(e -> handleDelete());
         btnRequests.setOnAction(e -> handleRequests());
         btnSessions.setOnAction(e -> handleSessions());
+        btnChatbot.setOnAction(e -> handleChatbot());
     }
 
     private void loadData() {
@@ -134,6 +137,11 @@ public class MentorAvailabilityListController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleChatbot() {
+        navigateTo("/FXML/Chatbot.fxml");
     }
 
     private void showAlert(String msg) {

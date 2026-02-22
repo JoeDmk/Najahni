@@ -1,0 +1,14 @@
+What is Najahni?
+Najahni is a digital platform designed to foster entrepreneurship and mentorship by connecting dynamic founders with experienced mentors, investors, and essential resources to help build and scale innovative projects.
+
+Who are the best mentors?
+The best mentors depend on your project needs. However, active super mentors on Najahni usually have strong backgrounds in tech startups, strategic management, and fundraising. We recommend checking the dashboard for "Top Rated" mentors based on community feedback.
+
+How do I find available mentors?
+You can navigate to the 'Availability' tab in the application to view the schedule of mentors. Alternatively, you can ask this chatbot about specific dates!
+
+How can I book a session?
+Once you find an available time slot for a mentor, go to the 'Requests' section to send a mentorship request. Once approved, it will appear in your 'Sessions'.
+
+Does the app support real-time chat with a mentor?
+Currently, the application supports scheduling and managing mentorship sessions. You can also export session details as PDF. Direct messaging might be available in future releases.

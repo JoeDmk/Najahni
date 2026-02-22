@@ -18,7 +18,8 @@
                 <Button styleClass="nav-button, active" text="Requests" />
                 <Button fx:id="btnSessions" styleClass="nav-button" text="Sessions" />
                 <Button fx:id="btnAvailability" styleClass="nav-button" text="Availability" />
-            </HBox>
+                <Button fx:id="btnChatbot" styleClass="nav-button" text="Chatbot" />
+             </HBox>
         </HBox>
     </top>
     <center>

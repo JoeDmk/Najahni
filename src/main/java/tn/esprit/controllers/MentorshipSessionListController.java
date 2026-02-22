@@ -44,6 +44,8 @@ public class MentorshipSessionListController implements Initializable {
     private Button btnRequests;
     @FXML
     private Button btnAvailability;
+    @FXML
+    private Button btnChatbot;
 
     @FXML
     private DatePicker searchDate;
@@ -67,6 +69,7 @@ public class MentorshipSessionListController implements Initializable {
         btnDelete.setOnAction(e -> handleDelete());
         btnRequests.setOnAction(e -> handleRequests());
         btnAvailability.setOnAction(e -> handleAvailability());
+        btnChatbot.setOnAction(e -> handleChatbot());
     }
 
     private void loadData() {
@@ -157,11 +160,17 @@ public class MentorshipSessionListController implements Initializable {
         }
     }
 
+    @FXML
+    private void handleChatbot() {
+        navigateTo("/FXML/Chatbot.fxml");
+    }
+
     private void showAlert(String msg) {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setContentText(msg);
         a.show();
     }
+
     @FXML
     private void handleExportPDF() {
         FileChooser fileChooser = new FileChooser();
@@ -181,7 +190,7 @@ public class MentorshipSessionListController implements Initializable {
                 // Create table with 11 columns
                 PdfPTable pdfTable = new PdfPTable(11);
                 pdfTable.setWidthPercentage(100);
-                
+
                 // Add Headers
                 pdfTable.addCell("ID");
                 pdfTable.addCell("Req ID");
@@ -212,7 +221,7 @@ public class MentorshipSessionListController implements Initializable {
 
                 document.add(pdfTable);
                 document.close();
-                
+
                 showAlert("PDF exported successfully!");
             } catch (Exception e) {
                 e.printStackTrace();

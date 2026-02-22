@@ -20,6 +20,7 @@
                  <Button text="Requests" styleClass="nav-button" fx:id="btnRequests"/>
                  <Button text="Sessions" styleClass="nav-button, active"/>
                  <Button text="Availability" styleClass="nav-button" fx:id="btnAvailability"/>
+                 <Button fx:id="btnChatbot" styleClass="nav-button" text="Chatbot" />
              </HBox>
         </HBox>
     </top>

@@ -15,6 +15,7 @@ import tn.esprit.models.User;
 import tn.esprit.services.ServiceMentorshipRequest;
 import tn.esprit.services.ServiceProjet;
 import tn.esprit.services.ServiceUser;
+import tn.esprit.utils.AudioTranscriber;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,8 +36,6 @@ public class MentorshipRequestFormController implements Initializable {
     @FXML
     private ComboBox<MentorshipRequest.RequestStatus> cbStatus;
     @FXML
-    private TextField tfMatchScore;
-    @FXML
     private CheckBox chkAutoApproved;
     @FXML
     private TextArea taMotivation;
@@ -49,7 +48,13 @@ public class MentorshipRequestFormController implements Initializable {
     @FXML
     private Button btnSessions;
     @FXML
+    private Button btnChatbot;
+    @FXML
     private Button btnAvailability;
+    @FXML
+    private Button btnMicGoals;
+    @FXML
+    private Button btnMicMotivation;
 
     private ServiceMentorshipRequest service;
     private ServiceUser serviceUser;
@@ -72,6 +77,13 @@ public class MentorshipRequestFormController implements Initializable {
         btnCancel.setOnAction(e -> navigateBack());
         btnSessions.setOnAction(e -> navigateTo("/FXML/MentorshipSessionList.fxml"));
         btnAvailability.setOnAction(e -> navigateTo("/FXML/MentorAvailabilityList.fxml"));
+        btnChatbot.setOnAction(e -> handleChatbot());
+        if (btnMicMotivation != null) {
+            btnMicMotivation.setOnAction(e -> AudioTranscriber.recordAndTranscribe(taMotivation, btnMicMotivation, 10));
+        }
+        if (btnMicGoals != null) {
+            btnMicGoals.setOnAction(e -> AudioTranscriber.recordAndTranscribe(taGoals, btnMicGoals, 10));
+        }
     }
 
     private void filterMentors() {
@@ -149,7 +161,6 @@ public class MentorshipRequestFormController implements Initializable {
                 cbProject.setValue(p);
 
         cbStatus.setValue(request.getStatus());
-        tfMatchScore.setText(String.valueOf(request.getMatchScore()));
         chkAutoApproved.setSelected(request.isAutoApproved());
         taMotivation.setText(request.getMotivation());
         taGoals.setText(request.getGoals());
@@ -165,10 +176,6 @@ public class MentorshipRequestFormController implements Initializable {
             showAlert("Motivation and Goals cannot be empty.");
             return;
         }
-        if (!validator(tfMatchScore.getText())) {
-            showAlert("Match score must be a number.");
-            return;
-        }
 
         MentorshipRequest req = currentRequest != null ? currentRequest : new MentorshipRequest();
         req.setEntrepreneurId(cbEntrepreneur.getValue().getId());
@@ -177,7 +184,7 @@ public class MentorshipRequestFormController implements Initializable {
         req.setDate(java.sql.Date.valueOf(dpDate.getValue()));
         req.setTime(tfTime.getText());
         req.setStatus(cbStatus.getValue());
-        req.setMatchScore(Float.parseFloat(tfMatchScore.getText()));
+        req.setMatchScore(0.0f); // default to 0
         req.setAutoApproved(chkAutoApproved.isSelected());
         req.setMotivation(taMotivation.getText());
         req.setGoals(taGoals.getText());
@@ -209,6 +216,11 @@ public class MentorshipRequestFormController implements Initializable {
 
     private void navigateBack() {
         navigateTo("/FXML/MentorshipRequestList.fxml");
+    }
+
+    @FXML
+    private void handleChatbot() {
+        navigateTo("/FXML/Chatbot.fxml");
     }
 
     private void navigateTo(String path) {

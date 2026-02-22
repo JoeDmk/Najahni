@@ -33,6 +33,8 @@ public class MentorshipRequestListController implements Initializable {
     @FXML
     private Button btnSessions;
     @FXML
+    private Button btnChatbot;
+    @FXML
     private Button btnAvailability;
     @FXML
     private Button btnSort;
@@ -76,6 +78,7 @@ public class MentorshipRequestListController implements Initializable {
 
         btnSessions.setOnAction(e -> navigateTo("/FXML/MentorshipSessionList.fxml"));
         btnAvailability.setOnAction(e -> navigateTo("/FXML/MentorAvailabilityList.fxml"));
+        btnChatbot.setOnAction(e -> handleChatbot());
         btnSort.setOnAction(e -> sortByStatus());
     }
 
@@ -85,7 +88,8 @@ public class MentorshipRequestListController implements Initializable {
     }
 
     private void sortByStatus() {
-        // currentStatusIndex: 0 = All, 1 = auto_accepted, 2 = pending_review, 3 = rejected, 4 = cancelled, 5 = completed
+        // currentStatusIndex: 0 = All, 1 = auto_accepted, 2 = pending_review, 3 =
+        // rejected, 4 = cancelled, 5 = completed
         currentStatusIndex++;
         if (currentStatusIndex > statuses.length) {
             currentStatusIndex = 0;
@@ -121,14 +125,16 @@ public class MentorshipRequestListController implements Initializable {
         for (MentorshipRequest request : masterList) {
             boolean matches = false;
             // Search by Mentor Name
-            if (request.getMentorName() != null && request.getMentorName().toLowerCase().contains(keyword.toLowerCase())) {
+            if (request.getMentorName() != null
+                    && request.getMentorName().toLowerCase().contains(keyword.toLowerCase())) {
                 matches = true;
             }
             // Search by Entrepreneur Name
-            if (request.getEntrepreneurName() != null && request.getEntrepreneurName().toLowerCase().contains(keyword.toLowerCase())) {
+            if (request.getEntrepreneurName() != null
+                    && request.getEntrepreneurName().toLowerCase().contains(keyword.toLowerCase())) {
                 matches = true;
             }
-            
+
             if (matches) {
                 filteredList.add(request);
             }
@@ -161,6 +167,11 @@ public class MentorshipRequestListController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleChatbot() {
+        navigateTo("/FXML/Chatbot.fxml");
     }
 
     private void showAlert(String message) {

@@ -13,6 +13,7 @@ tn\esprit\interfaces\IService.class
 tn\esprit\interfaces\IMentorshipRequest.class
 tn\esprit\controllers\MentorAvailabilityListController.class
 tn\esprit\interfaces\IMentorAvailability.class
+tn\esprit\utils\AudioTranscriber.class
 tn\esprit\utils\StageManager.class
 tn\esprit\interfaces\IMentorat.class
 tn\esprit\controllers\MentorshipSessionListController.class
@@ -21,6 +22,7 @@ tn\esprit\controllers\MentorshipRequestListController.class
 tn\esprit\models\User.class
 tn\esprit\services\ServiceMentorshipSession.class
 tn\esprit\models\MentorshipSession.class
+tn\esprit\controllers\ChatbotController.class
 tn\esprit\interfaces\IMentorshipSession.class
 tn\esprit\controllers\MentorshipRequestFormController$1.class
 tn\esprit\models\MentorshipRequest$RequestStatus.class

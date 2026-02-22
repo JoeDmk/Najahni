@@ -1,0 +1,9 @@
+fastapi[standard]
+uvicorn
+requests
+urllib3
+llama-index
+llama-index-embeddings-huggingface
+pydantic
+python-dotenv
+mysql-connector-python

@@ -37,6 +37,8 @@ public class MentorAvailabilityFormController implements Initializable {
     private Button btnRequests;
     @FXML
     private Button btnSessions;
+    @FXML
+    private Button btnChatbot;
 
     private ServiceMentorAvailability service;
     private ServiceUser serviceUser;
@@ -53,6 +55,7 @@ public class MentorAvailabilityFormController implements Initializable {
         btnCancel.setOnAction(e -> navigateBack());
         btnRequests.setOnAction(e -> navigateTo("/FXML/MentorshipRequestList.fxml"));
         btnSessions.setOnAction(e -> navigateTo("/FXML/MentorshipSessionList.fxml"));
+        btnChatbot.setOnAction(e -> handleChatbot());
     }
 
     public void setAvailability(MentorAvailability av) {
@@ -117,6 +120,11 @@ public class MentorAvailabilityFormController implements Initializable {
 
     private void navigateBack() {
         navigateTo("/FXML/MentorAvailabilityList.fxml");
+    }
+
+    @FXML
+    private void handleChatbot() {
+        navigateTo("/FXML/Chatbot.fxml");
     }
 
     private void navigateTo(String path) {

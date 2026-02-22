@@ -18,6 +18,7 @@
                  <Button fx:id="btnRequests" styleClass="nav-button" text="Requests" />
                  <Button styleClass="nav-button, active" text="Sessions" />
                  <Button fx:id="btnAvailability" styleClass="nav-button" text="Availability" />
+                 <Button fx:id="btnChatbot" styleClass="nav-button" text="Chatbot" />
              </HBox>
         </HBox>
     </top>

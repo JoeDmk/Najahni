@@ -20,7 +20,8 @@
                 <Button text="Requests" styleClass="nav-button, active"/>
                 <Button text="Sessions" styleClass="nav-button" fx:id="btnSessions"/>
                 <Button text="Availability" styleClass="nav-button" fx:id="btnAvailability"/>
-            </HBox>
+                <Button fx:id="btnChatbot" styleClass="nav-button" text="Chatbot" />
+             </HBox>
         </HBox>
     </top>
     <center>
@@ -46,17 +47,20 @@
                    <Label text="Status:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                    <ComboBox fx:id="cbStatus" prefWidth="300" promptText="Select Status" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-                   <Label text="Match Score:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                   <TextField fx:id="tfMatchScore" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                   
-                   <Label text="Auto Approved:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                   <CheckBox fx:id="chkAutoApproved" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                   <Label text="Auto Approved:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                   <CheckBox fx:id="chkAutoApproved" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
-                   <Label text="Motivation:" GridPane.columnIndex="0" GridPane.rowIndex="8" GridPane.valignment="TOP"/>
-                   <TextArea fx:id="taMotivation" prefColumnCount="20" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                   <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.valignment="TOP">
+                        <Label text="Motivation:" />
+                        <Button fx:id="btnMicMotivation" text="🎤 Record (10s)" styleClass="button-secondary" />
+                   </VBox>
+                   <TextArea fx:id="taMotivation" prefColumnCount="20" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                   <Label text="Goals:" GridPane.columnIndex="0" GridPane.rowIndex="9" GridPane.valignment="TOP"/>
-                   <TextArea fx:id="taGoals" prefColumnCount="20" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                   <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="8" GridPane.valignment="TOP">
+                        <Label text="Goals:" />
+                        <Button fx:id="btnMicGoals" text="🎤 Record (10s)" styleClass="button-secondary" />
+                   </VBox>
+                   <TextArea fx:id="taGoals" prefColumnCount="20" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
                </GridPane>
                
                <HBox spacing="10" alignment="CENTER_RIGHT">
