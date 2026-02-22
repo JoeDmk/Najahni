@@ -29,6 +29,7 @@
                 <HBox alignment="CENTER_RIGHT" spacing="10" HBox.hgrow="ALWAYS">
                     <DatePicker fx:id="searchDate" promptText="Search by date..." />
                     <Button fx:id="btnExportPDF" styleClass="button" text="Export PDF" />
+                    <Button fx:id="btnExportExcel" styleClass="button" text="Export Excel" />
                     <Button fx:id="btnAdd" styleClass="button" text="+ New Session" />
                 </HBox>
             </HBox>

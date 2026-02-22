@@ -1,4 +1,5 @@
 tn\esprit\services\ServiceMentorAvailability.class
+tn\esprit\controllers\MentorshipSessionListController$1.class
 tn\esprit\test\MainFX.class
 tn\esprit\services\ServiceMentorshipRequest.class
 tn\esprit\controllers\MentorshipSessionFormController.class
