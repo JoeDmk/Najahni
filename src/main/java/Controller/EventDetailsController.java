@@ -2,8 +2,11 @@ package Controller;
 
 import Entites.Event;
 import Entites.EventParticipant;
+import Services.AiEventService;
+import Services.EmailAsync;
 import Services.EventParticipantCRUD;
 import Services.NotificationEmailService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +21,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class EventDetailsController {
+
+    @FXML private javafx.scene.control.TextArea eventAiOutputLabel;
+    private final AiEventService aiEventService = new AiEventService();
     @FXML
     private Button validateTicketBtn;
 
@@ -41,13 +47,91 @@ public class EventDetailsController {
 
     private Event event;
 
+
     // TODO: Replace with SessionService.getInstance().getCurrentUser().getId()
     // Temporary logged user (until integration with User module)
     private final int currentUserId = 1;
 
     // Better practice: single CRUD instance
     private final EventParticipantCRUD crud = new EventParticipantCRUD();
+    private String safe(String s){ return s == null ? "" : s; }
 
+    private String baseEventContext() {
+        return "EVENT CONTEXT:\n" +
+                "Title: " + safe(event.getTitle()) + "\n" +
+                "Description: " + safe(event.getDescription()) + "\n" +
+                "Capacity: " + event.getCapacity() + "\n";
+    }
+    @FXML
+    private void generateEventSummary() {
+        eventAiOutputLabel.setText("⏳ Generating summary...");
+
+        EmailAsync.run(() -> {
+            try {
+                String prompt =
+                        "TASK: Write a neutral factual summary of the event.\n" +
+                                " If details are unclear, keep it generic and safe.\n"+
+                                "Rules:\n" +
+                                "- Neutral tone.\n" +
+                                "- No marketing language.\n" +
+                                "- No invitation phrases like 'Join us'.\n" +
+                                "- No persuasive tone.\n" +
+                                "- 1-2 sentences only.\n\n" +
+                                baseEventContext();
+
+                String out = aiEventService.generate(prompt);
+
+                Platform.runLater(() -> eventAiOutputLabel.setText(out));
+            } catch (Exception ex) {
+                Platform.runLater(() -> eventAiOutputLabel.setText("❌ AI failed: " + ex.getMessage()));
+            }
+        });
+    }
+
+    @FXML
+    private void generateEventPromo() {
+        eventAiOutputLabel.setText("⏳ Generating promo text...");
+
+        EmailAsync.run(() -> {
+            try {
+                String prompt =
+                        "TASK: Write a short promotional text for this event.\n" +
+                                "Rules:\n" +
+                                "- Friendly tone.\n" +
+                                "- 2–3 lines max.\n" +
+                                "- Do NOT invent details.\n" +
+                                "- If details are missing, stay generic WITHOUT saying you lack info.\n" +
+                                "- Do NOT include meta text like “I can’t…” or policy explanations.\n\n" +
+                                baseEventContext();
+
+                String out = aiEventService.generate(prompt);
+
+                Platform.runLater(() -> eventAiOutputLabel.setText(out));
+            } catch (Exception ex) {
+                Platform.runLater(() -> eventAiOutputLabel.setText("❌ AI failed: " + ex.getMessage()));
+            }
+        });
+    }
+
+    @FXML
+    private void generateEventChecklist() {
+        eventAiOutputLabel.setText("⏳ Generating checklist...");
+
+        EmailAsync.run(() -> {
+            try {
+                String prompt =
+                        "Create a short preparation checklist for the event.\n" +
+                                "\" If details are unclear, keep it generic and safe.\\n\"Rules: max 3 bullet points. No invented details. Practical.\n\n" +
+                                baseEventContext();
+
+                String out = aiEventService.generate(prompt);
+
+                Platform.runLater(() -> eventAiOutputLabel.setText(out));
+            } catch (Exception ex) {
+                Platform.runLater(() -> eventAiOutputLabel.setText("❌ AI failed: " + ex.getMessage()));
+            }
+        });
+    }
     public void setEvent(Event event) {
         this.event = event;
         boolean isCreator = isCurrentUserCreator();

@@ -18,8 +18,12 @@ public class GroupCRUD implements IntrefaceCRUD<Group> {
     @Override
     public void ajouter(Group g) throws SQLException {
 
-        String req = "INSERT INTO groups (name, description, group_admin_id, is_private) VALUES (?, ?, ?,?)";
+        // ✅ UNICITY CHECK
+        if (existsByName(g.getName())) {
+            throw new SQLException("GROUP_NAME_EXISTS");
+        }
 
+        String req = "INSERT INTO groups (name, description, group_admin_id, is_private) VALUES (?, ?, ?,?)";
         PreparedStatement pst = conn.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
 
         pst.setString(1, g.getName());
@@ -27,13 +31,10 @@ public class GroupCRUD implements IntrefaceCRUD<Group> {
         pst.setInt(3, g.getGroupAdminId());
         pst.setBoolean(4, g.getIsPrivate());
 
-
         pst.executeUpdate();
 
         ResultSet rs = pst.getGeneratedKeys();
-        if (rs.next()) {
-            g.setId(rs.getInt(1));  // 🔥 IMPORTANT
-        }
+        if (rs.next()) g.setId(rs.getInt(1));
     }
 
 
@@ -41,12 +42,17 @@ public class GroupCRUD implements IntrefaceCRUD<Group> {
     @Override
     public void modifier(Group g) throws SQLException {
 
+        // ✅ UNICITY CHECK (ignore current row)
+        if (existsByNameExceptId(g.getName(), g.getId())) {
+            throw new SQLException("GROUP_NAME_EXISTS");
+        }
+
         String req = "UPDATE groups SET name=?, description=?, group_admin_id=? WHERE id=?";
         PreparedStatement pst = conn.prepareStatement(req);
 
         pst.setString(1, g.getName());
         pst.setString(2, g.getDescription());
-        pst.setInt(3, g.getGroupAdminId());   // ✅ NEW
+        pst.setInt(3, g.getGroupAdminId());
         pst.setInt(4, g.getId());
 
         pst.executeUpdate();
@@ -85,7 +91,28 @@ public class GroupCRUD implements IntrefaceCRUD<Group> {
 
         return list;
     }
+    // ✅ true if name exists (case-insensitive)
+    public boolean existsByName(String name) throws SQLException {
+        String sql = "SELECT 1 FROM groups WHERE LOWER(name) = LOWER(?) LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 
+    // ✅ true if name exists for another group (for update)
+    public boolean existsByNameExceptId(String name, int id) throws SQLException {
+        String sql = "SELECT 1 FROM groups WHERE LOWER(name) = LOWER(?) AND id <> ? LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name.trim());
+            ps.setInt(2, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 
 
 }

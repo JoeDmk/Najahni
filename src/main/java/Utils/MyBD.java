@@ -6,7 +6,7 @@ public class MyBD {
    final private String USER="root";
    final private String PASS="";
    private static MyBD instance;
-    private MyBD(){
+   private MyBD(){
         try {
             conn=DriverManager.getConnection(URL,USER,PASS);
         }catch (SQLException s){

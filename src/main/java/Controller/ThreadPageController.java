@@ -20,8 +20,19 @@ import java.net.http.HttpResponse;
 
 import java.sql.SQLException;
 import java.util.List;
-
+import Services.AiReplyService;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 public class ThreadPageController {
+
+
+    @FXML private Button addCommentBtn;
+
+    // prevents double-submit even if user spams
+    private volatile boolean isPostingComment = false;
+    @FXML private Label replyStatusLabel;
+    private final AiReplyService replyService = new AiReplyService();
     @FXML
     private Label commentCountLabel;
 
@@ -50,43 +61,159 @@ public class ThreadPageController {
     @FXML
     private Label summaryLabel;
 
-    private final AiSummaryService summaryService = new AiSummaryService();
-    private String buildSummaryPrompt(Thread thread, List<Comment> comments) {
+
+    private String buildReplyPrompt(Thread thread, List<Comment> comments) {
+        int count = (comments == null) ? 0 : comments.size();
+
         StringBuilder sb = new StringBuilder();
 
-        sb.append("ROLE: You summarize a community discussion thread.\n");
-        sb.append("You will receive THREAD INFO and COMMENTS.\n");
-        sb.append("THREAD INFO is CONTEXT, NOT comments.\n\n");
+        sb.append("TASK: Generate 3 READY-TO-POST replies as a comment.\n\n");
 
-        sb.append("THREAD INFO (CONTEXT ONLY)\n");
-        sb.append("TITLE: ").append(safe(thread.getTitle())).append("\n");
-        sb.append("DESCRIPTION: ").append(safe(thread.getContent())).append("\n\n");
+        sb.append("ABSOLUTE RULES:\n");
+        sb.append("- Each suggestion must be a DIRECT reply message I can post.\n");
+        sb.append("- Write in FIRST PERSON (\"I\", \"we\") and address the reader as \"you\".\n");
+        sb.append("- DO NOT describe the conversation or participants (NO: \"someone\", \"the person\", \"they\", \"seems\", \"this thread is...\").\n");
+        sb.append("- DO NOT invent facts beyond the given text.\n");
+        sb.append("- If context is unclear/minimal: output friendly generic replies (greeting + ask clarification).\n");
+        sb.append("- No names or dates.\n");
+        sb.append("- 1–2 sentences per reply.\n\n");
 
-        sb.append("COMMENTS (oldest -> newest)\n");
-        sb.append("Each comment has author_firstname, created_at, content.\n\n");
+        sb.append("THREAD:\n");
+        sb.append("title: ").append(safe(thread.getTitle())).append("\n");
+        sb.append("content: ").append(safe(thread.getContent())).append("\n\n");
 
-        int i = 1;
-        for (Comment c : comments) {
-            String name = safe(c.getFirstname());
-            String created = (c.getCreatedAt() == null) ? "" : c.getCreatedAt().toString();
-            String content = safe(c.getContent()).replace("\r", " ").replace("\n", " ").trim();
+        sb.append("COMMENTS_COUNT: ").append(count).append("\n");
+        sb.append("COMMENTS (oldest -> newest):\n");
 
-            sb.append(i++).append(") author_firstname: ").append(name.isBlank() ? "Unknown" : name).append("\n");
-            sb.append("   created_at: ").append(created).append("\n");
-            sb.append("   content: ").append(content).append("\n\n");
+        if (count == 0) {
+            sb.append("(none)\n");
+            sb.append("IMPORTANT: Since there are no comments, replies MUST be generic and ask for clarification.\n");
+        } else {
+            int i = 1;
+            for (Comment c : comments) {
+                String content = safe(c.getContent()).replace("\r", " ").replace("\n", " ").trim();
+                if (!content.isBlank()) sb.append(i++).append(") ").append(content).append("\n");
+            }
         }
 
-        sb.append("IMPORTANT RULES (MUST FOLLOW)\n");
-        sb.append("1) Treat TITLE/DESCRIPTION as context only.\n");
-        sb.append("2) DO NOT mention any usernames/firstnames.\n");
-        sb.append("3) DO NOT mention any dates/timestamps.\n");
-        sb.append("4) Ignore filler like 'aaa', random letters.\n");
-        sb.append("5) Do not invent facts.\n\n");
+        sb.append("\nOUTPUT FORMAT (STRICT):\n");
+        sb.append("1) <ready-to-post reply>\n");
+        sb.append("2) <ready-to-post reply>\n");
+        sb.append("3) <ready-to-post reply>\n");
 
-        sb.append("OUTPUT FORMAT (strict)\n");
-        sb.append("Topic: <3-6 words>\n");
-        sb.append("Summary: <1-2 sentences>\n");
-        sb.append("Key points:\n- <max 3 bullets>\n");
+        return sb.toString();
+    }
+    @FXML
+    private void onSuggestReply() {
+
+        // quick UI feedback
+        replyStatusLabel.setText("⏳ Generating reply suggestions..."); // reuse your label or create a new label if you want
+
+        EmailAsync.run(() -> {
+            try {
+                CommentCRUD crud = new CommentCRUD();
+                List<Comment> all = crud.afficherByThread(thread.getId());
+
+                // last 15 comments max (good context, not too big)
+                int start = Math.max(0, all.size() - 15);
+                List<Comment> recent = all.subList(start, all.size());
+
+                String prompt = buildReplyPrompt(thread, recent);
+                String aiText = replyService.suggestReplies(prompt);
+
+                // parse "1) ... 2) ... 3) ..."
+                List<String> options = extractNumberedOptions(aiText);
+                if (options.size() < 1) options = List.of(aiText);
+
+                List<String> finalOptions = options;
+
+                Platform.runLater(() -> {
+                    replyStatusLabel.setText("✅ Suggestions ready"); // optional
+
+                    ChoiceDialog<String> dialog =
+                            new ChoiceDialog<>(finalOptions.get(0), finalOptions);
+
+                    dialog.setTitle("Reply Suggestions");
+                    dialog.setHeaderText("Pick a reply to insert");
+                    dialog.setContentText("Suggestions:");
+
+                    dialog.showAndWait().ifPresent(choice -> {
+                        commentField.setText(choice);
+                        commentField.requestFocus();
+                        commentField.positionCaret(commentField.getText().length());
+                    });
+                });
+
+            } catch (Exception ex) {
+                Platform.runLater(() -> summaryLabel.setText("❌ Suggest failed: " + ex.getMessage()));
+            }
+        });
+    }
+    private List<String> extractNumberedOptions(String text) {
+        List<String> list = new ArrayList<>();
+
+        Pattern p = Pattern.compile("(?m)^\\s*[123]\\)\\s*(.+)$");
+        Matcher m = p.matcher(text);
+
+        while (m.find()) {
+            String s = m.group(1).trim();
+            if (!s.isEmpty()) list.add(s);
+        }
+
+        return list;
+    }
+    private String keepOnlySummaryText(String ai) {
+        if (ai == null) return "";
+        ai = ai.trim();
+
+        // If model still outputs "Summary: ..."
+        int idx = ai.toLowerCase().indexOf("summary:");
+        if (idx >= 0) {
+            return ai.substring(idx + "summary:".length()).trim();
+        }
+
+        // If it outputs Topic/Key points etc, keep first 2 lines max
+        String[] lines = ai.split("\\R+");
+        if (lines.length >= 2) return (lines[0] + " " + lines[1]).trim();
+        return ai;
+    }
+    private final AiSummaryService summaryService = new AiSummaryService();
+    private String buildSummaryPrompt(Thread thread, List<Comment> comments) {
+        int count = (comments == null) ? 0 : comments.size();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("TASK: Summarize the discussion in 1-2 sentences.\n\n");
+
+        sb.append("OUTPUT RULES (STRICT):\n");
+        sb.append("- Output ONLY the final summary text (no labels, no headings).\n");
+        sb.append("- Do NOT include usernames/firstnames.\n");
+        sb.append("- Do NOT include dates/timestamps.\n");
+        sb.append("- Do NOT quote verbatim.\n");
+        sb.append("- Do NOT invent missing info.\n");
+        sb.append("- IMPORTANT: COMMENTS_COUNT is authoritative.\n");
+        sb.append("- If COMMENTS_COUNT > 0: you MUST produce a summary (never say 'no discussion yet').\n");
+        sb.append("- If COMMENTS_COUNT = 0: output exactly: No discussion yet.\n\n");
+
+        sb.append("THREAD:\n");
+        sb.append("id: ").append(thread.getId()).append("\n");
+        sb.append("title: ").append(safe(thread.getTitle())).append("\n");
+        sb.append("content: ").append(safe(thread.getContent())).append("\n\n");
+
+        sb.append("COMMENTS_COUNT: ").append(count).append("\n\n");
+
+        sb.append("COMMENTS (oldest -> newest):\n");
+        if (count == 0) {
+            sb.append("(none)\n");
+        } else {
+            int i = 1;
+            for (Comment c : comments) {
+                sb.append(i++).append(")\n");
+                sb.append("   author_firstname: ").append(safe(c.getFirstname())).append("\n");
+                sb.append("   created_at: ").append(c.getCreatedAt() == null ? "" : c.getCreatedAt().toString()).append("\n");
+                sb.append("   content: ").append(safe(c.getContent()).replace("\r", " ").replace("\n", " ").trim()).append("\n");
+            }
+        }
 
         return sb.toString();
     }
@@ -117,7 +244,8 @@ public class ThreadPageController {
                 // ✅ IMPORTANT: call instance method (NOT static)
                 String summary = summaryService.summarize(prompt);
 
-                Platform.runLater(() -> summaryLabel.setText(summary));
+                String clean = keepOnlySummaryText(summary);
+                Platform.runLater(() -> summaryLabel.setText(clean));
 
             } catch (Exception ex) {
                 Platform.runLater(() ->
@@ -127,27 +255,40 @@ public class ThreadPageController {
         });
     }
 
-    private String freeCensor(String text) {
+    private static final HttpClient CENSOR_CLIENT = HttpClient.newBuilder()
+            .connectTimeout(java.time.Duration.ofSeconds(1))
+            .version(HttpClient.Version.HTTP_1_1)
+            .build();
+
+    private String freeCensorFast(String text) {
         try {
+            if (text == null || text.isBlank()) return text;
+
             String encoded = URLEncoder.encode(text, StandardCharsets.UTF_8);
             String url = "https://www.purgomalum.com/service/plain?text=" + encoded;
 
-            HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
+                    .timeout(java.time.Duration.ofSeconds(3))   // request timeout
                     .GET()
                     .build();
 
-            HttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (res.statusCode() >= 300) return text; // fallback if service fails
-            return res.body(); // already the censored text
+            // HARD CAP: 3 seconds total max
+            return CENSOR_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .completeOnTimeout(null, 3, java.util.concurrent.TimeUnit.SECONDS)
+                    .thenApply(res -> {
+                        if (res == null) return text;               // timed out
+                        if (res.statusCode() >= 300) return text;   // bad response
+                        String body = res.body();
+                        return (body == null || body.isBlank()) ? text : body;
+                    })
+                    .exceptionally(ex -> text)
+                    .join();
 
         } catch (Exception e) {
-            return text; // fallback
+            return text;
         }
     }
-
     public void setThread(Thread thread) {
         this.thread = thread;
 
@@ -294,23 +435,39 @@ public class ThreadPageController {
                                 return;
                             }
 
-                            try {
-                                String cleaned = freeCensor(newText);
+                            // lock while saving
+                            saveBtn.setDisable(true);
+                            cancelBtn.setDisable(true);
 
-                                CommentCRUD cCrud = new CommentCRUD();
-                                cCrud.modifier(comment.getId(), cleaned);
+                            EmailAsync.run(() -> {
+                                try {
+                                    String cleaned = freeCensorFast(newText);
 
-                                contentLabel.setText(cleaned);
-                                contentBox.getChildren().setAll(contentLabel);
+                                    CommentCRUD cCrud = new CommentCRUD();
+                                    cCrud.modifier(comment.getId(), cleaned);
 
-                            } catch (SQLException ex) {
-                                showAlert("Error updating comment: " + ex.getMessage());
-                                contentBox.getChildren().setAll(contentLabel);
-                            } finally {
-                                editBtn.setDisable(false);
-                                deleteBtn.setDisable(false);
-                            }
+                                    Platform.runLater(() -> {
+                                        contentLabel.setText(cleaned);
+                                        contentBox.getChildren().setAll(contentLabel);
 
+                                        editBtn.setDisable(false);
+                                        deleteBtn.setDisable(false);
+                                        saveBtn.setDisable(false);
+                                        cancelBtn.setDisable(false);
+                                    });
+
+                                } catch (Exception ex) {
+                                    Platform.runLater(() -> {
+                                        showAlert("Error updating comment: " + ex.getMessage());
+                                        contentBox.getChildren().setAll(contentLabel);
+
+                                        editBtn.setDisable(false);
+                                        deleteBtn.setDisable(false);
+                                        saveBtn.setDisable(false);
+                                        cancelBtn.setDisable(false);
+                                    });
+                                }
+                            });
                         });
                     });
 
@@ -341,8 +498,12 @@ public class ThreadPageController {
     @FXML
     private void addComment() {
 
+        // ✅ anti-spam lock
+        if (isPostingComment) return;
+
         String text = commentField.getText().trim();
 
+        // ✅ validate BEFORE locking
         if (text.isEmpty()) {
             showAlert("Comment cannot be empty.");
             return;
@@ -352,31 +513,47 @@ public class ThreadPageController {
             return;
         }
 
-        String cleaned = freeCensor(text);
+        // ✅ lock UI once
+        isPostingComment = true;
+        commentField.setDisable(true);
+        if (addCommentBtn != null) addCommentBtn.setDisable(true);
 
-        Comment comment = new Comment(thread.getId(), currentUserId, cleaned);
+        EmailAsync.run(() -> {
+            try {
+                // ✅ use FAST censor (hard cap)
+                String cleaned = freeCensorFast(text);
 
-        CommentCRUD crud = new CommentCRUD();
-        try {
-            crud.ajouter(comment);
+                Comment comment = new Comment(thread.getId(), currentUserId, cleaned);
+                new CommentCRUD().ajouter(comment);
 
-            EmailAsync.run(() -> {
-                new NotificationEmailService()
-                        .sendThreadCommentMail(thread.getId(), currentUserId, cleaned);
-            });
+                // email async (keep it async)
+                EmailAsync.run(() -> {
+                    new NotificationEmailService()
+                            .sendThreadCommentMail(thread.getId(), currentUserId, cleaned);
+                });
 
-            commentField.clear();
-            loadComments();
+                Platform.runLater(() -> {
+                    commentField.clear();
+                    loadComments();
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            showAlert("DB error: " + e.getMessage());
-        }
+                    // ✅ unlock UI
+                    commentField.setDisable(false);
+                    if (addCommentBtn != null) addCommentBtn.setDisable(false);
+                    isPostingComment = false;
+                });
 
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    // ✅ unlock UI on error too
+                    commentField.setDisable(false);
+                    if (addCommentBtn != null) addCommentBtn.setDisable(false);
+                    isPostingComment = false;
 
+                    showAlert("Error: " + e.getMessage());
+                });
+            }
+        });
     }
-
-
     @FXML
     private void editThread() {
         try {

@@ -20,6 +20,7 @@ public class HomePage extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/CommunityHomePage.fxml"));
         Scene scene= new Scene(root);
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
     catch(IOException e){

@@ -57,10 +57,13 @@
 
         private Group group;
 
-        // TODO: Replace with SessionService.getInstance().getCurrentUser().getId()
-        // Temporary logged user for testing (integration with User module not done yet)
-        private final int currentUserId = 1;
 
+        private final int currentUserId = 1;
+        private String softWrapLongTokens(String text, int every) {
+            if (text == null) return "";
+            // Inserts zero-width spaces so Label can wrap even without spaces
+            return text.replaceAll("(.{" + every + "})", "$1\u200B");
+        }
         private VBox createAdminPanel() {
 
             VBox card = new VBox(15);
@@ -283,7 +286,6 @@
 
             checkMembership();
         }
-
         private void deleteThread(int threadId) {
 
             if (!confirmAction("Delete Thread",
@@ -327,42 +329,47 @@
                         .forEach(thread -> {
 
                             VBox card = new VBox(10);
-                            card.setStyle(
+                            String normal =
                                     "-fx-background-color: white;" +
                                             "-fx-padding: 18;" +
                                             "-fx-background-radius: 14;" +
-                                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
-                            );
+                                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);" +
+                                            "-fx-border-color: transparent;" +
+                                            "-fx-border-radius: 14;";
+
+                            String hover =
+                                    "-fx-background-color: white;" +
+                                            "-fx-padding: 18;" +
+                                            "-fx-background-radius: 14;" +
+                                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);" + // ✅ SAME shadow (no expansion)
+                                            "-fx-border-color: rgba(52,152,219,0.35);" +
+                                            "-fx-border-width: 1.2;" +
+                                            "-fx-border-radius: 14;";
+
+                            card.setStyle(normal);
+
+                            card.setOnMouseEntered(e -> card.setStyle(hover));
+                            card.setOnMouseExited(e -> card.setStyle(normal));
 
                             Label author = new Label("By " + thread.getFirstname());
                             author.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 12;");
 
                             Label title = new Label(thread.getTitle());
+                            title.setMinWidth(0);
+                            title.maxWidthProperty().bind(card.widthProperty().subtract(20));
+                            title.setWrapText(true);
                             title.setStyle("-fx-font-size:16px; -fx-font-weight: bold; -fx-text-fill:#111827;");
 
-                            Label content = new Label(thread.getContent());
+                            Label content = new Label(softWrapLongTokens(thread.getContent(), 40));
                             content.setWrapText(true);
                             content.setStyle("-fx-text-fill:#374151;");
 
+                            // IMPORTANT: prevent it from growing the HBox width
+                            content.setMinWidth(0);
+                            content.maxWidthProperty().bind(card.widthProperty().subtract(20));
+
                             card.getChildren().addAll(author, title, content);
 
-                            card.setOnMouseEntered(e ->
-                                    card.setStyle(
-                                            "-fx-background-color: white;" +
-                                                    "-fx-padding: 18;" +
-                                                    "-fx-background-radius: 14;" +
-                                                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 6);"
-                                    )
-                            );
-
-                            card.setOnMouseExited(e ->
-                                    card.setStyle(
-                                            "-fx-background-color: white;" +
-                                                    "-fx-padding: 18;" +
-                                                    "-fx-background-radius: 14;" +
-                                                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);"
-                                    )
-                            );
 
                             card.setOnMouseClicked(e -> openThreadPage(thread));
 
@@ -538,7 +545,8 @@
 
                         Button kickBtn = new Button("Kick");
                         kickBtn.setStyle("-fx-background-color:#e53935; -fx-text-fill:white;");
-
+                        kickBtn.setMinWidth(70);
+                        kickBtn.setPrefWidth(70);
                         kickBtn.setOnAction(e -> kickMember(member.getUserId()));
 
                         row.getChildren().add(kickBtn);

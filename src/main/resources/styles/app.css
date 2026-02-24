@@ -952,6 +952,6 @@
     -fx-border-radius: 10;
 }
 .page-wrap {
-    -fx-padding: 30px;
+    -fx-padding: 10px;
+    -fx-alignment: TOP_CENTER;
 }
-

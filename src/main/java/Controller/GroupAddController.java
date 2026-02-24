@@ -73,8 +73,13 @@ public class GroupAddController {
             creategroup.getScene().setRoot(root);
 
         } catch (SQLException | IOException e) {
-            statusLabel.setText("Error adding group");
-            System.out.println(e.getMessage());
+
+            if (e instanceof SQLException && "GROUP_NAME_EXISTS".equals(e.getMessage())) {
+                statusLabel.setText("Group name already exists.");
+            } else {
+                statusLabel.setText("Error adding group");
+                System.out.println(e.getMessage());
+            }
         }
     }
 

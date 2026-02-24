@@ -52,7 +52,7 @@
             <HBox fx:id="mainContentBox" spacing="20" styleClass="page-wrap">
 
                 <!-- MEMBERS -->
-                <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="card">
+                <VBox spacing="12" prefWidth="300" minWidth="300" styleClass="card">
                     <Label fx:id="memberCountLabel" text="Members" styleClass="card-title"/>
 
                     <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">

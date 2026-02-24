@@ -34,50 +34,59 @@
 
     <!-- BODY (WHOLE PAGE SCROLLABLE) -->
     <center>
-        <ScrollPane fitToWidth="true"
-                    hbarPolicy="NEVER"
-                    vbarPolicy="AS_NEEDED"
-                    style="-fx-background-color: transparent;">
+        <VBox styleClass="content-area" fillWidth="true">
 
-            <VBox styleClass="content-area">
+            <HBox spacing="30" styleClass="page-wrap" VBox.vgrow="ALWAYS">
 
-                <HBox spacing="30" styleClass="page-wrap">
+                <!-- LEFT SIDE -->
+                <VBox spacing="15" HBox.hgrow="ALWAYS" minWidth="600">
 
-                    <!-- LEFT SIDE -->
-                    <VBox spacing="15" HBox.hgrow="ALWAYS">
-
-                        <VBox styleClass="card" spacing="10">
-                            <Label text="Description" styleClass="card-title"/>
-                            <Label fx:id="descriptionLabel" wrapText="true"/>
-                        </VBox>
-
-                        <VBox styleClass="card" spacing="10">
-                            <Label fx:id="dateLabel" styleClass="muted-text"/>
-                            <Label fx:id="capacityLabel" styleClass="card-title"/>
-
-                            <Button fx:id="joinBtn"
-                                    styleClass="btn-primary"/>
-                        </VBox>
-
+                    <VBox styleClass="card" spacing="10">
+                        <Label text="Description" styleClass="card-title"/>
+                        <Label fx:id="descriptionLabel" wrapText="true"/>
                     </VBox>
 
-                    <!-- RIGHT SIDE -->
-                    <VBox spacing="15" prefWidth="320">
+                    <VBox spacing="8" styleClass="ai-box">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="AI for this event" styleClass="section-title-sm"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="Summary" onAction="#generateEventSummary" styleClass="btn-primary"/>
+                            <Button text="Promo" onAction="#generateEventPromo" styleClass="btn-secondary"/>
+                            <Button text="Checklist" onAction="#generateEventChecklist" styleClass="btn-secondary"/>
+                        </HBox>
 
-                        <VBox styleClass="card" spacing="10">
-                            <Label text="Participants" styleClass="card-title"/>
-
-                            <VBox fx:id="participantsContainer"
-                                  spacing="10"/>
-                        </VBox>
-
+                        <TextArea fx:id="eventAiOutputLabel"
+                                  editable="false"
+                                  wrapText="true"
+                                  focusTraversable="false"
+                                  prefRowCount="4"
+                                  styleClass="readonly-wrap"
+                                  text="(Click a button to generate AI text)"/>
                     </VBox>
 
-                </HBox>
+                    <VBox styleClass="card" spacing="10">
+                        <Label fx:id="dateLabel" styleClass="muted-text"/>
+                        <Label fx:id="capacityLabel" styleClass="card-title"/>
+                        <Button fx:id="joinBtn" styleClass="btn-primary"/>
+                    </VBox>
 
-            </VBox>
+                </VBox>
 
-        </ScrollPane>
+                <!-- RIGHT SIDE (fixed) -->
+                <VBox spacing="15" prefWidth="320" minWidth="320" maxWidth="320">
+
+                    <VBox styleClass="card" spacing="10" VBox.vgrow="ALWAYS">
+                        <Label text="Participants" styleClass="card-title"/>
+
+                        <!-- make participants list scroll INSIDE only if too long? (optional) -->
+                        <VBox fx:id="participantsContainer" spacing="10"/>
+                    </VBox>
+
+                </VBox>
+
+            </HBox>
+
+        </VBox>
     </center>
 
 </BorderPane>

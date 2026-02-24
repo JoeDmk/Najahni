@@ -79,8 +79,20 @@
                                   wrapText="true"
                                   styleClass="form-field"/>
 
-                        <HBox alignment="CENTER_RIGHT">
-                            <Button text="Add Comment"
+                        <!-- ✅ OPTIONAL status label for reply generation -->
+                        <Label fx:id="replyStatusLabel"
+                               text=""
+                               wrapText="true"
+                               styleClass="muted-text"/>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="10">
+                            <!-- ✅ NEW BUTTON -->
+                            <Button text="✨ Suggest reply"
+                                    onAction="#onSuggestReply"
+                                    styleClass="btn-secondary"/>
+
+                            <Button fx:id="addCommentBtn"
+                                    text="Add Comment"
                                     onAction="#addComment"
                                     styleClass="btn-primary"/>
                         </HBox>
