@@ -372,7 +372,7 @@ public class UserService implements UserInterface {
         }
     }
 
-    // ==================== Ban/Unban ====================
+    // Ban/Unban
 
     public void banUser(int userId) throws PermissionException, UserNotFoundException {
         User user = getUserbyID(userId);
@@ -402,7 +402,7 @@ public class UserService implements UserInterface {
         }
     }
 
-    // ==================== Statistics ====================
+    // Statistics
 
     public int countByRole(Type role) {
         String sql = "SELECT COUNT(*) FROM user WHERE role = ?";
@@ -633,6 +633,34 @@ public class UserService implements UserInterface {
         return false;
     }
 
+    // ==================== Face Recognition ====================
+
+    public void setFaceRegistered(int userId, boolean registered) {
+        String sql = "UPDATE user SET face_registered = ?, updated_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, registered);
+            ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error updating face_registered: " + ex.getMessage());
+        }
+    }
+
+    public List<User> getFaceRegisteredUsers() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM user WHERE face_registered = true AND is_active = true AND is_banned = false";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSet(rs));
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error retrieving face-registered users: " + ex.getMessage());
+        }
+        return users;
+    }
+
     // ==================== Crypto Helpers ====================
 
     public String cryptPassword(String passwordToCrypt) {
@@ -704,6 +732,25 @@ public class UserService implements UserInterface {
 
         user.setGoogleProviderId(rs.getString("google_provider_id"));
 
+        // Face recognition
+        try {
+            user.setFaceRegistered(rs.getBoolean("face_registered"));
+        } catch (SQLException ignored) {
+            user.setFaceRegistered(false);
+        }
+
+        // Theme & Language preferences
+        try {
+            user.setPreferredTheme(rs.getString("preferred_theme"));
+        } catch (SQLException ignored) {
+            user.setPreferredTheme("light");
+        }
+        try {
+            user.setPreferredLanguage(rs.getString("preferred_language"));
+        } catch (SQLException ignored) {
+            user.setPreferredLanguage("fr");
+        }
+
         Timestamp createdAt = rs.getTimestamp("created_at");
         user.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
 
@@ -711,5 +758,81 @@ public class UserService implements UserInterface {
         user.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
 
         return user;
+    }
+
+    // ==================== User Preferences ====================
+
+    public void saveThemePreference(int userId, String theme) {
+        String sql = "UPDATE user SET preferred_theme = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, theme);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error saving theme preference: " + ex.getMessage());
+        }
+    }
+
+    public void saveLanguagePreference(int userId, String language) {
+        String sql = "UPDATE user SET preferred_language = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, language);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error saving language preference: " + ex.getMessage());
+        }
+    }
+
+    // ==================== Similar Users (AI Suggest) ====================
+
+    /**
+     * Find similar users based on role, company, and address matching.
+     * Uses a weighted scoring system: same role +3, same company +5, same city +2.
+     */
+    public List<User> getSimilarUsers(int userId, int limit) {
+        List<User> similar = new ArrayList<>();
+        try {
+            User currentUser = getUserbyID(userId);
+            String sql = "SELECT *, " +
+                    "(CASE WHEN role = ? THEN 3 ELSE 0 END) + " +
+                    "(CASE WHEN company_name IS NOT NULL AND company_name != '' AND company_name = ? THEN 5 ELSE 0 END) + " +
+                    "(CASE WHEN address IS NOT NULL AND address != '' AND address = ? THEN 2 ELSE 0 END) " +
+                    "AS similarity_score FROM user " +
+                    "WHERE id != ? AND is_active = TRUE AND is_banned = FALSE " +
+                    "AND id NOT IN (SELECT followed_id FROM user_connection WHERE follower_id = ?) " +
+                    "ORDER BY similarity_score DESC, created_at DESC LIMIT ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, currentUser.getRole().name());
+            ps.setString(2, currentUser.getCompanyName() != null ? currentUser.getCompanyName() : "");
+            ps.setString(3, currentUser.getAddress() != null ? currentUser.getAddress() : "");
+            ps.setInt(4, userId);
+            ps.setInt(5, userId);
+            ps.setInt(6, limit);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                similar.add(mapResultSet(rs));
+            }
+        } catch (Exception ex) {
+            System.err.println("Error finding similar users: " + ex.getMessage());
+        }
+        return similar;
+    }
+
+    /**
+     * Get all user emails (for broadcast).
+     */
+    public List<String> getAllEmails() {
+        List<String> emails = new ArrayList<>();
+        String sql = "SELECT email FROM user WHERE is_active = TRUE";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                emails.add(rs.getString("email"));
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error getting emails: " + ex.getMessage());
+        }
+        return emails;
     }
 }

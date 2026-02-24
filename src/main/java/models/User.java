@@ -24,6 +24,9 @@ public class User {
     private boolean isActive;
     private boolean isBanned;
     private String googleProviderId;
+    private boolean faceRegistered;
+    private String preferredTheme;
+    private String preferredLanguage;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -151,6 +154,15 @@ public class User {
 
     public String getGoogleProviderId() { return googleProviderId; }
     public void setGoogleProviderId(String googleProviderId) { this.googleProviderId = googleProviderId; }
+
+    public boolean isFaceRegistered() { return faceRegistered; }
+    public void setFaceRegistered(boolean faceRegistered) { this.faceRegistered = faceRegistered; }
+
+    public String getPreferredTheme() { return preferredTheme != null ? preferredTheme : "light"; }
+    public void setPreferredTheme(String preferredTheme) { this.preferredTheme = preferredTheme; }
+
+    public String getPreferredLanguage() { return preferredLanguage != null ? preferredLanguage : "fr"; }
+    public void setPreferredLanguage(String preferredLanguage) { this.preferredLanguage = preferredLanguage; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

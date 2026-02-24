@@ -36,6 +36,7 @@ public class SignInController {
     @FXML private CheckBox chkCaptcha;        // The checkbox inside the panel
     @FXML private Label lblCaptchaStatus;     // Status label (shows ✓ Vérifié or instructions)
     @FXML private Button btnGoogle;            // "Continue with Google" button
+    @FXML private Button btnFaceLogin;         // "Face ID" login button
 
     private UserService userService = UserService.getInstance();
     private SessionService sessionService = SessionService.getInstance();
@@ -146,10 +147,30 @@ public class SignInController {
                 sessionService.setCurrentUser(user);
                 SessionManager.saveSession(user.getEmail(), user.getRole().name());
                 loginAttemptsMap.put(email, 0);
+
+                // Record successful login
+                LoginHistoryService.getInstance().recordLogin(user.getId(), "PASSWORD", true);
+
+                // Suspicious login detection
+                SuspiciousLoginService suspiciousService = SuspiciousLoginService.getInstance();
+                int riskScore = suspiciousService.analyzeLogin(user);
+                if (riskScore >= 30) {
+                    suspiciousService.handleSuspiciousLogin(user, riskScore);
+                }
+
+                // Load user preferences
+                ThemeService.getInstance().loadPreference(user.getPreferredTheme());
+                LanguageService.getInstance().setLanguage(user.getPreferredLanguage());
+
                 redirectToHome(user);
             } else {
                 int attempts = loginAttemptsMap.getOrDefault(email, 0) + 1;
                 loginAttemptsMap.put(email, attempts);
+
+                // Record failed login attempt
+                try {
+                    LoginHistoryService.getInstance().recordLogin(user.getId(), "PASSWORD", false);
+                } catch (Exception ignored) {}
 
                 if (attempts >= sessionService.MAX_LOGIN_ATTEMPTS) {
                     if (user.getRole() != Type.ADMIN) {
@@ -304,6 +325,14 @@ public class SignInController {
                     // Success! Set session and redirect
                     sessionService.setCurrentUser(user);
                     SessionManager.saveSession(user.getEmail(), user.getRole().name());
+
+                    // Record Google login
+                    LoginHistoryService.getInstance().recordLogin(user.getId(), "GOOGLE", true);
+
+                    // Load user preferences
+                    ThemeService.getInstance().loadPreference(user.getPreferredTheme());
+                    LanguageService.getInstance().setLanguage(user.getPreferredLanguage());
+
                     System.out.println("Google login successful for: " + user.getEmail());
                     redirectToHome(user);
 
@@ -313,6 +342,22 @@ public class SignInController {
                 }
             });
         });
+    }
+
+    /**
+     * Handles "Face ID" login button click.
+     * Opens the FaceLogin.fxml window which starts the webcam and recognition process.
+     */
+    @FXML
+    private void handleFaceLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/FaceLogin.fxml"));
+            Parent root = loader.load();
+            SceneHelper.switchScene(SceneHelper.stageOf(txtEmail), root);
+        } catch (Exception e) {
+            showError("Impossible d'ouvrir la connexion Face ID.");
+            e.printStackTrace();
+        }
     }
 
     @FXML

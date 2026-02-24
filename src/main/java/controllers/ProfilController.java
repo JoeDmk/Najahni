@@ -1,23 +1,33 @@
 package controllers;
 
 import exceptions.*;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import models.User;
+import org.bytedeco.opencv.opencv_core.*;
+import org.bytedeco.opencv.opencv_videoio.VideoCapture;
 import tools.SceneHelper;
 import services.*;
 import util.Type;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Profile controller - view and edit user profile.
@@ -46,8 +56,12 @@ public class ProfilController {
     @FXML private Circle profileImageClip;
     @FXML private ImageView profileImageView;
     @FXML private Label lblUploadHint;
+    @FXML private Label lblFaceStatus;
+    @FXML private Button btnRegisterFace;
+    @FXML private Button btnDeleteFace;
 
     private User currentUser;
+    private FaceRecognitionService faceService = FaceRecognitionService.getInstance();
     private UserService userService = UserService.getInstance();
     private String originalEmail;
     private String originalPhone;
@@ -101,6 +115,7 @@ public class ProfilController {
 
         updateEmailVerificationBadge();
         updatePhoneVerificationBadge();
+        updateFaceIdStatus();
     }
 
     private void updateEmailVerificationBadge() {
@@ -271,6 +286,246 @@ public class ProfilController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // ==================== Face ID Methods ====================
+
+    private void updateFaceIdStatus() {
+        if (lblFaceStatus == null || btnRegisterFace == null || btnDeleteFace == null) return;
+        if (currentUser == null) return;
+
+        boolean hasFace = faceService.hasFaceData(currentUser.getId()) || currentUser.isFaceRegistered();
+        if (hasFace) {
+            lblFaceStatus.setText("✓ Face ID enregistré");
+            lblFaceStatus.setStyle("-fx-text-fill: #27AE60; -fx-font-size: 12px; -fx-font-weight: bold;");
+            btnRegisterFace.setText("Réenregistrer Face ID");
+            btnDeleteFace.setVisible(true);
+            btnDeleteFace.setManaged(true);
+        } else {
+            lblFaceStatus.setText("Aucun Face ID enregistré");
+            lblFaceStatus.setStyle("-fx-text-fill: #95A5A6; -fx-font-size: 12px;");
+            btnRegisterFace.setText("Enregistrer Face ID");
+            btnDeleteFace.setVisible(false);
+            btnDeleteFace.setManaged(false);
+        }
+    }
+
+    /**
+     * Face enrollment flow with LIVE WEBCAM PREVIEW:
+     * 1. Opens a popup dialog with the webcam feed
+     * 2. Captures 15 face samples with visual countdown
+     * 3. Trains a LBPH model for this user
+     * 4. Updates face_registered in the database
+     */
+    @FXML
+    private void handleRegisterFace() {
+        // Confirm with user
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Enregistrement Face ID");
+        confirm.setHeaderText("Enregistrer votre visage");
+        confirm.setContentText(
+                "La caméra va s'ouvrir pour capturer 15 échantillons de votre visage.\n" +
+                "Restez face à la caméra et tournez légèrement la tête.\n\n" +
+                "Voulez-vous continuer ?");
+        confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.YES) return;
+
+        // Create the preview popup
+        Stage previewStage = new Stage();
+        previewStage.initModality(Modality.APPLICATION_MODAL);
+        previewStage.initOwner(firstnameField.getScene().getWindow());
+        previewStage.setTitle("Enregistrement Face ID — Caméra");
+        previewStage.setResizable(false);
+
+        ImageView camView = new ImageView();
+        camView.setFitWidth(480);
+        camView.setFitHeight(360);
+        camView.setPreserveRatio(false);
+
+        Label lblProgress = new Label("Ouverture de la caméra...");
+        lblProgress.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #6C63FF;");
+
+        ProgressBar progressBarEnroll = new ProgressBar(0);
+        progressBarEnroll.setPrefWidth(400);
+        progressBarEnroll.setStyle("-fx-accent: #6C63FF;");
+
+        Label lblHint = new Label("Regardez la caméra et tournez légèrement la tête");
+        lblHint.setStyle("-fx-font-size: 12px; -fx-text-fill: #7f8c8d;");
+
+        Button btnCancel = new Button("Annuler");
+        btnCancel.setStyle("-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 24; -fx-cursor: hand;");
+
+        VBox layout = new VBox(12, camView, lblProgress, progressBarEnroll, lblHint, btnCancel);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: #1a1a2e;");
+
+        Scene scene = new Scene(layout, 520, 500);
+        previewStage.setScene(scene);
+
+        AtomicBoolean cancelled = new AtomicBoolean(false);
+
+        btnCancel.setOnAction(e -> {
+            cancelled.set(true);
+            previewStage.close();
+        });
+        previewStage.setOnCloseRequest(e -> cancelled.set(true));
+
+        // Show the stage first, then start webcam thread
+        previewStage.show();
+
+        new Thread(() -> {
+            VideoCapture camera = null;
+            try {
+                camera = faceService.openWebcam();
+                if (camera == null) {
+                    Platform.runLater(() -> {
+                        previewStage.close();
+                        showError("Impossible d'ouvrir la caméra.");
+                    });
+                    return;
+                }
+
+                // Delete old data first
+                faceService.deleteFaceData(currentUser.getId());
+
+                int totalSamples = FaceRecognitionService.ENROLLMENT_SAMPLES;
+                int captured = 0;
+                int emptyFrameCount = 0;
+                final int MAX_EMPTY_FRAMES = 60;
+
+                while (captured < totalSamples && !cancelled.get()) {
+                    Mat frame = faceService.captureFrame(camera);
+                    if (frame.empty()) {
+                        frame.close();
+                        emptyFrameCount++;
+                        if (emptyFrameCount >= MAX_EMPTY_FRAMES) {
+                            if (camera != null && camera.isOpened()) camera.release();
+                            Platform.runLater(() -> {
+                                previewStage.close();
+                                showError("La caméra ne renvoie aucune image. Vérifiez votre webcam et réessayez.");
+                            });
+                            return;
+                        }
+                        Thread.sleep(100);
+                        continue;
+                    }
+                    emptyFrameCount = 0;
+
+                    RectVector faces = faceService.detectFaces(frame);
+
+                    if (faces.size() > 0) {
+                        // Draw green rectangle on detected face
+                        Scalar green = new Scalar(0, 255, 0, 255);
+                        faceService.drawFaceRectangles(frame, faces, green);
+                        green.close();
+
+                        Rect faceRect = faces.get(0);
+                        Mat faceROI = faceService.extractFaceROI(frame, faceRect);
+                        faceService.saveFaceSample(currentUser.getId(), captured, faceROI);
+                        faceROI.close();
+                        captured++;
+
+                        final int count = captured;
+                        final double progress = (double) count / totalSamples;
+                        Platform.runLater(() -> {
+                            lblProgress.setText("📸 Capture " + count + " / " + totalSamples);
+                            progressBarEnroll.setProgress(progress);
+                        });
+
+                        Thread.sleep(400);
+                    } else {
+                        Platform.runLater(() -> {
+                            lblProgress.setText("Recherche de visage...");
+                            lblProgress.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #E17055;");
+                        });
+                    }
+
+                    // Update live preview
+                    javafx.scene.image.Image fxImage = faceService.matToJavaFXImage(frame);
+                    if (fxImage != null && !cancelled.get()) {
+                        Platform.runLater(() -> {
+                            camView.setImage(fxImage);
+                            lblProgress.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #6C63FF;");
+                        });
+                    }
+
+                    frame.close();
+                    faces.close();
+                    Thread.sleep(50);
+                }
+
+                if (cancelled.get()) {
+                    if (camera != null && camera.isOpened()) camera.release();
+                    Platform.runLater(() -> showError("Enregistrement annulé."));
+                    return;
+                }
+
+                // Release camera before training
+                camera.release();
+                camera = null;
+
+                Platform.runLater(() -> {
+                    lblProgress.setText("⏳ Entraînement du modèle...");
+                    lblProgress.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #F39C12;");
+                    lblHint.setText("Veuillez patienter...");
+                    progressBarEnroll.setProgress(-1); // indeterminate
+                });
+
+                boolean trained = faceService.trainUserModel(currentUser.getId());
+
+                Platform.runLater(() -> {
+                    previewStage.close();
+                    if (trained) {
+                        userService.setFaceRegistered(currentUser.getId(), true);
+                        currentUser.setFaceRegistered(true);
+                        showSuccess("Face ID enregistré avec succès ! Vous pouvez maintenant vous connecter avec votre visage.");
+                        updateFaceIdStatus();
+                    } else {
+                        showError("Erreur lors de l'entraînement du modèle. Réessayez.");
+                        updateFaceIdStatus();
+                    }
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                final VideoCapture cam = camera;
+                Platform.runLater(() -> {
+                    previewStage.close();
+                    showError("Erreur : " + e.getMessage());
+                    updateFaceIdStatus();
+                });
+                if (cam != null && cam.isOpened()) cam.release();
+            }
+        }, "FaceEnrollment").start();
+    }
+
+    /**
+     * Deletes the user's face data and updates the database.
+     */
+    @FXML
+    private void handleDeleteFace() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Supprimer Face ID");
+        confirm.setHeaderText("Supprimer votre Face ID ?");
+        confirm.setContentText("Vous ne pourrez plus vous connecter avec votre visage.");
+        confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    faceService.deleteFaceData(currentUser.getId());
+                    userService.setFaceRegistered(currentUser.getId(), false);
+                    currentUser.setFaceRegistered(false);
+                    updateFaceIdStatus();
+                    showSuccess("Face ID supprimé avec succès.");
+                } catch (Exception e) {
+                    showError("Erreur lors de la suppression : " + e.getMessage());
+                }
+            }
+        });
     }
 
     @FXML

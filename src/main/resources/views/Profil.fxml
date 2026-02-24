@@ -208,6 +208,23 @@
                                 styleClass="btn-primary-gradient" prefHeight="46" prefWidth="220"/>
                     </HBox>
 
+                    <!-- Face ID Registration Section -->
+                    <Separator styleClass="modern-separator"/>
+                    <VBox spacing="10" alignment="CENTER">
+                        <Label text="🔐 Identification par visage (Face ID)" styleClass="field-label"
+                               style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblFaceStatus" text="" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                        <HBox spacing="14" alignment="CENTER">
+                            <Button fx:id="btnRegisterFace" text="Enregistrer Face ID"
+                                    onAction="#handleRegisterFace" prefHeight="42" prefWidth="200"
+                                    style="-fx-background-color: #6C63FF; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 13px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                            <Button fx:id="btnDeleteFace" text="Supprimer Face ID"
+                                    onAction="#handleDeleteFace" prefHeight="42" prefWidth="200"
+                                    style="-fx-background-color: #E17055; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 13px; -fx-cursor: hand; -fx-font-weight: bold;"
+                                    visible="false" managed="false"/>
+                        </HBox>
+                    </VBox>
+
                     <!-- Delete Account -->
                     <HBox alignment="CENTER" style="-fx-padding: 20 0 0 0;">
                         <Button text="Supprimer mon compte" onAction="#handleDeleteAccount"

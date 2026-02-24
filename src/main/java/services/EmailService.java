@@ -72,4 +72,49 @@ public class EmailService {
             System.err.println("Error sending welcome email: " + e.getMessage());
         }
     }
+
+    /**
+     * Send broadcast email to a single recipient.
+     */
+    public void sendBroadcastEmail(String recipientEmail, String subject, String body) {
+        try {
+            Message message = new MimeMessage(getSession());
+            message.setFrom(new InternetAddress(senderEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject(subject + " - Najahni");
+            message.setContent(
+                    "<html><body style='font-family: Segoe UI, Arial, sans-serif;'>" +
+                    "<div style='max-width: 600px; margin: 0 auto; padding: 20px;'>" +
+                    "<div style='background: linear-gradient(135deg, #6C63FF, #8B85FF); padding: 20px; border-radius: 12px 12px 0 0;'>" +
+                    "<h1 style='color: white; margin: 0; font-size: 24px;'>Najahni</h1>" +
+                    "</div>" +
+                    "<div style='background: #f8f9fa; padding: 30px; border-radius: 0 0 12px 12px;'>" +
+                    "<h2 style='color: #2D3436;'>" + subject + "</h2>" +
+                    "<p style='color: #636E72; line-height: 1.6;'>" + body.replace("\n", "<br>") + "</p>" +
+                    "<hr style='border: none; border-top: 1px solid #E1E8ED; margin: 20px 0;'>" +
+                    "<p style='color: #B0B0B0; font-size: 12px;'>Cet email a été envoyé par l'équipe Najahni.</p>" +
+                    "</div></div></body></html>",
+                    "text/html; charset=UTF-8"
+            );
+            Transport.send(message);
+            System.out.println("Broadcast email sent to: " + recipientEmail);
+        } catch (MessagingException e) {
+            System.err.println("Error sending broadcast email to " + recipientEmail + ": " + e.getMessage());
+        }
+    }
+
+    /**
+     * Send broadcast to multiple recipients (runs in background thread).
+     */
+    public void sendBroadcastToAll(java.util.List<String> emails, String subject, String body) {
+        new Thread(() -> {
+            int sent = 0;
+            for (String email : emails) {
+                sendBroadcastEmail(email, subject, body);
+                sent++;
+                try { Thread.sleep(200); } catch (InterruptedException ignored) {} // Rate limiting
+            }
+            System.out.println("Broadcast complete: " + sent + "/" + emails.size() + " emails sent.");
+        }, "email-broadcast").start();
+    }
 }

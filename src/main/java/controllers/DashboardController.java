@@ -5,15 +5,25 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import models.LoginHistory;
+import models.Notification;
 import models.User;
 import tools.SceneHelper;
 import services.*;
 import util.Type;
 
+import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -42,7 +52,12 @@ public class DashboardController {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> roleFilterCombo;
 
+    // NEW: Notification badge
+    @FXML private Label notificationBadge;
+
     private UserService userService = UserService.getInstance();
+    private NotificationService notificationService = NotificationService.getInstance();
+    private ThemeService themeService = ThemeService.getInstance();
     private User currentUser;
     private ObservableList<User> usersList = FXCollections.observableArrayList();
 
@@ -53,6 +68,12 @@ public class DashboardController {
         }
         loadStats();
         loadUsers(null);
+        updateNotificationBadge();
+
+        // Apply theme
+        if (welcomeLabel != null && welcomeLabel.getScene() != null) {
+            themeService.applyTheme(welcomeLabel.getScene());
+        }
     }
 
     @FXML
@@ -266,5 +287,281 @@ public class DashboardController {
         } else {
             stage.setMaximized(true);
         }
+    }
+
+    // ==================== NEW FEATURES ====================
+
+    @FXML
+    private void handleExportCSV() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter en CSV");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        fileChooser.setInitialFileName("najahni_users.csv");
+        File file = fileChooser.showSaveDialog(SceneHelper.stageOf(usersTable));
+        if (file != null) {
+            try {
+                ExportService.getInstance().exportToCSV(userService.getUsers(), file);
+                showAlert(Alert.AlertType.INFORMATION, "Export CSV réussi !\nFichier: " + file.getName());
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur lors de l'export CSV: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void handleExportPDF() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter en PDF");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+        fileChooser.setInitialFileName("najahni_users.pdf");
+        File file = fileChooser.showSaveDialog(SceneHelper.stageOf(usersTable));
+        if (file != null) {
+            try {
+                ExportService.getInstance().exportToPDF(userService.getUsers(), file);
+                showAlert(Alert.AlertType.INFORMATION, "Export PDF réussi !\nFichier: " + file.getName());
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur lors de l'export PDF: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void handleBroadcast() {
+        // Show broadcast dialog
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(SceneHelper.stageOf(usersTable));
+        dialog.setTitle("Email Broadcast");
+
+        VBox layout = new VBox(15);
+        layout.setPadding(new Insets(25));
+        layout.setStyle("-fx-background-color: #F0F2F5;");
+
+        Label title = new Label("📧 Diffusion Email");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;");
+
+        TextField subjectField = new TextField();
+        subjectField.setPromptText("Sujet de l'email...");
+        subjectField.setStyle("-fx-padding: 10; -fx-font-size: 14px; -fx-background-radius: 8;");
+
+        TextArea messageArea = new TextArea();
+        messageArea.setPromptText("Corps du message...");
+        messageArea.setPrefRowCount(8);
+        messageArea.setStyle("-fx-padding: 10; -fx-font-size: 14px; -fx-background-radius: 8;");
+
+        List<String> emails = userService.getAllEmails();
+        Label countLabel = new Label("Destinataires: " + emails.size() + " utilisateurs");
+        countLabel.setStyle("-fx-text-fill: #636E72;");
+
+        Button sendBtn = new Button("Envoyer à tous");
+        sendBtn.setStyle("-fx-background-color: linear-gradient(to right, #6C63FF, #8B85FF); " +
+                "-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; " +
+                "-fx-background-radius: 10; -fx-padding: 10 30; -fx-cursor: hand;");
+        sendBtn.setOnAction(e -> {
+            if (subjectField.getText().trim().isEmpty() || messageArea.getText().trim().isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Veuillez remplir le sujet et le message.");
+                return;
+            }
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Envoyer cet email à " + emails.size() + " utilisateurs ?",
+                    ButtonType.YES, ButtonType.NO);
+            confirm.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.YES) {
+                    EmailService emailService = new EmailService();
+                    emailService.sendBroadcastToAll(emails, subjectField.getText().trim(), messageArea.getText().trim());
+                    showAlert(Alert.AlertType.INFORMATION, "Emails en cours d'envoi !");
+                    dialog.close();
+                }
+            });
+        });
+
+        Button cancelBtn = new Button("Annuler");
+        cancelBtn.setStyle("-fx-background-color: transparent; -fx-border-color: #E1E8ED; " +
+                "-fx-border-radius: 10; -fx-padding: 10 30; -fx-cursor: hand;");
+        cancelBtn.setOnAction(e -> dialog.close());
+
+        HBox buttons = new HBox(10, sendBtn, cancelBtn);
+        buttons.setAlignment(Pos.CENTER_RIGHT);
+
+        layout.getChildren().addAll(title, new Label("Sujet:"), subjectField,
+                new Label("Message:"), messageArea, countLabel, buttons);
+
+        Scene scene = new Scene(layout, 500, 480);
+        dialog.setScene(scene);
+        dialog.show();
+    }
+
+    @FXML
+    private void handleThemeToggle() {
+        themeService.toggleTheme(usersTable.getScene());
+        if (currentUser != null) {
+            userService.saveThemePreference(currentUser.getId(), themeService.getThemeName());
+        }
+    }
+
+    @FXML
+    private void handleNotifications() {
+        if (currentUser == null) return;
+
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(SceneHelper.stageOf(usersTable));
+        dialog.setTitle("Notifications");
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: #F0F2F5;");
+
+        Label title = new Label("🔔 Notifications");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;");
+
+        List<Notification> notifs = notificationService.getNotifications(currentUser.getId());
+
+        ScrollPane scrollPane = new ScrollPane();
+        VBox notifList = new VBox(8);
+        notifList.setPadding(new Insets(5));
+
+        if (notifs.isEmpty()) {
+            notifList.getChildren().add(new Label("Aucune notification"));
+        } else {
+            for (Notification n : notifs) {
+                VBox item = new VBox(4);
+                item.setPadding(new Insets(12));
+                item.setStyle(n.isRead()
+                        ? "-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #E1E8ED; -fx-border-radius: 8;"
+                        : "-fx-background-color: #F0EDFF; -fx-background-radius: 8; -fx-border-color: #6C63FF; -fx-border-radius: 8;");
+
+                Label nTitle = new Label(n.getTypeIcon() + " " + n.getTitle());
+                nTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+                Label nMsg = new Label(n.getMessage());
+                nMsg.setWrapText(true);
+                nMsg.setStyle("-fx-text-fill: #636E72; -fx-font-size: 12px;");
+                Label nTime = new Label(n.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                nTime.setStyle("-fx-text-fill: #B0B0B0; -fx-font-size: 11px;");
+
+                item.getChildren().addAll(nTitle, nMsg, nTime);
+                notifList.getChildren().add(item);
+            }
+        }
+
+        scrollPane.setContent(notifList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefHeight(400);
+
+        Button markAllBtn = new Button("Tout marquer lu");
+        markAllBtn.setStyle("-fx-background-color: #6C63FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+        markAllBtn.setOnAction(e -> {
+            notificationService.markAllAsRead(currentUser.getId());
+            updateNotificationBadge();
+            dialog.close();
+        });
+
+        Button closeBtn = new Button("Fermer");
+        closeBtn.setStyle("-fx-background-color: transparent; -fx-border-color: #E1E8ED; -fx-border-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+        closeBtn.setOnAction(e -> dialog.close());
+
+        HBox buttons = new HBox(10, markAllBtn, closeBtn);
+        buttons.setAlignment(Pos.CENTER_RIGHT);
+
+        layout.getChildren().addAll(title, scrollPane, buttons);
+
+        Scene scene = new Scene(layout, 480, 520);
+        dialog.setScene(scene);
+        dialog.show();
+    }
+
+    @FXML
+    private void handleLoginHistory() {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(SceneHelper.stageOf(usersTable));
+        dialog.setTitle("Historique de connexion");
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: #F0F2F5;");
+
+        Label title = new Label("📋 Historique de connexion (Admin)");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;");
+
+        TableView<LoginHistory> historyTable = new TableView<>();
+        historyTable.setPrefHeight(400);
+
+        TableColumn<LoginHistory, String> userCol = new TableColumn<>("Utilisateur");
+        userCol.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getUserFullName() != null ? c.getValue().getUserFullName() : "ID: " + c.getValue().getUserId()));
+        userCol.setPrefWidth(150);
+
+        TableColumn<LoginHistory, String> methodCol = new TableColumn<>("Méthode");
+        methodCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getLoginMethod()));
+        methodCol.setPrefWidth(90);
+
+        TableColumn<LoginHistory, String> ipCol = new TableColumn<>("IP");
+        ipCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getIpAddress()));
+        ipCol.setPrefWidth(120);
+
+        TableColumn<LoginHistory, String> deviceCol = new TableColumn<>("Appareil");
+        deviceCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDeviceInfo()));
+        deviceCol.setPrefWidth(200);
+
+        TableColumn<LoginHistory, String> statusCol = new TableColumn<>("Statut");
+        statusCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSuccessDisplay()));
+        statusCol.setPrefWidth(70);
+
+        TableColumn<LoginHistory, String> timeCol = new TableColumn<>("Date");
+        timeCol.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getLoginTime() != null
+                        ? c.getValue().getLoginTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
+                        : ""));
+        timeCol.setPrefWidth(150);
+
+        historyTable.getColumns().addAll(userCol, methodCol, ipCol, deviceCol, statusCol, timeCol);
+
+        List<LoginHistory> history = LoginHistoryService.getInstance().getAllLoginHistory(100);
+        historyTable.setItems(FXCollections.observableArrayList(history));
+
+        Button closeBtn = new Button("Fermer");
+        closeBtn.setStyle("-fx-background-color: #6C63FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 20; -fx-cursor: hand;");
+        closeBtn.setOnAction(e -> dialog.close());
+
+        layout.getChildren().addAll(title, historyTable, closeBtn);
+
+        Scene scene = new Scene(layout, 850, 520);
+        dialog.setScene(scene);
+        dialog.show();
+    }
+
+    @FXML
+    private void handleLanguageToggle() {
+        LanguageService langService = LanguageService.getInstance();
+        String current = langService.getCurrentLanguageCode();
+        String next = switch (current) {
+            case "fr" -> "en";
+            case "en" -> "ar";
+            default -> "fr";
+        };
+        langService.setLanguage(next);
+        if (currentUser != null) {
+            userService.saveLanguagePreference(currentUser.getId(), next);
+        }
+        showAlert(Alert.AlertType.INFORMATION, "Langue changée: " + langService.getCurrentLanguageName() +
+                "\nLes changements seront appliqués au prochain chargement de page.");
+    }
+
+    private void updateNotificationBadge() {
+        if (notificationBadge != null && currentUser != null) {
+            int unread = notificationService.getUnreadCount(currentUser.getId());
+            if (unread > 0) {
+                notificationBadge.setText(String.valueOf(unread));
+                notificationBadge.setVisible(true);
+            } else {
+                notificationBadge.setVisible(false);
+            }
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type, message);
+        alert.showAndWait();
     }
 }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:controller="controllers.FaceLoginController"
+            stylesheets="@modern.css"
+            style="-fx-background-color: #F0F2F5;"
+            prefWidth="700" prefHeight="580"
+            xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- Top Header -->
+    <top>
+        <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets top="14" right="24" bottom="14" left="24"/></padding>
+            <Button text="← Retour" onAction="#handleCancel" styleClass="btn-back"/>
+            <Label text="Connexion par Face ID" styleClass="page-header-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="🔐" style="-fx-font-size: 22px;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 30;">
+            <VBox styleClass="glass-card" spacing="20" alignment="CENTER" maxWidth="580">
+                <padding><Insets top="30" right="35" bottom="30" left="35"/></padding>
+
+                <Label text="Reconnaissance Faciale" styleClass="page-title" style="-fx-font-size: 24px;"/>
+                <Label fx:id="lblInstruction" text="Placez votre visage devant la caméra"
+                       styleClass="page-subtitle" style="-fx-font-size: 14px;"/>
+
+                <!-- Webcam Feed Container -->
+                <StackPane fx:id="webcamContainer" alignment="CENTER"
+                           style="-fx-background-color: #1a1a2e; -fx-background-radius: 16;"
+                           prefWidth="480" prefHeight="360" maxWidth="480" maxHeight="360">
+
+                    <!-- Webcam image feed -->
+                    <ImageView fx:id="webcamView" fitWidth="480" fitHeight="360"
+                               preserveRatio="false"/>
+
+                    <!-- Scanning overlay frame -->
+                    <Rectangle fx:id="scanFrame" width="200" height="250"
+                               fill="TRANSPARENT" stroke="#6C63FF" strokeWidth="3"
+                               strokeDashArray="15, 10" arcWidth="20" arcHeight="20"
+                               opacity="0.8"/>
+
+                    <!-- "No camera" fallback text -->
+                    <Label fx:id="lblNoCamera" text="📷 Caméra non disponible"
+                           style="-fx-text-fill: white; -fx-font-size: 16px; -fx-opacity: 0.7;"
+                           visible="false"/>
+                </StackPane>
+
+                <!-- Status & Progress -->
+                <HBox spacing="12" alignment="CENTER">
+                    <Label fx:id="lblStatus" text="Initialisation..."
+                           style="-fx-font-size: 14px; -fx-text-fill: #6C63FF; -fx-font-weight: bold;"/>
+                </HBox>
+
+                <ProgressBar fx:id="progressBar" progress="0" prefWidth="400"
+                             style="-fx-accent: #6C63FF;" visible="false"/>
+
+                <!-- Confidence display -->
+                <HBox fx:id="confidenceBox" spacing="8" alignment="CENTER" visible="false">
+                    <Label text="Confiance :" style="-fx-text-fill: #636e72; -fx-font-size: 13px;"/>
+                    <Label fx:id="lblConfidence" text="0%"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #00B894;"/>
+                </HBox>
+
+                <!-- Match result display -->
+                <VBox fx:id="matchResultBox" spacing="8" alignment="CENTER" visible="false">
+                    <Label fx:id="lblMatchName" text=""
+                           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2D3436;"/>
+                    <Label fx:id="lblMatchEmail" text=""
+                           style="-fx-font-size: 13px; -fx-text-fill: #636e72;"/>
+                </VBox>
+
+                <!-- Error label -->
+                <Label fx:id="lblError" text="" wrapText="true" styleClass="error-label"
+                       visible="false" maxWidth="400"/>
+
+                <!-- Action buttons -->
+                <HBox spacing="14" alignment="CENTER">
+                    <Button fx:id="btnRetry" text="Réessayer" onAction="#handleRetry"
+                            styleClass="btn-outline" prefHeight="42" prefWidth="160"
+                            visible="false"/>
+                    <Button text="Annuler" onAction="#handleCancel"
+                            styleClass="btn-outline" prefHeight="42" prefWidth="160"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

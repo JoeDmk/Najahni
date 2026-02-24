@@ -111,6 +111,23 @@
             <Label text="NAJAHNI" styleClass="nav-brand"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Label fx:id="welcomeLabel" text="Bienvenue, Admin" styleClass="nav-welcome"/>
+
+            <!-- New Feature Buttons -->
+            <Button text="🌙" onAction="#handleThemeToggle" styleClass="btn-nav" style="-fx-font-size: 15px;" tooltip="Thème sombre/clair">
+                <tooltip><Tooltip text="Thème sombre/clair"/></tooltip>
+            </Button>
+            <Button text="🌐" onAction="#handleLanguageToggle" styleClass="btn-nav" style="-fx-font-size: 15px;">
+                <tooltip><Tooltip text="Changer la langue"/></tooltip>
+            </Button>
+            <StackPane>
+                <Button text="🔔" onAction="#handleNotifications" styleClass="btn-nav" style="-fx-font-size: 15px;">
+                    <tooltip><Tooltip text="Notifications"/></tooltip>
+                </Button>
+                <Label fx:id="notificationBadge" text="0" visible="false"
+                       style="-fx-background-color: #E17055; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-background-radius: 50; -fx-padding: 1 5; -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: center;"
+                       StackPane.alignment="TOP_RIGHT" mouseTransparent="true"/>
+            </StackPane>
+
             <Button fx:id="btnToggleScreen" text="⛶" onAction="#handleToggleScreen" styleClass="btn-nav" style="-fx-font-size: 16px;"/>
             <Button text="Mon Profil" onAction="#handleMyProfile" styleClass="btn-nav"/>
             <Button text="Statistiques" onAction="#handleStats" styleClass="btn-nav-accent"/>
@@ -205,6 +222,18 @@
                             styleClass="btn-action-warn-modern" maxWidth="Infinity" prefHeight="42"/>
                     <Button text="Supprimer" onAction="#handleDeleteUser"
                             styleClass="btn-action-danger-modern" maxWidth="Infinity" prefHeight="42"/>
+
+                    <Separator styleClass="modern-separator"/>
+                    <Label text="Outils" styleClass="action-panel-title"/>
+
+                    <Button text="📋 Historique Connexions" onAction="#handleLoginHistory"
+                            styleClass="btn-action-modern" maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="📧 Email Broadcast" onAction="#handleBroadcast"
+                            styleClass="btn-action-modern" maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="📊 Export CSV" onAction="#handleExportCSV"
+                            styleClass="btn-action-edit" maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="📄 Export PDF" onAction="#handleExportPDF"
+                            styleClass="btn-action-edit" maxWidth="Infinity" prefHeight="42"/>
                 </VBox>
             </HBox>
         </VBox>

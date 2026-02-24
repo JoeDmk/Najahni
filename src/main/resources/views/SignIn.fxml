@@ -207,6 +207,12 @@
                         styleClass="btn-google" prefHeight="46" maxWidth="Infinity"
                         graphicTextGap="10"/>
 
+                <!-- Face ID login button -->
+                <Button fx:id="btnFaceLogin" text="🔐  Se connecter avec Face ID"
+                        onAction="#handleFaceLogin"
+                        styleClass="btn-outline" prefHeight="46" maxWidth="Infinity"
+                        style="-fx-border-color: #6C63FF; -fx-text-fill: #6C63FF; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand;"/>
+
                 <Separator styleClass="modern-separator"/>
 
                 <VBox spacing="8" alignment="CENTER">

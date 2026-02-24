@@ -1,0 +1,258 @@
+/* ============================================================
+   NAJAHNI - Dark Theme Override
+   Applied on top of modern.css when dark mode is active
+   ============================================================ */
+
+.root {
+    -najahni-bg: #1A1A2E;
+    -najahni-card: #16213E;
+    -najahni-text: #E8E8E8;
+    -najahni-text-secondary: #B0B0B0;
+    -najahni-border: #2A2A4A;
+    -najahni-dark: #0F0F23;
+    -najahni-dark-mid: #12122B;
+    -najahni-dark-light: #1E1E3F;
+}
+
+/* ---- Background overrides ---- */
+
+.form-panel-bg {
+    -fx-background-color: linear-gradient(to bottom, #1A1A2E, #0F0F23);
+}
+
+.glass-card {
+    -fx-background-color: rgba(22, 33, 62, 0.95);
+    -fx-border-color: rgba(108, 99, 255, 0.2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 24, 0, 0, 8);
+}
+
+/* ---- Text overrides ---- */
+
+.page-title {
+    -fx-text-fill: #E8E8E8;
+}
+
+.page-subtitle {
+    -fx-text-fill: #B0B0B0;
+}
+
+.field-label {
+    -fx-text-fill: #D0D0D0;
+}
+
+.text-muted {
+    -fx-text-fill: #8888AA;
+}
+
+.section-heading {
+    -fx-text-fill: #E0E0E0;
+}
+
+/* ---- Form field overrides ---- */
+
+.modern-field {
+    -fx-background-color: #0F3460;
+    -fx-border-color: #2A2A4A;
+    -fx-text-fill: #E8E8E8;
+    -fx-prompt-text-fill: #666688;
+}
+
+.modern-field:focused {
+    -fx-background-color: #16213E;
+    -fx-border-color: #6C63FF;
+}
+
+.modern-combo {
+    -fx-background-color: #0F3460;
+    -fx-border-color: #2A2A4A;
+}
+
+.modern-combo .list-cell {
+    -fx-text-fill: #E8E8E8;
+    -fx-background-color: #16213E;
+}
+
+.modern-textarea {
+    -fx-background-color: #0F3460;
+    -fx-border-color: #2A2A4A;
+    -fx-text-fill: #E8E8E8;
+}
+
+.modern-textarea .content {
+    -fx-background-color: transparent;
+}
+
+/* ---- Top nav override ---- */
+
+.top-nav {
+    -fx-background-color: linear-gradient(to right, #0F0F23, #1A1A2E, #16213E);
+}
+
+/* ---- Stat cards ---- */
+
+.stat-card-modern {
+    -fx-background-color: rgba(22, 33, 62, 0.9);
+    -fx-border-color: rgba(108, 99, 255, 0.15);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 12, 0, 0, 4);
+}
+
+.stat-card-label {
+    -fx-text-fill: #8888AA;
+}
+
+/* ---- Table overrides ---- */
+
+.modern-table {
+    -fx-background-color: #16213E;
+    -fx-border-color: #2A2A4A;
+}
+
+.modern-table .column-header {
+    -fx-background-color: #0F3460;
+}
+
+.modern-table .column-header .label {
+    -fx-text-fill: #B0B0B0;
+}
+
+.modern-table .table-row-cell {
+    -fx-background-color: #16213E;
+    -fx-border-color: #2A2A4A;
+}
+
+.modern-table .table-row-cell:odd {
+    -fx-background-color: #1A1A2E;
+}
+
+.modern-table .table-row-cell:selected {
+    -fx-background-color: rgba(108, 99, 255, 0.3);
+}
+
+.modern-table .table-cell {
+    -fx-text-fill: #D0D0D0;
+}
+
+.modern-table .table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+}
+
+/* ---- Action panel ---- */
+
+.action-panel-modern {
+    -fx-background-color: rgba(22, 33, 62, 0.95);
+    -fx-border-color: #2A2A4A;
+}
+
+.action-panel-title {
+    -fx-text-fill: #E0E0E0;
+}
+
+.action-panel-hint {
+    -fx-text-fill: #8888AA;
+}
+
+/* ---- Search & filter ---- */
+
+.search-modern {
+    -fx-background-color: #0F3460;
+    -fx-border-color: #2A2A4A;
+    -fx-text-fill: #E8E8E8;
+    -fx-prompt-text-fill: #666688;
+}
+
+.filter-modern {
+    -fx-background-color: #0F3460;
+    -fx-border-color: #2A2A4A;
+}
+
+.filter-modern .list-cell {
+    -fx-text-fill: #E8E8E8;
+}
+
+/* ---- Counter boxes (Home) ---- */
+
+.counter-box {
+    -fx-background-color: rgba(22, 33, 62, 0.9);
+    -fx-border-color: rgba(108, 99, 255, 0.15);
+}
+
+.counter-label {
+    -fx-text-fill: #8888AA;
+}
+
+/* ---- Profile badge ---- */
+
+.profile-badge {
+    -fx-background-color: rgba(108, 99, 255, 0.2);
+    -fx-text-fill: #8B85FF;
+}
+
+/* ---- Captcha box ---- */
+
+.captcha-box {
+    -fx-background-color: #16213E;
+    -fx-border-color: #2A2A4A;
+}
+
+/* ---- Scroll pane ---- */
+
+.modern-scroll {
+    -fx-background-color: transparent;
+}
+
+.modern-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ---- Alert/Dialog overrides ---- */
+
+.dialog-pane {
+    -fx-background-color: #16213E;
+}
+
+.dialog-pane .content .label {
+    -fx-text-fill: #E8E8E8;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #0F3460;
+}
+
+/* ---- Separator ---- */
+
+.modern-separator {
+    -fx-background-color: #2A2A4A;
+}
+
+/* ---- Notification panel ---- */
+
+.notification-panel {
+    -fx-background-color: rgba(22, 33, 62, 0.98);
+    -fx-border-color: #2A2A4A;
+}
+
+.notification-item {
+    -fx-background-color: #1A1A2E;
+    -fx-border-color: #2A2A4A;
+}
+
+.notification-item-unread {
+    -fx-background-color: rgba(108, 99, 255, 0.1);
+    -fx-border-color: rgba(108, 99, 255, 0.3);
+}
+
+/* ---- BorderPane background ---- */
+
+.root {
+    -fx-background-color: #1A1A2E;
+}
+
+/* Override inline styles commonly used */
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
