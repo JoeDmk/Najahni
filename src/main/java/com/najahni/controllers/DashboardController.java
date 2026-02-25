@@ -1,8 +1,11 @@
 package com.najahni.controllers;
 
+import com.najahni.models.InvestmentOpportunity;
+import com.najahni.models.OpportunityStatus;
 import com.najahni.models.Project;
 import com.najahni.models.ProjectStatus;
 import com.najahni.models.Role;
+import com.najahni.services.DeadlineService;
 import com.najahni.services.InvestmentOpportunityService;
 import com.najahni.services.ProjectService;
 import com.najahni.services.UserService;
@@ -14,6 +17,11 @@ import javafx.animation.ParallelTransition;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -21,7 +29,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Duration;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the Dashboard view.
@@ -52,6 +64,15 @@ public class DashboardController {
 
     @FXML
     private Label lblTotalAmount;
+
+    @FXML private Label lblUrgentDeadlines;
+    @FXML private Label lblUpcomingDeadlines;
+
+    // ─── Charts ──────────────────────────────────────────────
+    @FXML private PieChart chartOpportunityStatus;
+    @FXML private BarChart<String, Number> chartProjectAmounts;
+    @FXML private CategoryAxis chartXAxis;
+    @FXML private NumberAxis chartYAxis;
 
     @FXML
     private TableView<Project> recentProjectsTable;
@@ -160,6 +181,8 @@ public class DashboardController {
         loadUserStats();
         loadProjectStats();
         loadInvestmentStats();
+        loadDeadlineStats();
+        loadCharts();
         loadRecentProjects();
     }
 
@@ -210,6 +233,106 @@ public class DashboardController {
             projects = projects.subList(0, 10);
         }
         recentProjectsTable.setItems(FXCollections.observableArrayList(projects));
+    }
+
+    // ─── DEADLINE STATS ──────────────────────────────────────
+
+    private void loadDeadlineStats() {
+        if (lblUrgentDeadlines == null) return;
+
+        List<InvestmentOpportunity> all = investmentService.findAll();
+        long urgent = all.stream()
+            .filter(o -> o.getDeadline() != null)
+            .filter(o -> {
+                DeadlineService.DeadlineLevel level = DeadlineService.getLevel(o.getDeadline());
+                return level == DeadlineService.DeadlineLevel.URGENT || level == DeadlineService.DeadlineLevel.EXPIRED;
+            })
+            .count();
+        long upcoming = all.stream()
+            .filter(o -> o.getDeadline() != null)
+            .filter(o -> {
+                DeadlineService.DeadlineLevel level = DeadlineService.getLevel(o.getDeadline());
+                return level == DeadlineService.DeadlineLevel.ATTENTION || level == DeadlineService.DeadlineLevel.PROCHE;
+            })
+            .count();
+
+        lblUrgentDeadlines.setText(String.valueOf(urgent));
+        lblUpcomingDeadlines.setText("À venir : " + upcoming);
+    }
+
+    // ─── CHARTS ──────────────────────────────────────────────
+
+    private void loadCharts() {
+        loadOpportunityStatusChart();
+        loadProjectAmountsChart();
+    }
+
+    /**
+     * PieChart showing opportunity status distribution (OPEN / CLOSED / FUNDED).
+     */
+    private void loadOpportunityStatusChart() {
+        if (chartOpportunityStatus == null) return;
+
+        int open = investmentService.countByStatus(OpportunityStatus.OPEN);
+        int closed = investmentService.countByStatus(OpportunityStatus.CLOSED);
+        int funded = investmentService.countByStatus(OpportunityStatus.FUNDED);
+
+        chartOpportunityStatus.setData(FXCollections.observableArrayList(
+            new PieChart.Data("Ouvertes (" + open + ")", open),
+            new PieChart.Data("Fermées (" + closed + ")", closed),
+            new PieChart.Data("Financées (" + funded + ")", funded)
+        ));
+
+        // Color coding after data is added
+        chartOpportunityStatus.getData().forEach(data -> {
+            String name = data.getName();
+            String color;
+            if (name.startsWith("Ouvertes"))   color = "#27ae60";
+            else if (name.startsWith("Fermées")) color = "#e74c3c";
+            else                                  color = "#3498db";
+            data.getNode().setStyle("-fx-pie-color: " + color + ";");
+        });
+    }
+
+    /**
+     * BarChart showing top 5 projects by total target investment amount.
+     */
+    private void loadProjectAmountsChart() {
+        if (chartProjectAmounts == null) return;
+
+        List<InvestmentOpportunity> allOpps = investmentService.findAll();
+
+        // Sum target amounts by projectTitle
+        Map<String, Double> amountByProject = allOpps.stream()
+            .filter(o -> o.getProjectTitle() != null && o.getTargetAmount() != null)
+            .collect(Collectors.groupingBy(
+                o -> o.getProjectTitle().length() > 18
+                    ? o.getProjectTitle().substring(0, 15) + "..."
+                    : o.getProjectTitle(),
+                Collectors.summingDouble(o -> o.getTargetAmount().doubleValue())
+            ));
+
+        // Sort descending by amount and take top 5
+        Map<String, Double> top5 = amountByProject.entrySet().stream()
+            .sorted(Map.Entry.<String, Double>comparingByValue(Comparator.reverseOrder()))
+            .limit(5)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                (a, b) -> a, LinkedHashMap::new));
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Montant");
+        top5.forEach((project, amount) ->
+            series.getData().add(new XYChart.Data<>(project, amount)));
+
+        chartProjectAmounts.getData().clear();
+        chartProjectAmounts.getData().add(series);
+
+        // Color bars after rendering
+        series.getData().forEach(d -> {
+            if (d.getNode() != null) {
+                d.getNode().setStyle("-fx-bar-fill: #0f3460;");
+            }
+        });
     }
 
     /**

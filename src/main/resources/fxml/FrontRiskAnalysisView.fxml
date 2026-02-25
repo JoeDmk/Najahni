@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.najahni.controllers.FrontRiskAnalysisController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="front-scroll"
+            style="-fx-background-color: transparent;">
+<content>
+<VBox spacing="25" styleClass="front-page">
+
+    <padding>
+        <Insets top="25" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- ═══════════════════════════════════════════════════
+         HERO BANNER — Titre principal
+         ═══════════════════════════════════════════════════ -->
+    <VBox spacing="8" alignment="CENTER"
+          style="-fx-background-color: linear-gradient(to right, #0f3460, #16213e, #1a1a2e);
+                 -fx-background-radius: 18; -fx-padding: 35 40;
+                 -fx-effect: dropshadow(gaussian, rgba(15,52,96,0.4), 20, 0, 0, 6);">
+        <Label text="🧠 Intelligence Artificielle — Analyse de Risque"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label text="Aide à la décision financière basée sur les données économiques mondiales"
+               style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.7);"/>
+        <HBox spacing="15" alignment="CENTER">
+            <Label fx:id="lblFoStatus" text="⏳ Chargement..."
+                   style="-fx-text-fill: #f39c12; -fx-font-size: 12px;"/>
+            <Label fx:id="lblFoUpdateTime" text=""
+                   style="-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 11px;"/>
+            <ProgressIndicator fx:id="foLoadingIndicator" prefWidth="18" prefHeight="18"
+                               visible="false" style="-fx-progress-color: #e94560;"/>
+        </HBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         INDICATEURS ÉCONOMIQUES EN TEMPS RÉEL
+         ═══════════════════════════════════════════════════ -->
+    <Label text="📡 Données Économiques en Temps Réel"
+           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <HBox spacing="15">
+        <!-- EUR/USD -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 20 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #3498db transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="💱 EUR / USD" style="-fx-font-size: 12px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+            <Label fx:id="lblFoEurUsd" text="..."
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2980b9;"/>
+        </VBox>
+
+        <!-- EUR/TND -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 20 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #8e44ad transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="🏦 EUR / TND" style="-fx-font-size: 12px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+            <Label fx:id="lblFoEurTnd" text="..."
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #8e44ad;"/>
+        </VBox>
+
+        <!-- PIB -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 20 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #27ae60 transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="📊 PIB" style="-fx-font-size: 12px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+            <Label fx:id="lblFoGdp" text="..."
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+        </VBox>
+
+        <!-- Inflation -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 20 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #e74c3c transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="📈 Inflation" style="-fx-font-size: 12px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+            <Label fx:id="lblFoInflation" text="..."
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+        </VBox>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label fx:id="lblFoCountry" text=""
+               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CALCULATEUR INTERACTIF DE RISQUE
+         ═══════════════════════════════════════════════════ -->
+    <VBox spacing="15"
+          style="-fx-background-color: white; -fx-background-radius: 16;
+                 -fx-padding: 25 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
+                 -fx-border-color: rgba(52,152,219,0.15); -fx-border-width: 1; -fx-border-radius: 16;">
+
+        <Label text="🎯 Calculateur de Risque d'Investissement"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <Label text="Simulez un investissement et obtenez une analyse IA instantanée basée sur les indicateurs économiques actuels."
+               wrapText="true"
+               style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d; -fx-line-spacing: 2;"/>
+
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <!-- Montant -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="💰 Montant d'investissement (€)"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="txtAmount" promptText="Ex: 50000" prefHeight="42"
+                           style="-fx-font-size: 15px; -fx-background-radius: 10; -fx-border-radius: 10;"/>
+            </VBox>
+
+            <!-- Deadline -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="📅 Date limite"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <DatePicker fx:id="dpDeadline" prefHeight="42" maxWidth="Infinity"
+                            style="-fx-font-size: 14px;"/>
+            </VBox>
+
+            <!-- Pays -->
+            <VBox spacing="5">
+                <Label text="🌍 Contexte économique"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <ComboBox fx:id="cmbFoCountry" prefHeight="42" prefWidth="180"
+                          style="-fx-font-size: 14px;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Bouton Calculer -->
+        <Button fx:id="btnCalculate" text="🧠 Analyser le Risque"
+                onAction="#calculateRisk" maxWidth="Infinity" prefHeight="50"
+                style="-fx-background-color: linear-gradient(to right, #0f3460, #16213e);
+                       -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;
+                       -fx-background-radius: 12; -fx-cursor: hand;
+                       -fx-effect: dropshadow(gaussian, rgba(15,52,96,0.4), 10, 0, 0, 3);"/>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         RÉSULTAT — Jauge + Détails
+         ═══════════════════════════════════════════════════ -->
+    <VBox fx:id="resultPanel" spacing="20" visible="false" managed="false">
+
+        <VBox spacing="15"
+              style="-fx-background-color: white; -fx-background-radius: 16;
+                     -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+
+            <Label text="📊 Résultat de l'Analyse IA"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+            <HBox spacing="30" alignment="CENTER">
+                <!-- Jauge -->
+                <VBox alignment="CENTER" spacing="10">
+                    <StackPane fx:id="foGaugeContainer" prefHeight="160" prefWidth="260"/>
+                    <Label fx:id="lblFoScore" text=""
+                           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblFoLevel" text=""
+                           style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                </VBox>
+
+                <!-- Breakdown -->
+                <VBox fx:id="detailsPanel" spacing="12" HBox.hgrow="ALWAYS">
+
+                    <Label text="Décomposition du Score"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                    <!-- Montant -->
+                    <VBox spacing="3">
+                        <Label fx:id="lblBreakdownAmount" text="Montant : —"
+                               style="-fx-font-size: 13px; -fx-text-fill: #34495e;"/>
+                        <ProgressBar fx:id="pbAmount" progress="0" prefWidth="300" prefHeight="14"
+                                     style="-fx-accent: #3498db;"/>
+                    </VBox>
+
+                    <!-- Durée -->
+                    <VBox spacing="3">
+                        <Label fx:id="lblBreakdownDuration" text="Durée : —"
+                               style="-fx-font-size: 13px; -fx-text-fill: #34495e;"/>
+                        <ProgressBar fx:id="pbDuration" progress="0" prefWidth="300" prefHeight="14"
+                                     style="-fx-accent: #f39c12;"/>
+                    </VBox>
+
+                    <!-- Économique -->
+                    <VBox spacing="3">
+                        <Label fx:id="lblBreakdownEconomic" text="Économique : —"
+                               style="-fx-font-size: 13px; -fx-text-fill: #34495e;"/>
+                        <ProgressBar fx:id="pbEconomic" progress="0" prefWidth="300" prefHeight="14"
+                                     style="-fx-accent: #e74c3c;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+
+            <!-- Recommandation -->
+            <VBox spacing="8"
+                  style="-fx-background-color: #f8f9fa; -fx-background-radius: 12; -fx-padding: 18;">
+                <Label text="💡 Recommandation IA"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <Label fx:id="lblFoRecommendation" text=""
+                       wrapText="true"
+                       style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-line-spacing: 3;"/>
+            </VBox>
+        </VBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP OPPORTUNITÉS
+         ═══════════════════════════════════════════════════ -->
+    <VBox spacing="12"
+          style="-fx-background-color: white; -fx-background-radius: 16;
+                 -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);">
+
+        <Label text="🏆 Top Opportunités d'Investissement"
+               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <Label text="Opportunités récentes avec leur score de risque IA"
+               style="-fx-font-size: 12px; -fx-text-fill: #95a5a6;"/>
+
+        <VBox fx:id="opportunitiesContainer" spacing="10">
+            <Label text="Chargement des opportunités..."
+                   style="-fx-text-fill: #95a5a6; -fx-font-style: italic;"/>
+        </VBox>
+    </VBox>
+
+    <!-- Footer -->
+    <HBox alignment="CENTER" spacing="10"
+          style="-fx-padding: 15 0;">
+        <Label text="🧠 Powered by NAJAHNI IA — Données : World Bank API &amp; Open Exchange Rates"
+               style="-fx-font-size: 11px; -fx-text-fill: #bdc3c7;"/>
+    </HBox>
+
+</VBox>
+</content>
+</ScrollPane>

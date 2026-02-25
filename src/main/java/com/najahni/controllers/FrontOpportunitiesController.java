@@ -1,10 +1,11 @@
 package com.najahni.controllers;
 
-import com.najahni.models.InvestmentOpportunity;
-import com.najahni.models.OpportunityStatus;
-import com.najahni.models.Project;
+import com.najahni.models.*;
+import com.najahni.services.DeadlineService;
 import com.najahni.services.InvestmentOpportunityService;
 import com.najahni.services.ProjectService;
+import com.najahni.services.SessionManager;
+import com.najahni.utils.AlertUtils;
 import com.najahni.utils.AnimationUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,8 +25,9 @@ import java.util.stream.Collectors;
 /**
  * Contrôleur Front-Office pour parcourir les Opportunités d'Investissement.
  * 
- * Affichage sous forme de cartes visuelles avec filtrage et recherche.
- * Pas de formulaire de création ici — c'est le côté "investisseur" (consultation).
+ * Role-aware:
+ * - INVESTOR: browse opportunities, click "Investir"
+ * - ENTREPRENEUR: browse opportunities, create new ones on their projects
  * 
  * Architecture : Controller → Service → DAO → Database
  */
@@ -35,6 +38,7 @@ public class FrontOpportunitiesController {
     @FXML private Label lblOpenOpps;
     @FXML private Label lblTotalTarget;
     @FXML private Label lblFundedOpps;
+    @FXML private Label lblHeroSubtitle;
 
     // ─── Filter ──────────────────────────────────────────────
     @FXML private TextField txtSearch;
@@ -44,10 +48,19 @@ public class FrontOpportunitiesController {
     @FXML private FlowPane cardsContainer;
     @FXML private VBox emptyState;
 
+    // ─── Create opportunity form (entrepreneur only) ─────────
+    @FXML private TitledPane newOppPane;
+    @FXML private ComboBox<Project> cboProject;
+    @FXML private TextField txtTargetAmount;
+    @FXML private TextArea txtOppDescription;
+    @FXML private DatePicker dpDeadline;
+    @FXML private Label lblOppFormMsg;
+
     // ─── Services ────────────────────────────────────────────
     private final InvestmentOpportunityService opportunityService;
     private final ProjectService projectService;
     private List<InvestmentOpportunity> allOpportunities;
+    private boolean isEntrepreneur;
 
     public FrontOpportunitiesController() {
         this.opportunityService = new InvestmentOpportunityService();
@@ -56,6 +69,18 @@ public class FrontOpportunitiesController {
 
     @FXML
     public void initialize() {
+        // Detect role
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        isEntrepreneur = currentUser != null && currentUser.getRole() == Role.ENTREPRENEUR;
+
+        if (isEntrepreneur) {
+            lblHeroSubtitle.setText("Gérez vos opportunités de financement et suivez les investissements sur vos projets.");
+            // Show the create form
+            newOppPane.setVisible(true);
+            newOppPane.setManaged(true);
+            setupOppForm();
+        }
+
         setupFilters();
         loadData();
     }
@@ -69,6 +94,22 @@ public class FrontOpportunitiesController {
         statuses.add(0, "Tous");
         cboStatusFilter.setItems(FXCollections.observableArrayList(statuses));
         cboStatusFilter.setValue("Tous");
+    }
+
+    private void setupOppForm() {
+        int userId = SessionManager.getInstance().getCurrentUserId();
+        List<Project> projects = projectService.findByEntrepreneur(userId);
+        cboProject.setItems(FXCollections.observableArrayList(projects));
+        cboProject.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Project p) {
+                if (p == null) return "";
+                return "#" + p.getId() + " — " + p.getTitle()
+                    + (p.getSector() != null ? " [" + p.getSector() + "]" : "");
+            }
+            @Override
+            public Project fromString(String s) { return null; }
+        });
     }
 
     // ─── DATA LOADING ────────────────────────────────────────
@@ -155,15 +196,9 @@ public class FrontOpportunitiesController {
         lblDesc.setWrapText(true);
         lblDesc.setMaxHeight(60);
 
-        // ── Deadline ──
-        String deadlineText = "Pas de deadline";
-        if (opp.getDeadline() != null) {
-            deadlineText = "📅 " + opp.getDeadline().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
-            if (opp.getDeadline().isBefore(LocalDate.now())) {
-                deadlineText += " (expirée)";
-            }
-        }
-        Label lblDeadline = new Label(deadlineText);
+        // ── Deadline badge coloré ──
+        Label lblDeadline = new Label(DeadlineService.getDeadlineBadge(opp.getDeadline()));
+        lblDeadline.setStyle(DeadlineService.getDeadlineStyle(opp.getDeadline()));
         lblDeadline.getStyleClass().add("front-card-meta");
 
         // ── Separator ──
@@ -173,17 +208,31 @@ public class FrontOpportunitiesController {
         HBox actions = new HBox(10);
         actions.setAlignment(Pos.CENTER);
 
-        if (opp.getStatus() == OpportunityStatus.OPEN) {
-            Button btnInvest = new Button("💰 Investir");
-            btnInvest.getStyleClass().add("front-btn-invest");
-            btnInvest.setMaxWidth(Double.MAX_VALUE);
-            HBox.setHgrow(btnInvest, Priority.ALWAYS);
-            btnInvest.setOnAction(e -> navigateToOfferForm(opp));
-            actions.getChildren().add(btnInvest);
+        if (isEntrepreneur) {
+            // Entrepreneurs don't see "Investir", they see a status label
+            if (opp.getStatus() == OpportunityStatus.OPEN) {
+                Label lblOpen = new Label("🟢 En attente d'offres");
+                lblOpen.setStyle("-fx-text-fill: #27ae60; -fx-font-style: italic; -fx-font-size: 12px;");
+                actions.getChildren().add(lblOpen);
+            } else {
+                Label lblClosed = new Label(opp.getStatus() == OpportunityStatus.FUNDED ? "✅ Objectif atteint" : "🔒 Fermée");
+                lblClosed.setStyle("-fx-text-fill: #95a5a6; -fx-font-style: italic;");
+                actions.getChildren().add(lblClosed);
+            }
         } else {
-            Label lblClosed = new Label(opp.getStatus() == OpportunityStatus.FUNDED ? "✅ Objectif atteint" : "🔒 Fermée");
-            lblClosed.setStyle("-fx-text-fill: #95a5a6; -fx-font-style: italic;");
-            actions.getChildren().add(lblClosed);
+            // Investor mode — show "Investir" button on OPEN opportunities
+            if (opp.getStatus() == OpportunityStatus.OPEN) {
+                Button btnInvest = new Button("💰 Investir");
+                btnInvest.getStyleClass().add("front-btn-invest");
+                btnInvest.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(btnInvest, Priority.ALWAYS);
+                btnInvest.setOnAction(e -> navigateToOfferForm(opp));
+                actions.getChildren().add(btnInvest);
+            } else {
+                Label lblClosed = new Label(opp.getStatus() == OpportunityStatus.FUNDED ? "✅ Objectif atteint" : "🔒 Fermée");
+                lblClosed.setStyle("-fx-text-fill: #95a5a6; -fx-font-style: italic;");
+                actions.getChildren().add(lblClosed);
+            }
         }
 
         card.getChildren().addAll(topBar, lblProject, lblAmount, lblDesc, lblDeadline, sep, actions);
@@ -246,5 +295,75 @@ public class FrontOpportunitiesController {
             // Fallback - ignore
         }
         return null;
+    }
+
+    // ─── CREATE OPPORTUNITY (Entrepreneur only) ──────────────
+
+    @FXML
+    public void submitOpportunity() {
+        if (lblOppFormMsg != null) lblOppFormMsg.setText("");
+
+        try {
+            if (cboProject.getValue() == null) {
+                throw new IllegalArgumentException("Veuillez sélectionner un projet.");
+            }
+
+            String amountText = txtTargetAmount.getText() != null ? txtTargetAmount.getText().trim() : "";
+            if (amountText.isEmpty()) {
+                throw new IllegalArgumentException("Le montant cible est obligatoire.");
+            }
+
+            BigDecimal amount;
+            try {
+                amount = new BigDecimal(amountText);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Format de montant invalide.");
+            }
+
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Le montant doit être supérieur à zéro.");
+            }
+
+            String description = txtOppDescription.getText() != null ? txtOppDescription.getText().trim() : "";
+            if (description.isEmpty()) {
+                throw new IllegalArgumentException("La description est obligatoire.");
+            }
+
+            LocalDate deadline = dpDeadline.getValue();
+            if (deadline != null && deadline.isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("La deadline ne peut pas être dans le passé.");
+            }
+
+            InvestmentOpportunity opp = new InvestmentOpportunity();
+            opp.setTargetAmount(amount);
+            opp.setDescription(description);
+            opp.setDeadline(deadline);
+            opp.setStatus(OpportunityStatus.OPEN);
+            opp.setProjectId(cboProject.getValue().getId());
+
+            InvestmentOpportunity created = opportunityService.createOpportunity(opp);
+            if (created != null) {
+                AlertUtils.showSuccess("Opportunité créée avec succès !");
+                clearOppForm();
+                newOppPane.setExpanded(false);
+                loadData();
+            } else {
+                AlertUtils.showError("Erreur", "Impossible de créer l'opportunité.");
+            }
+
+        } catch (IllegalArgumentException e) {
+            if (lblOppFormMsg != null) lblOppFormMsg.setText(e.getMessage());
+        } catch (Exception e) {
+            AlertUtils.showError("Erreur", "Erreur inattendue : " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void clearOppForm() {
+        if (cboProject != null) cboProject.setValue(null);
+        if (txtTargetAmount != null) txtTargetAmount.clear();
+        if (txtOppDescription != null) txtOppDescription.clear();
+        if (dpDeadline != null) dpDeadline.setValue(null);
+        if (lblOppFormMsg != null) lblOppFormMsg.setText("");
     }
 }

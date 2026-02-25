@@ -5,6 +5,8 @@ import com.najahni.models.User;
 import com.najahni.utils.DBConnection;
 
 import java.sql.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,44 @@ public class UserService {
         this.cnx = DBConnection.getInstance().getConnection();
     }
 
+    // ─── PASSWORD HASHING ────────────────────────────────────
+
+    /**
+     * Hache un mot de passe avec SHA-256.
+     */
+    public static String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
+    }
+
+    /**
+     * Authentifie un utilisateur par email et mot de passe.
+     * @return L'utilisateur si les identifiants sont valides, Optional.empty() sinon.
+     */
+    public Optional<User> authenticate(String email, String password) {
+        Optional<User> userOpt = findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            String hashed = hashPassword(password);
+            // Support both plain text (legacy) and hashed passwords
+            if (hashed.equals(user.getPassword()) || password.equals(user.getPassword())) {
+                return Optional.of(user);
+            }
+        }
+        return Optional.empty();
+    }
+
     // ─── CRUD ────────────────────────────────────────────────
 
     public User createUser(User user) throws IllegalArgumentException {
@@ -35,7 +75,7 @@ public class UserService {
             ps.setString(1, parts[0]);
             ps.setString(2, parts[1]);
             ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPassword());
+            ps.setString(4, hashPassword(user.getPassword()));
             ps.setString(5, user.getRole().getDbValue());
 
             ps.executeUpdate();
@@ -96,7 +136,7 @@ public class UserService {
             ps.setString(1, parts[0]);
             ps.setString(2, parts[1]);
             ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPassword());
+            ps.setString(4, hashPassword(user.getPassword()));
             ps.setString(5, user.getRole().getDbValue());
             ps.setInt(6, user.getId());
             return ps.executeUpdate() > 0;

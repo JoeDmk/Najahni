@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -19,11 +20,11 @@
     <!-- Section de Bienvenue -->
     <VBox styleClass="welcome-panel" spacing="10">
         <Label text="Bienvenue sur NAJAHNI" styleClass="welcome-text"/>
-        <Label text="Votre Plateforme de Gestion d'Entrepreneuriat et d'Investissement" styleClass="welcome-subtext"/>
+        <Label text="Votre Plateforme Fintech — Entrepreneuriat et Investissement" styleClass="welcome-subtext"/>
     </VBox>
     
     <!-- Cartes de Statistiques -->
-    <Label text="Statistiques de la Plateforme" styleClass="section-title"/>
+    <Label text="📊 Statistiques de la Plateforme" styleClass="section-title"/>
     
     <HBox fx:id="statsContainer" spacing="20">
         <!-- Carte Total Utilisateurs -->
@@ -52,20 +53,46 @@
             <Label text="Total Investissements" styleClass="stat-label"/>
             <Label fx:id="lblTotalAmount" text="Total : 0,00 €" style="-fx-text-fill: #9b59b6; -fx-font-weight: bold;"/>
         </VBox>
+
+        <!-- Carte Deadlines Urgentes -->
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5">
+            <Label fx:id="lblUrgentDeadlines" text="0" styleClass="stat-value" style="-fx-text-fill: #e74c3c;"/>
+            <Label text="Deadlines Urgentes" styleClass="stat-label"/>
+            <Label fx:id="lblUpcomingDeadlines" text="À venir : 0" style="-fx-text-fill: #e67e22;"/>
+        </VBox>
     </HBox>
     
     <!-- Actions Rapides -->
-    <Label text="Actions Rapides" styleClass="section-title"/>
-    
-    <HBox spacing="15">
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Button text="🔄 Actualiser" onAction="#refreshDashboard" styleClass="btn-secondary"/>
         <Button text="➕ Ajouter Utilisateur" onAction="#addNewUser" styleClass="btn-primary"/>
         <Button text="📁 Créer Projet" onAction="#addNewProject" styleClass="btn-success"/>
         <Button text="💰 Ajouter Investissement" onAction="#addNewInvestment" styleClass="btn-warning"/>
-        <Button text="🔄 Actualiser" onAction="#refreshDashboard" styleClass="btn-secondary"/>
+    </HBox>
+    
+    <!-- Graphiques Analytiques -->
+    <Label text="📈 Analytiques" styleClass="section-title"/>
+    
+    <HBox spacing="20">
+        <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" spacing="5" alignment="CENTER">
+            <Label text="Répartition des Opportunités" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+            <PieChart fx:id="chartOpportunityStatus" prefHeight="280" legendSide="BOTTOM" labelsVisible="true" animated="true"/>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" spacing="5" alignment="CENTER">
+            <Label text="Montants par Projet (Top 5)" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+            <BarChart fx:id="chartProjectAmounts" prefHeight="280" animated="true" legendVisible="false">
+                <xAxis>
+                    <CategoryAxis fx:id="chartXAxis" label="Projet"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="chartYAxis" label="Montant (€)"/>
+                </yAxis>
+            </BarChart>
+        </VBox>
     </HBox>
     
     <!-- Section Projets Récents -->
-    <Label text="Projets Récents" styleClass="section-title"/>
+    <Label text="📋 Projets Récents" styleClass="section-title"/>
     
     <TableView fx:id="recentProjectsTable" VBox.vgrow="ALWAYS" minHeight="280">
         <columns>

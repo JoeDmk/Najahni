@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.najahni.controllers.EconomicDashboardController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="20" style="-fx-background-color: transparent;">
+
+    <padding>
+        <Insets top="10" right="15" bottom="20" left="10"/>
+    </padding>
+
+    <!-- ═══════════════════════════════════════════════════
+         HERO SECTION — Titre + Contrôles
+         ═══════════════════════════════════════════════════ -->
+    <VBox styleClass="welcome-panel" spacing="10">
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="🧠 Dashboard IA — Aide à la Décision Financière"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Analyse économique en temps réel via APIs World Bank &amp; Exchange Rates"
+                       style="-fx-font-size: 14px; -fx-text-fill: #d6eaf8; -fx-opacity: 0.9;"/>
+                <Label fx:id="lblLastUpdate" text="En attente de données..."
+                       style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.6);"/>
+            </VBox>
+            <VBox spacing="8" alignment="CENTER_RIGHT">
+                <ComboBox fx:id="cmbCountry" prefWidth="200"
+                          style="-fx-background-radius: 8; -fx-border-radius: 8;"/>
+                <Button text="🔄 Actualiser les données" onAction="#refreshData"
+                        styleClass="btn-primary"
+                        style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         INDICATEURS ÉCONOMIQUES (4 cartes)
+         ═══════════════════════════════════════════════════ -->
+    <VBox fx:id="indicatorsPanel" spacing="10">
+
+        <Label text="📡 Indicateurs Économiques en Temps Réel" styleClass="section-title"/>
+
+        <HBox spacing="15">
+            <!-- Carte EUR/USD -->
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                  style="-fx-border-color: transparent transparent #3498db transparent;">
+                <Label text="💱" style="-fx-font-size: 28px;"/>
+                <Label fx:id="lblEurUsd" text="..." styleClass="stat-value"
+                       style="-fx-font-size: 22px; -fx-text-fill: #2980b9;"/>
+                <Label text="Taux EUR / USD" styleClass="stat-label"/>
+            </VBox>
+
+            <!-- Carte EUR/TND -->
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                  style="-fx-border-color: transparent transparent #8e44ad transparent;">
+                <Label text="🏦" style="-fx-font-size: 28px;"/>
+                <Label fx:id="lblEurTnd" text="..." styleClass="stat-value"
+                       style="-fx-font-size: 22px; -fx-text-fill: #8e44ad;"/>
+                <Label text="Taux EUR / TND" styleClass="stat-label"/>
+            </VBox>
+
+            <!-- Carte PIB -->
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                  style="-fx-border-color: transparent transparent #27ae60 transparent;">
+                <Label text="📊" style="-fx-font-size: 28px;"/>
+                <Label fx:id="lblGdp" text="..." styleClass="stat-value"
+                       style="-fx-font-size: 22px; -fx-text-fill: #27ae60;"/>
+                <Label text="PIB (GDP)" styleClass="stat-label"/>
+                <Label fx:id="lblDataYear" text="" style="-fx-text-fill: #95a5a6; -fx-font-size: 11px;"/>
+            </VBox>
+
+            <!-- Carte Inflation -->
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                  style="-fx-border-color: transparent transparent #e74c3c transparent;">
+                <Label text="📈" style="-fx-font-size: 28px;"/>
+                <Label fx:id="lblInflation" text="..." styleClass="stat-value"
+                       style="-fx-font-size: 22px;"/>
+                <Label text="Inflation Annuelle" styleClass="stat-label"/>
+            </VBox>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label fx:id="lblCountryName" text=""
+                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <ProgressIndicator fx:id="loadingIndicator" prefWidth="24" prefHeight="24"
+                               visible="false"/>
+        </HBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION CENTRALE — Jauge + Stats Opportunités
+         ═══════════════════════════════════════════════════ -->
+    <VBox fx:id="analysisPanel" spacing="15">
+
+        <Label text="🎯 Analyse de Risque Économique" styleClass="section-title"/>
+
+        <HBox spacing="20">
+
+            <!-- Jauge de risque -->
+            <VBox styleClass="card" alignment="CENTER" spacing="10" prefWidth="320" minWidth="300">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Label text="Indice de Risque Économique"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <StackPane fx:id="gaugeContainer" prefHeight="140" prefWidth="240"/>
+                <Label fx:id="lblEconomicScore" text="..."
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Label fx:id="lblEconomicLevel" text=""
+                       style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            </VBox>
+
+            <!-- Stats Opportunités -->
+            <VBox HBox.hgrow="ALWAYS" spacing="12">
+
+                <HBox spacing="15">
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                          style="-fx-border-color: transparent transparent #3498db transparent;">
+                        <Label fx:id="lblTotalOpportunities" text="0" styleClass="stat-value"
+                               style="-fx-font-size: 32px; -fx-text-fill: #2980b9;"/>
+                        <Label text="Opportunités Totales" styleClass="stat-label"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                          style="-fx-border-color: transparent transparent #f39c12 transparent;">
+                        <Label fx:id="lblAvgRiskScore" text="0" styleClass="stat-value"
+                               style="-fx-font-size: 32px; -fx-text-fill: #f39c12;"/>
+                        <Label text="Score Moyen" styleClass="stat-label"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                          style="-fx-border-color: transparent transparent #e74c3c transparent;">
+                        <Label fx:id="lblHighRiskCount" text="0" styleClass="stat-value"
+                               style="-fx-font-size: 32px; -fx-text-fill: #e74c3c;"/>
+                        <Label text="Risque Élevé" styleClass="stat-label"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Bouton analyse -->
+                <Button text="🧠 Analyser toutes les opportunités avec les données économiques"
+                        onAction="#analyzeAllOpportunities"
+                        styleClass="btn-primary" maxWidth="Infinity"
+                        style="-fx-font-size: 14px; -fx-padding: 14px;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Recommandation -->
+        <VBox styleClass="card" spacing="8">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+            <Label text="💡 Recommandation IA"
+                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label fx:id="lblRecommendation" text="En attente d'analyse..."
+                   wrapText="true"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-line-spacing: 3;"/>
+        </VBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         GRAPHIQUES — Distribution + Comparaison
+         ═══════════════════════════════════════════════════ -->
+    <Label text="📊 Visualisation des Données" styleClass="section-title"/>
+
+    <HBox spacing="20">
+        <!-- PieChart -->
+        <VBox styleClass="card" HBox.hgrow="ALWAYS" alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <PieChart fx:id="riskDistributionChart" prefHeight="320" prefWidth="400"
+                      title="Distribution des Risques"/>
+        </VBox>
+
+        <!-- BarChart -->
+        <VBox styleClass="card" HBox.hgrow="ALWAYS" alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <BarChart fx:id="economicComparisonChart" prefHeight="320" prefWidth="400">
+                <xAxis>
+                    <CategoryAxis fx:id="xAxisComparison"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxisComparison" lowerBound="0" upperBound="100" autoRanging="false"/>
+                </yAxis>
+            </BarChart>
+        </VBox>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         FORMULE DE SCORING
+         ═══════════════════════════════════════════════════ -->
+    <VBox styleClass="card" spacing="10">
+        <padding>
+            <Insets top="15" right="20" bottom="15" left="20"/>
+        </padding>
+        <VBox fx:id="formulaBox" spacing="8">
+            <Label text="🧠 Formule de Scoring IA"
+                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label text="En attente de données..."
+                   style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+        </VBox>
+    </VBox>
+
+</VBox>
+</content>
+</ScrollPane>

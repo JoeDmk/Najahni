@@ -11,38 +11,71 @@
             styleClass="front-scroll"
             style="-fx-background-color: transparent; -fx-padding: 0;">
 <content>
-<VBox spacing="20" styleClass="front-page">
+<VBox spacing="22" styleClass="front-page">
     <padding>
-        <Insets top="15" right="20" bottom="20" left="20"/>
+        <Insets top="18" right="24" bottom="24" left="24"/>
     </padding>
 
-    <!-- ═══ HERO SECTION ═══ -->
-    <VBox styleClass="front-hero" alignment="CENTER" spacing="8">
-        <padding>
-            <Insets top="30" right="30" bottom="30" left="30"/>
-        </padding>
-        <Label text="🤝 Mes Offres d'Investissement" styleClass="front-hero-title"/>
-        <Label text="Suivez l'état de vos offres de financement et soumettez de nouvelles propositions."
-               styleClass="front-hero-subtitle" wrapText="true"/>
+    <!-- ═══ HERO SECTION — Gradient banner ═══ -->
+    <VBox alignment="CENTER" spacing="10"
+          style="-fx-background-color: linear-gradient(to right, #0f3460, #16213e, #1a1a2e);
+                 -fx-background-radius: 18; -fx-padding: 32 36;
+                 -fx-effect: dropshadow(gaussian, rgba(15,52,96,0.45), 20, 0, 0, 8);">
+        <Label text="💼 Mes Offres d'Investissement"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label text="Gérez vos offres, suivez leur statut et effectuez vos paiements en un clic."
+               wrapText="true" maxWidth="550"
+               style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.65); -fx-text-alignment: center;"/>
     </VBox>
 
-    <!-- ═══ STATS BAR ═══ -->
-    <HBox spacing="15" alignment="CENTER">
-        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblTotalOffers" text="0" styleClass="front-stat-value"/>
-            <Label text="Total Offres" styleClass="front-stat-label"/>
+    <!-- ═══ STATS DASHBOARD — Enhanced visual cards ═══ -->
+    <HBox spacing="16" alignment="CENTER">
+        <!-- Total -->
+        <VBox alignment="CENTER" spacing="6" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 22 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #2c3e50 transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="📊" style="-fx-font-size: 22;"/>
+            <Label fx:id="lblTotalOffers" text="0"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label text="Total Offres"
+                   style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
         </VBox>
-        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblPendingOffers" text="0" styleClass="front-stat-value" style="-fx-text-fill: #f39c12;"/>
-            <Label text="En attente" styleClass="front-stat-label"/>
+
+        <!-- Pending -->
+        <VBox alignment="CENTER" spacing="6" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 22 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #f39c12 transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="⏳" style="-fx-font-size: 22;"/>
+            <Label fx:id="lblPendingOffers" text="0"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+            <Label text="En Attente"
+                   style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
         </VBox>
-        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblAcceptedOffers" text="0" styleClass="front-stat-value-green"/>
-            <Label text="Acceptées" styleClass="front-stat-label"/>
+
+        <!-- Accepted -->
+        <VBox alignment="CENTER" spacing="6" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 22 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #27ae60 transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="✅" style="-fx-font-size: 22;"/>
+            <Label fx:id="lblAcceptedOffers" text="0"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+            <Label text="Acceptées"
+                   style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
         </VBox>
-        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblRejectedOffers" text="0" styleClass="front-stat-value" style="-fx-text-fill: #e74c3c;"/>
-            <Label text="Rejetées" styleClass="front-stat-label"/>
+
+        <!-- Rejected -->
+        <VBox alignment="CENTER" spacing="6" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14;
+                     -fx-padding: 22 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                     -fx-border-color: transparent transparent #e74c3c transparent; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;">
+            <Label text="❌" style="-fx-font-size: 22;"/>
+            <Label fx:id="lblRejectedOffers" text="0"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+            <Label text="Rejetées"
+                   style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
         </VBox>
     </HBox>
 

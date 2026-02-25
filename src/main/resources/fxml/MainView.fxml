@@ -16,60 +16,76 @@
         </VBox>
     </top>
     
-    <!-- Menu de Navigation -->
+    <!-- Menu de Navigation (ScrollPane pour accessibilité) -->
     <left>
-        <VBox styleClass="nav-menu" spacing="5" minWidth="200">
-            <padding>
-                <Insets top="20" right="10" bottom="20" left="10"/>
-            </padding>
-            
-            <Button fx:id="btnDashboard" text="📊 Tableau de bord" 
-                    onAction="#showDashboard" 
-                    styleClass="nav-button" maxWidth="Infinity"/>
-            
-            <Separator/>
-            
-            <Label text="Gestion" style="-fx-text-fill: #95a5a6; -fx-font-size: 12px; -fx-padding: 10 0 5 5;"/>
-            
-            <Button fx:id="btnUsers" text="👥 Utilisateurs" 
-                    onAction="#showUsers" 
-                    styleClass="nav-button" maxWidth="Infinity"/>
-            
-            <Button fx:id="btnProjects" text="📁 Projets" 
-                    onAction="#showProjects" 
-                    styleClass="nav-button" maxWidth="Infinity"/>
-            
-            <Button fx:id="btnOpportunities" text="💰 Opportunités" 
-                    onAction="#showOpportunities" 
-                    styleClass="nav-button" maxWidth="Infinity"/>
-            
-            <Button fx:id="btnOffers" text="🤝 Offres" 
-                    onAction="#showOffers" 
-                    styleClass="nav-button" maxWidth="Infinity"/>
-            
-            <Separator/>
-            
-            <Label text="Apprentissage" style="-fx-text-fill: #95a5a6; -fx-font-size: 12px; -fx-padding: 10 0 5 5;"/>
-            
-            <Button fx:id="btnCours" text="📚 Cours" 
-                    onAction="#showCours" 
-                    styleClass="nav-button" maxWidth="Infinity"/>
-            
-            <Button fx:id="btnApprentissage" text="🎮 Mon Apprentissage" 
-                    onAction="#showApprentissage" 
-                    styleClass="nav-button" maxWidth="Infinity"/>
-            
-            <Region VBox.vgrow="ALWAYS"/>
-            
-            <Separator/>
-            
-            <Button text="🌐 Accéder au Front Office" 
-                    onAction="#openFrontOffice"
-                    styleClass="nav-button-front-office" maxWidth="Infinity"/>
-            
-            <Label text="PIDEV - NAJAHNI v1.0" 
-                   style="-fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-padding: 10 0 0 5;"/>
-        </VBox>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    styleClass="nav-scroll-pane" minWidth="220" prefWidth="220">
+            <VBox styleClass="nav-menu" spacing="5" minWidth="200">
+                <padding>
+                    <Insets top="20" right="10" bottom="20" left="10"/>
+                </padding>
+                
+                <Button fx:id="btnDashboard" text="📊 Tableau de bord" 
+                        onAction="#showDashboard" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Separator/>
+                
+                <Label text="Gestion" styleClass="nav-section-label"/>
+                
+                <Button fx:id="btnUsers" text="👥 Utilisateurs" 
+                        onAction="#showUsers" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Button fx:id="btnProjects" text="📁 Projets" 
+                        onAction="#showProjects" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Button fx:id="btnOpportunities" text="💰 Opportunités" 
+                        onAction="#showOpportunities" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Button fx:id="btnOffers" text="🤝 Offres" 
+                        onAction="#showOffers" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Separator/>
+                
+                <Label text="Apprentissage" styleClass="nav-section-label"/>
+                
+                <Button fx:id="btnCours" text="📚 Cours" 
+                        onAction="#showCours" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Button fx:id="btnApprentissage" text="🎮 Mon Apprentissage" 
+                        onAction="#showApprentissage" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Separator/>
+                
+                <Label text="Intelligence Artificielle" styleClass="nav-section-label"/>
+                
+                <Button fx:id="btnEconomicDashboard" text="🧠 Dashboard IA Financier" 
+                        onAction="#showEconomicDashboard" 
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                
+                <Region VBox.vgrow="ALWAYS"/>
+                
+                <Separator/>
+                
+                <Button text="🌐 Accéder au Front Office" 
+                        onAction="#openFrontOffice"
+                        styleClass="nav-button-front-office" maxWidth="Infinity"/>
+                
+                <Button text="🚪 Déconnexion" 
+                        onAction="#handleLogout"
+                        styleClass="nav-button" maxWidth="Infinity"
+                        style="-fx-text-fill: #e74c3c;"/>
+                
+                <Label text="NAJAHNI v2.0 — Fintech" 
+                       style="-fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-padding: 10 0 0 5;"/>
+            </VBox>
+        </ScrollPane>
     </left>
     
     <!-- Zone de Contenu Principal -->

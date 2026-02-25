@@ -21,12 +21,19 @@ public class InvestmentOffer {
     private int investorId;
     private int opportunityId;
 
+    // Payment tracking
+    private boolean paid;
+    private String paymentIntentId;
+
     // Champs transients pour l'affichage (issus de JOIN SQL)
     private String investorName;
     private String opportunityDescription;
+    private String projectTitle;
+    private String projectSector;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime paidAt;
 
     // ─── Constructeurs ───────────────────────────────────────
 
@@ -82,6 +89,21 @@ public class InvestmentOffer {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public boolean isPaid() { return paid; }
+    public void setPaid(boolean paid) { this.paid = paid; }
+
+    public String getPaymentIntentId() { return paymentIntentId; }
+    public void setPaymentIntentId(String paymentIntentId) { this.paymentIntentId = paymentIntentId; }
+
+    public String getProjectTitle() { return projectTitle; }
+    public void setProjectTitle(String projectTitle) { this.projectTitle = projectTitle; }
+
+    public String getProjectSector() { return projectSector; }
+    public void setProjectSector(String projectSector) { this.projectSector = projectSector; }
+
+    public LocalDateTime getPaidAt() { return paidAt; }
+    public void setPaidAt(LocalDateTime paidAt) { this.paidAt = paidAt; }
 
     // ─── Méthodes utilitaires ────────────────────────────────
 

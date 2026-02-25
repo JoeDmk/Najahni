@@ -18,22 +18,22 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
         
-        // Charger la vue principale
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
+        // Charger la page de connexion
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginView.fxml"));
         Parent root = loader.load();
         
         // Configurer la scène
-        Scene scene = new Scene(root, 1200, 700);
+        Scene scene = new Scene(root, 900, 600);
         scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
         
-        // Configurer la scène
-        stage.setTitle("NAJAHNI - Plateforme d'Entrepreneuriat et d'Investissement");
+        // Configurer la fenêtre
+        stage.setTitle("NAJAHNI — Connexion");
         stage.setScene(scene);
-        stage.setMinWidth(1000);
-        stage.setMinHeight(600);
+        stage.setMinWidth(800);
+        stage.setMinHeight(550);
         stage.show();
         
-        System.out.println("✓ Application NAJAHNI démarrée avec succès !");
+        System.out.println("✓ Application NAJAHNI démarrée — page de connexion affichée");
     }
 
     /**

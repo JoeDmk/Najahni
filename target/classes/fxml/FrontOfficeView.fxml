@@ -16,7 +16,7 @@
             </padding>
 
             <Label text="🌐 NAJAHNI" styleClass="fo-navbar-brand"/>
-            <Label text="Espace Investisseur" styleClass="fo-navbar-subtitle"/>
+            <Label fx:id="lblNavSubtitle" text="Espace Investisseur" styleClass="fo-navbar-subtitle"/>
 
             <Region HBox.hgrow="ALWAYS"/>
 
@@ -26,11 +26,22 @@
             <Button fx:id="btnFoOffers" text="📨 Mes Offres"
                     onAction="#showOffers"
                     styleClass="fo-nav-link"/>
+            <Button fx:id="btnFoPortfolio" text="💼 Portefeuille"
+                    onAction="#showPortfolio"
+                    styleClass="fo-nav-link"/>
+            <Button fx:id="btnFoRiskAnalysis" text="🧠 Analyse IA"
+                    onAction="#showRiskAnalysis"
+                    styleClass="fo-nav-link"/>
+            <Button fx:id="btnInbox" text="📬 Inbox" visible="false" managed="false"
+                    onAction="#toggleInbox"
+                    styleClass="fo-nav-link"/>
 
             <Region prefWidth="20"/>
 
             <Button text="⬅ Back Office" onAction="#goBackOffice"
                     styleClass="fo-btn-back"/>
+            <Button text="🚪 Déconnexion" onAction="#handleLogout"
+                    style="-fx-background-color: rgba(231,76,60,0.2); -fx-text-fill: #e74c3c; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-size: 12px; -fx-padding: 6 12;"/>
         </HBox>
     </top>
 

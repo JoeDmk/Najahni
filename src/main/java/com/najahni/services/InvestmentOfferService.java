@@ -208,6 +208,68 @@ public class InvestmentOfferService {
         return updateOfferStatus(offerId, OfferStatus.REJECTED);
     }
 
+    /**
+     * Marks an offer as paid after successful Stripe payment.
+     */
+    public boolean markAsPaid(int offerId, String paymentIntentId) {
+        String sql = "UPDATE investment_offer SET paid = 1, payment_intent_id = ?, paid_at = NOW() WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, paymentIntentId);
+            ps.setInt(2, offerId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("✗ Error marking offer as paid: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Check if an offer has already been paid.
+     */
+    public boolean isOfferPaid(int offerId) {
+        String sql = "SELECT paid FROM investment_offer WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, offerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBoolean("paid");
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error checking offer paid status: " + e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Finds all paid offers for a given investor (portfolio).
+     */
+    public List<InvestmentOffer> findPaidByInvestor(int investorId) {
+        List<InvestmentOffer> offers = new ArrayList<>();
+        String sql = """
+            SELECT io.*,
+                   CONCAT(u.firstname, ' ', u.lastname) AS investor_name,
+                   iop.description AS opportunity_description,
+                   p.title AS project_title,
+                   p.sector AS project_sector
+            FROM investment_offer io
+            LEFT JOIN user u ON io.investor_id = u.id
+            LEFT JOIN investment_opportunity iop ON io.opportunity_id = iop.id
+            LEFT JOIN projet p ON iop.project_id = p.id
+            WHERE io.investor_id = ? AND io.paid = 1
+            ORDER BY io.paid_at DESC
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, investorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) offers.add(mapResultSetToOffer(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding paid offers: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return offers;
+    }
+
     private boolean updateOfferStatus(int offerId, OfferStatus newStatus) {
         Optional<InvestmentOffer> offerOpt = findById(offerId);
         if (offerOpt.isEmpty()) {
@@ -270,6 +332,39 @@ public class InvestmentOfferService {
 
     // ─── MAPPING ─────────────────────────────────────────────
 
+    /**
+     * Finds all offers on opportunities that belong to the given project IDs.
+     * Used by entrepreneurs to see offers on their projects' opportunities.
+     */
+    public List<InvestmentOffer> findByProjectIds(List<Integer> projectIds) {
+        if (projectIds == null || projectIds.isEmpty()) return new ArrayList<>();
+
+        String placeholders = projectIds.stream().map(id -> "?").collect(java.util.stream.Collectors.joining(","));
+        String sql = """
+            SELECT io.*,
+                   CONCAT(u.firstname, ' ', u.lastname) AS investor_name,
+                   iop.description AS opportunity_description
+            FROM investment_offer io
+            LEFT JOIN user u ON io.investor_id = u.id
+            LEFT JOIN investment_opportunity iop ON io.opportunity_id = iop.id
+            WHERE iop.project_id IN (%s)
+            ORDER BY io.created_at DESC
+            """.formatted(placeholders);
+        List<InvestmentOffer> offers = new ArrayList<>();
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            for (int i = 0; i < projectIds.size(); i++) {
+                ps.setInt(i + 1, projectIds.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) offers.add(mapResultSetToOffer(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding offers by projects: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return offers;
+    }
+
     private InvestmentOffer mapResultSetToOffer(ResultSet rs) throws SQLException {
         InvestmentOffer offer = new InvestmentOffer();
         offer.setId(rs.getInt("id"));
@@ -284,9 +379,21 @@ public class InvestmentOfferService {
         offer.setInvestorId(rs.getInt("investor_id"));
         offer.setOpportunityId(rs.getInt("opportunity_id"));
 
+        // Payment tracking
+        try { offer.setPaid(rs.getBoolean("paid")); } catch (SQLException ignored) { }
+        try { offer.setPaymentIntentId(rs.getString("payment_intent_id")); } catch (SQLException ignored) { }
+        try {
+            Timestamp paidAt = rs.getTimestamp("paid_at");
+            if (paidAt != null) offer.setPaidAt(paidAt.toLocalDateTime());
+        } catch (SQLException ignored) { }
+
         try { offer.setInvestorName(rs.getString("investor_name")); }
         catch (SQLException ignored) { }
         try { offer.setOpportunityDescription(rs.getString("opportunity_description")); }
+        catch (SQLException ignored) { }
+        try { offer.setProjectTitle(rs.getString("project_title")); }
+        catch (SQLException ignored) { }
+        try { offer.setProjectSector(rs.getString("project_sector")); }
         catch (SQLException ignored) { }
 
         Timestamp createdAt = rs.getTimestamp("created_at");

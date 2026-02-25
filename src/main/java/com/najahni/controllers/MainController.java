@@ -13,13 +13,19 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import com.najahni.services.SessionManager;
+import com.najahni.utils.AlertUtils;
+
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Main controller for the application.
  * Handles navigation between different views with smooth animations.
  */
 public class MainController {
+
+    private static final Logger LOG = Logger.getLogger(MainController.class.getName());
 
     @FXML
     private StackPane contentArea;
@@ -44,6 +50,9 @@ public class MainController {
 
     @FXML
     private Button btnApprentissage;
+
+    @FXML
+    private Button btnEconomicDashboard;
 
     private Button activeButton;
 
@@ -130,6 +139,15 @@ public class MainController {
     }
 
     /**
+     * Shows the Economic Dashboard IA view.
+     */
+    @FXML
+    public void showEconomicDashboard() {
+        loadView("/fxml/EconomicDashboardView.fxml");
+        setActiveButton(btnEconomicDashboard);
+    }
+
+    /**
      * Opens the Front Office as a completely separate page.
      * Replaces the current scene with the front-office layout.
      */
@@ -146,8 +164,8 @@ public class MainController {
             stage.setScene(scene);
             stage.setTitle("NAJAHNI - Espace Investisseur");
         } catch (IOException e) {
-            System.err.println("✗ Erreur lors de l'ouverture du Front Office: " + e.getMessage());
-            e.printStackTrace();
+            LOG.warning("Erreur ouverture Front Office: " + e.getMessage());
+            AlertUtils.showError("Erreur", "Impossible d'ouvrir le Front Office.");
         }
     }
 
@@ -182,8 +200,7 @@ public class MainController {
             transition.play();
             
         } catch (IOException e) {
-            System.err.println("✗ Erreur lors du chargement de la vue : " + fxmlPath);
-            e.printStackTrace();
+            LOG.warning("Erreur chargement vue: " + fxmlPath + " - " + e.getMessage());
         }
     }
 
@@ -200,5 +217,26 @@ public class MainController {
         // Add active style to new button
         button.getStyleClass().add("nav-button-active");
         activeButton = button;
+    }
+
+    /**
+     * Déconnecte l'utilisateur et retourne à la page de connexion.
+     */
+    @FXML
+    public void handleLogout() {
+        if (AlertUtils.showConfirmation("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?")) {
+            SessionManager.getInstance().logout();
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginView.fxml"));
+                Parent root = loader.load();
+                Stage stage = (Stage) contentArea.getScene().getWindow();
+                Scene scene = new Scene(root, 900, 600);
+                scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+                stage.setTitle("NAJAHNI \u2014 Connexion");
+                stage.setScene(scene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

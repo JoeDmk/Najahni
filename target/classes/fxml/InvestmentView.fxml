@@ -20,6 +20,11 @@
     <HBox alignment="CENTER_LEFT" spacing="20">
         <Label text="Opportunités d'Investissement" styleClass="section-title"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="8" alignment="CENTER_RIGHT" styleClass="currency-bar">
+            <Label text="💱" style="-fx-font-size: 16px;"/>
+            <ComboBox fx:id="cboCurrency" prefWidth="140" styleClass="form-field"/>
+            <Label fx:id="lblConvertedTotal" text="" style="-fx-font-weight: bold; -fx-text-fill: #16213e;"/>
+        </HBox>
         <Button text="➕ Nouvelle Opportunité" onAction="#showAddForm" styleClass="btn-primary"/>
         <Button text="🔄 Actualiser" onAction="#refreshTable" styleClass="btn-secondary"/>
     </HBox>
@@ -70,7 +75,6 @@
                     <TableColumn fx:id="colStatus" text="Statut" prefWidth="100" minWidth="80"/>
                     <TableColumn fx:id="colProject" text="Projet" prefWidth="150" minWidth="120"/>
                     <TableColumn fx:id="colRiskScore" text="🎯 Risque IA" prefWidth="120" minWidth="100"/>
-                    <TableColumn fx:id="colRiskLabel" text="🤖 ML" prefWidth="110" minWidth="90"/>
                     <TableColumn fx:id="colActions" text="Actions" prefWidth="200" minWidth="180"/>
                 </columns>
                 <placeholder>

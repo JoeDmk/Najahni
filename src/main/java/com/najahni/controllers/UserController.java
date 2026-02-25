@@ -257,6 +257,20 @@ public class UserController {
     @FXML
     public void saveUser() {
         try {
+            // ── Validation UI ──
+            String name = txtName.getText() != null ? txtName.getText().trim() : "";
+            String email = txtEmail.getText() != null ? txtEmail.getText().trim() : "";
+            String password = txtPassword.getText() != null ? txtPassword.getText() : "";
+
+            if (name.isEmpty()) throw new IllegalArgumentException("Le nom est obligatoire.");
+            if (name.length() < 2) throw new IllegalArgumentException("Le nom doit contenir au moins 2 caractères.");
+            if (email.isEmpty()) throw new IllegalArgumentException("L'email est obligatoire.");
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))
+                throw new IllegalArgumentException("Format d'email invalide.");
+            if (password.isEmpty()) throw new IllegalArgumentException("Le mot de passe est obligatoire.");
+            if (password.length() < 6) throw new IllegalArgumentException("Le mot de passe doit contenir au moins 6 caractères.");
+            if (cboRole.getValue() == null) throw new IllegalArgumentException("Veuillez sélectionner un rôle.");
+
             // Validate and create user object
             User user = new User();
             
@@ -264,9 +278,9 @@ public class UserController {
                 user.setId(Integer.parseInt(txtId.getText()));
             }
             
-            user.setName(txtName.getText().trim());
-            user.setEmail(txtEmail.getText().trim());
-            user.setPassword(txtPassword.getText());
+            user.setName(name);
+            user.setEmail(email);
+            user.setPassword(password);
             user.setRole(cboRole.getValue());
 
             if (isEditMode) {

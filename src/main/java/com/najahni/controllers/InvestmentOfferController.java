@@ -3,6 +3,7 @@ package com.najahni.controllers;
 import com.najahni.models.*;
 import com.najahni.services.InvestmentOfferService;
 import com.najahni.services.InvestmentOpportunityService;
+import com.najahni.services.PaymentService;
 import com.najahni.services.UserService;
 import com.najahni.utils.AlertUtils;
 import com.najahni.utils.AnimationUtils;
@@ -343,16 +344,53 @@ public class InvestmentOfferController {
     }
 
     private void acceptOffer(InvestmentOffer offer) {
-        if (AlertUtils.showConfirmation("Accepter l'Offre",
-                "Accepter cette offre de " + offer.getFormattedAmount() + " ?")) {
-            boolean accepted = offerService.acceptOffer(offer.getId());
-            if (accepted) {
-                loadOffers();
-                loadSummary();
-                AlertUtils.showSuccess("Offre acceptée avec succès !");
+        String confirmMsg = "Accepter cette offre de " + offer.getFormattedAmount() + " ?";
+        if (PaymentService.isConfigured()) {
+            confirmMsg += "\n\n💳 Un paiement Stripe (mode test) sera effectué.";
+        }
+
+        if (AlertUtils.showConfirmation("Accepter l'Offre", confirmMsg)) {
+            // Si Stripe est configuré, effectuer le paiement avant d'accepter
+            if (PaymentService.isConfigured()) {
+                processPaymentAndAccept(offer);
             } else {
-                AlertUtils.showError("Échec", "Impossible d'accepter l'offre.");
+                // Acceptation sans paiement (Stripe non configuré)
+                finalizeAcceptOffer(offer);
             }
+        }
+    }
+
+    private void processPaymentAndAccept(InvestmentOffer offer) {
+        PaymentService paymentService = new PaymentService();
+        long amountCents = offer.getProposedAmount().multiply(BigDecimal.valueOf(100)).longValue();
+        String description = "Offre #" + offer.getId() + " — Investissement NAJAHNI";
+
+        paymentService.createPaymentIntent(amountCents, "eur", description)
+            .thenAccept(result -> {
+                javafx.application.Platform.runLater(() -> {
+                    if (result.isSuccess()) {
+                        finalizeAcceptOffer(offer);
+                        AlertUtils.showInfo("💳 Paiement Stripe",
+                            "✅ Paiement réussi !\n\n"
+                            + "ID : " + result.getPaymentIntentId() + "\n"
+                            + "Statut : " + result.getStatus() + "\n"
+                            + "Montant : " + offer.getFormattedAmount());
+                    } else {
+                        AlertUtils.showError("💳 Échec du Paiement",
+                            result.getErrorMessage() + "\n\nL'offre n'a pas été acceptée.");
+                    }
+                });
+            });
+    }
+
+    private void finalizeAcceptOffer(InvestmentOffer offer) {
+        boolean accepted = offerService.acceptOffer(offer.getId());
+        if (accepted) {
+            loadOffers();
+            loadSummary();
+            AlertUtils.showSuccess("Offre acceptée avec succès !");
+        } else {
+            AlertUtils.showError("Échec", "Impossible d'accepter l'offre.");
         }
     }
 
@@ -371,14 +409,9 @@ public class InvestmentOfferController {
     }
 
     private void deleteOffer(InvestmentOffer offer) {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmation");
-        confirmation.setHeaderText("Supprimer ?");
-        confirmation.setContentText("Êtes-vous sûr de vouloir supprimer cet élément ?\n\n"
-            + "Offre : " + offer.getFormattedAmount());
-        java.util.Optional<ButtonType> result = confirmation.showAndWait();
-
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (AlertUtils.showConfirmation("Supprimer l'Offre",
+                "Êtes-vous sûr de vouloir supprimer cette offre ?\n\n"
+                + "Montant : " + offer.getFormattedAmount())) {
             boolean deleted = offerService.deleteOffer(offer.getId());
             if (deleted) {
                 loadOffers();

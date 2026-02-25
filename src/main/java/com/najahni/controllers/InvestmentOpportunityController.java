@@ -3,16 +3,17 @@ package com.najahni.controllers;
 import com.najahni.models.InvestmentOpportunity;
 import com.najahni.models.OpportunityStatus;
 import com.najahni.models.Project;
+import com.najahni.services.CurrencyService;
+import com.najahni.services.DeadlineService;
 import com.najahni.services.InvestmentOpportunityService;
 import com.najahni.services.ProjectService;
 import com.najahni.services.RiskCalculator;
 import com.najahni.services.RiskResult;
 import com.najahni.services.RiskService;
-import com.najahni.services.ml.RiskAIService;
-import com.najahni.services.ml.RiskPrediction;
 import com.najahni.utils.AlertUtils;
 import com.najahni.utils.AnimationUtils;
 import com.najahni.utils.WrappedTextCellFactory;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,7 +26,6 @@ import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,6 +51,10 @@ public class InvestmentOpportunityController {
     @FXML private Label lblFundedCount;
     @FXML private Label lblTotalAmount;
 
+    // ─── Convertisseur de devises ─────────────────────────
+    @FXML private ComboBox<String> cboCurrency;
+    @FXML private Label lblConvertedTotal;
+
     // ─── Table ───────────────────────────────────────────────
     @FXML private TableView<InvestmentOpportunity> opportunitiesTable;
     @FXML private TableColumn<InvestmentOpportunity, Integer> colId;
@@ -60,7 +64,6 @@ public class InvestmentOpportunityController {
     @FXML private TableColumn<InvestmentOpportunity, String> colStatus;
     @FXML private TableColumn<InvestmentOpportunity, String> colProject;
     @FXML private TableColumn<InvestmentOpportunity, String> colRiskScore;
-    @FXML private TableColumn<InvestmentOpportunity, String> colRiskLabel;
     @FXML private TableColumn<InvestmentOpportunity, Void> colActions;
 
     // ─── Filtres ─────────────────────────────────────────────
@@ -82,15 +85,16 @@ public class InvestmentOpportunityController {
     private final InvestmentOpportunityService opportunityService;
     private final ProjectService projectService;
     private final RiskService riskService;
-    private final RiskAIService riskAIService;
+    private final CurrencyService currencyService;
     private ObservableList<InvestmentOpportunity> opportunitiesList;
     private boolean isEditMode = false;
+    private String selectedCurrency = "EUR";
 
     public InvestmentOpportunityController() {
         this.opportunityService = new InvestmentOpportunityService();
         this.projectService = new ProjectService();
         this.riskService = new RiskService();
-        this.riskAIService = new RiskAIService();
+        this.currencyService = new CurrencyService();
     }
 
     // ─── INITIALISATION ──────────────────────────────────────
@@ -99,12 +103,42 @@ public class InvestmentOpportunityController {
     public void initialize() {
         setupTableColumns();
         setupComboBoxes();
+        setupCurrencyConverter();
         loadOpportunities();
         loadSummary();
         clearForm();
 
         AnimationUtils.playFadeScaleIn(opportunitiesTable, 300, 150);
         AnimationUtils.playFadeScaleIn(formContainer, 300, 250);
+    }
+
+    // ─── CURRENCY CONVERTER ──────────────────────────────
+
+    private void setupCurrencyConverter() {
+        if (cboCurrency != null) {
+            cboCurrency.setItems(FXCollections.observableArrayList(
+                CurrencyService.CURRENCY_LABELS.values().stream().sorted().collect(Collectors.toList())
+            ));
+            cboCurrency.setValue(CurrencyService.CURRENCY_LABELS.get("EUR"));
+            cboCurrency.setOnAction(e -> {
+                String label = cboCurrency.getValue();
+                // Extract currency code from label, e.g. "🇪🇺 Euro (EUR)" -> "EUR"
+                if (label != null && label.contains("(")) {
+                    selectedCurrency = label.substring(label.indexOf('(') + 1, label.indexOf(')'));
+                }
+                updateCurrencyDisplay();
+            });
+
+            // Load rates asynchronously
+            currencyService.fetchRates().thenRun(() -> Platform.runLater(this::updateCurrencyDisplay));
+        }
+    }
+
+    private void updateCurrencyDisplay() {
+        if (lblConvertedTotal == null || cboCurrency == null) return;
+        java.math.BigDecimal totalAmount = opportunityService.getTotalTargetAmount();
+        double converted = currencyService.convert(totalAmount.doubleValue(), "EUR", selectedCurrency);
+        lblConvertedTotal.setText(CurrencyService.format(converted, selectedCurrency));
     }
 
     // ─── CONFIGURATION TABLE ─────────────────────────────────
@@ -120,8 +154,23 @@ public class InvestmentOpportunityController {
                 ? cellData.getValue().getDescription() : "—"));
 
         colDeadline.setCellValueFactory(cellData ->
-            new SimpleStringProperty(cellData.getValue().getDeadline() != null
-                ? cellData.getValue().getDeadline().toString() : "—"));
+            new SimpleStringProperty(DeadlineService.getDeadlineBadge(cellData.getValue().getDeadline())));
+
+        // Badge coloré pour la deadline
+        colDeadline.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
+                    setStyle(DeadlineService.getDeadlineStyle(opp.getDeadline()));
+                }
+            }
+        });
 
         colStatus.setCellValueFactory(cellData ->
             new SimpleStringProperty(cellData.getValue().getStatus().getDisplayName()));
@@ -152,37 +201,6 @@ public class InvestmentOpportunityController {
             }
         });
 
-        // ── Colonne Risk Label ML ──
-        if (colRiskLabel != null) {
-            colRiskLabel.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedRiskLabel()));
-            colRiskLabel.setCellFactory(column -> new TableCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item);
-                        InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
-                        String label = opp.getRiskLabel();
-                        if (label != null) {
-                            String bgColor = switch (label.toLowerCase()) {
-                                case "faible" -> "-fx-text-fill: #27ae60; -fx-font-weight: bold;";
-                                case "moyen" -> "-fx-text-fill: #f39c12; -fx-font-weight: bold;";
-                                case "eleve" -> "-fx-text-fill: #e74c3c; -fx-font-weight: bold;";
-                                default -> "-fx-text-fill: #999;";
-                            };
-                            setStyle(bgColor);
-                        } else {
-                            setStyle("-fx-text-fill: #999; -fx-font-style: italic;");
-                        }
-                    }
-                }
-            });
-        }
-
         // Application du text wrapping
         colTargetAmount.setCellFactory(new WrappedTextCellFactory<>());
         colDescription.setCellFactory(new WrappedTextCellFactory<>());
@@ -195,8 +213,7 @@ public class InvestmentOpportunityController {
             private final Button deleteBtn = new Button("🗑️");
             private final Button closeBtn = new Button("🔒");
             private final Button riskBtn = new Button("🎯");
-            private final Button mlBtn = new Button("🤖");
-            private final HBox pane = new HBox(5, editBtn, riskBtn, mlBtn, closeBtn, deleteBtn);
+            private final HBox pane = new HBox(5, editBtn, riskBtn, closeBtn, deleteBtn);
 
             {
                 editBtn.getStyleClass().add("btn-warning");
@@ -209,9 +226,6 @@ public class InvestmentOpportunityController {
                 riskBtn.getStyleClass().add("btn-primary");
                 riskBtn.setStyle("-fx-padding: 5 8;");
                 riskBtn.setTooltip(new Tooltip("Calculer le Risk Score IA"));
-                mlBtn.getStyleClass().add("btn-primary");
-                mlBtn.setStyle("-fx-padding: 5 8; -fx-background-color: #8e44ad; -fx-text-fill: white;");
-                mlBtn.setTooltip(new Tooltip("Prédire Risque IA (Machine Learning)"));
 
                 editBtn.setOnAction(event -> {
                     InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
@@ -228,10 +242,6 @@ public class InvestmentOpportunityController {
                 riskBtn.setOnAction(event -> {
                     InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
                     calculateRisk(opp);
-                });
-                mlBtn.setOnAction(event -> {
-                    InvestmentOpportunity opp = getTableView().getItems().get(getIndex());
-                    predictRiskML(opp);
                 });
             }
 
@@ -310,6 +320,7 @@ public class InvestmentOpportunityController {
         lblClosedCount.setText(String.valueOf(closed));
         lblFundedCount.setText(String.valueOf(funded));
         lblTotalAmount.setText(String.format("%,.2f €", totalAmount));
+        updateCurrencyDisplay();
     }
 
     private void loadOpportunities() {
@@ -448,80 +459,11 @@ public class InvestmentOpportunityController {
         }
     }
 
-    // ─── PREDICTION ML (WEKA) ─────────────────────────────
-
-    /**
-     * Prédit le risque d'une opportunité via Machine Learning (Weka RandomForest).
-     * Affiche un popup de confirmation, lance la prédiction, affiche le résultat
-     * détaillé (label + probabilités) et sauvegarde le risk_label en BDD.
-     */
-    private void predictRiskML(InvestmentOpportunity opp) {
-        // ── Récupérer le secteur du projet associé ──
-        String projectSector = "tech"; // Défaut
-        try {
-            var project = projectService.findById(opp.getProjectId());
-            if (project.isPresent() && project.get().getSector() != null) {
-                projectSector = project.get().getSector();
-            }
-        } catch (Exception ignored) {}
-
-        // ── Popup de confirmation ──
-        String confirmMsg = "Prédire le risque ML pour cette opportunité ?\n\n"
-            + "📊 Montant : " + opp.getFormattedAmount() + "\n"
-            + "📅 Deadline : " + (opp.getDeadline() != null ? opp.getDeadline().toString() : "Aucune") + "\n"
-            + "🏷️ Projet : " + (opp.getProjectTitle() != null ? opp.getProjectTitle() : "Projet #" + opp.getProjectId()) + "\n"
-            + "🏭 Secteur : " + projectSector + "\n\n"
-            + "🤖 Modèle : RandomForest (Weka) — 100 arbres\n"
-            + "   Entraîné localement, aucune API externe.";
-
-        if (!AlertUtils.showConfirmation("🤖 Prédiction Risque ML", confirmMsg)) {
-            return;
-        }
-
-        try {
-            // ── Initialisation du service ML ──
-            riskAIService.initialize();
-
-            // ── Prédiction ──
-            RiskPrediction prediction = riskAIService.predictRisk(opp, projectSector);
-
-            // ── Sauvegarde du label en BDD ──
-            boolean saved = opportunityService.updateRiskLabel(opp.getId(), prediction.getLabel());
-
-            if (saved) {
-                opp.setRiskLabel(prediction.getLabel());
-                opportunitiesTable.refresh();
-
-                // ── Popup de résultat détaillé ──
-                AlertUtils.showInfo("🤖 Prédiction ML — Résultat",
-                    prediction.getDisplay() + "\n\n"
-                    + prediction.getDetailedDisplay() + "\n\n"
-                    + "Algorithme : RandomForest (100 arbres, seed=42)\n"
-                    + "Le label a été sauvegardé en base de données.");
-            } else {
-                AlertUtils.showError("Erreur",
-                    "Prédiction réussie (" + prediction.getDisplay() + ")\n"
-                    + "mais échec de sauvegarde en BDD.");
-            }
-
-        } catch (Exception e) {
-            AlertUtils.showError("Erreur Prédiction ML",
-                "Erreur lors de la prédiction ML :\n" + e.getMessage()
-                + "\n\nVérifiez que le dataset ARFF et le modèle sont accessibles.");
-            e.printStackTrace();
-        }
-    }
-
     private void deleteOpportunity(InvestmentOpportunity opp) {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmation");
-        confirmation.setHeaderText("Supprimer ?");
-        confirmation.setContentText("Êtes-vous sûr de vouloir supprimer cet élément ?\n\n"
-            + "Opportunité : " + opp.getFormattedAmount() + "\n"
-            + "Toutes les offres liées seront aussi supprimées (CASCADE).");
-        java.util.Optional<ButtonType> result = confirmation.showAndWait();
-
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (AlertUtils.showConfirmation("Supprimer l'Opportunité",
+                "Êtes-vous sûr de vouloir supprimer cette opportunité ?\n\n"
+                + "Montant : " + opp.getFormattedAmount() + "\n"
+                + "⚠️ Toutes les offres liées seront aussi supprimées (CASCADE).")) {
             boolean deleted = opportunityService.deleteOpportunity(opp.getId());
             if (deleted) {
                 loadOpportunities();
