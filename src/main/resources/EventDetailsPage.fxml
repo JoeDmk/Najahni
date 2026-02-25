@@ -66,6 +66,7 @@
 
                     <VBox styleClass="card" spacing="10">
                         <Label fx:id="dateLabel" styleClass="muted-text"/>
+                        <Label fx:id="weatherLabel" styleClass="muted-text" text="Weather: ..."/>
                         <Label fx:id="capacityLabel" styleClass="card-title"/>
                         <Button fx:id="joinBtn" styleClass="btn-primary"/>
                     </VBox>

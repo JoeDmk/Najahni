@@ -955,3 +955,10 @@
     -fx-padding: 10px;
     -fx-alignment: TOP_CENTER;
 }
+.dialog-pane-pro {
+    -fx-background-color: transparent;
+}
+
+.dialog-pane-pro .content {
+    -fx-background-color: transparent;
+}

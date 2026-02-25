@@ -128,25 +128,98 @@ public class ThreadPageController {
                 List<String> finalOptions = options;
 
                 Platform.runLater(() -> {
-                    replyStatusLabel.setText("✅ Suggestions ready"); // optional
-
-                    ChoiceDialog<String> dialog =
-                            new ChoiceDialog<>(finalOptions.get(0), finalOptions);
-
-                    dialog.setTitle("Reply Suggestions");
-                    dialog.setHeaderText("Pick a reply to insert");
-                    dialog.setContentText("Suggestions:");
-
-                    dialog.showAndWait().ifPresent(choice -> {
-                        commentField.setText(choice);
-                        commentField.requestFocus();
-                        commentField.positionCaret(commentField.getText().length());
-                    });
+                    replyStatusLabel.setText("✅ Suggestions ready");
+                    showReplySuggestionsDialog(finalOptions);
                 });
 
             } catch (Exception ex) {
                 Platform.runLater(() -> summaryLabel.setText("❌ Suggest failed: " + ex.getMessage()));
             }
+        });
+    }
+    private void showReplySuggestionsDialog(List<String> options) {
+
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Reply Suggestions");
+        dialog.setHeaderText(null);
+
+        DialogPane pane = dialog.getDialogPane();
+        pane.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
+
+        // --- UI ---
+        Label title = new Label("Choose a reply");
+        title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        ListView<String> listView = new ListView<>();
+        listView.getItems().addAll(options);
+        listView.getSelectionModel().selectFirst();
+        listView.setPrefWidth(320);
+
+        // show short preview in list
+        listView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    String s = item.replace("\n", " ").trim();
+                    if (s.length() > 70) s = s.substring(0, 70) + "…";
+                    setText(s);
+                }
+            }
+        });
+
+        TextArea preview = new TextArea();
+        preview.setEditable(false);
+        preview.setWrapText(true);
+        preview.setPrefWidth(420);
+        preview.setPrefHeight(180);
+        preview.setStyle(
+                "-fx-background-radius: 12;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-font-size: 13px;"
+        );
+
+        // bind preview to selection
+        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
+            preview.setText(newV == null ? "" : newV);
+        });
+        preview.setText(options.isEmpty() ? "" : options.get(0));
+
+        HBox body = new HBox(12, listView, preview);
+        body.setStyle("-fx-padding: 14;");
+
+        VBox root = new VBox(10, title, body);
+        root.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-padding: 18;" +
+                        "-fx-background-radius: 14;"
+        );
+
+        pane.setContent(root);
+
+        // --- Buttons styling ---
+        Button okBtn = (Button) pane.lookupButton(ButtonType.OK);
+        okBtn.setText("Insert");
+        okBtn.setDefaultButton(true);
+        okBtn.setStyle("-fx-background-color:#3b82f6; -fx-text-fill:white; -fx-background-radius:10;");
+
+        Button cancelBtn = (Button) pane.lookupButton(ButtonType.CANCEL);
+        cancelBtn.setStyle("-fx-background-color:#e5e7eb; -fx-text-fill:#111827; -fx-background-radius:10;");
+
+        // disable insert if nothing selected
+        okBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
+
+        dialog.setResultConverter(bt -> {
+            if (bt == ButtonType.OK) return listView.getSelectionModel().getSelectedItem();
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(choice -> {
+            commentField.setText(choice);
+            commentField.requestFocus();
+            commentField.positionCaret(commentField.getText().length());
         });
     }
     private List<String> extractNumberedOptions(String text) {

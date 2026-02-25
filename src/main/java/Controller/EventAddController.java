@@ -39,7 +39,45 @@
 
         @FXML
         private Label statusLabel;
+        @FXML private Label weatherPreviewLabel;
 
+        private final Services.WeatherService weatherService = new Services.WeatherService();
+        private static final double DEFAULT_LAT = 36.8065;
+        private static final double DEFAULT_LON = 10.1815;
+
+        @FXML
+        public void initialize() {
+            eventdate.valueProperty().addListener((obs, oldV, newV) -> {
+                if (newV == null) return;
+                previewWeather(newV);
+            });
+        }
+
+        private void previewWeather(java.time.LocalDate d) {
+            weatherPreviewLabel.setText("🌤 Loading weather...");
+
+            if (d.isAfter(java.time.LocalDate.now().plusDays(16))) {
+                weatherPreviewLabel.setText("🌤 Weather: not available yet (max 16 days ahead)");
+                return;
+            }
+
+            Services.EmailAsync.run(() -> {
+                try {
+                    var info = weatherService.getDaily(d, DEFAULT_LAT, DEFAULT_LON);
+                    String label = Services.WeatherService.labelFromCode(info.weatherCode);
+
+                    String txt = String.format(
+                            "Weather: %s | %.0f°-%.0f° | Rain %d%%",
+                            label, info.tMin, info.tMax, info.rainProbMax
+                    );
+
+                    javafx.application.Platform.runLater(() -> weatherPreviewLabel.setText(txt));
+                } catch (Exception ex) {
+                    javafx.application.Platform.runLater(() ->
+                            weatherPreviewLabel.setText("Weather: unavailable"));
+                }
+            });
+        }
 
         @FXML
         void addEvent(ActionEvent event) {

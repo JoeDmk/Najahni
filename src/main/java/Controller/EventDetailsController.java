@@ -46,7 +46,41 @@ public class EventDetailsController {
     private VBox participantsContainer;
 
     private Event event;
+    @FXML private Label weatherLabel;
 
+    private final Services.WeatherService weatherService = new Services.WeatherService();
+
+    // Tunis par défaut
+    private static final double DEFAULT_LAT = 36.8065;
+    private static final double DEFAULT_LON = 10.1815;
+    private void loadWeather() {
+        weatherLabel.setText("🌤 Loading weather...");
+
+        java.time.LocalDate d = event.getEventDate().toLocalDateTime().toLocalDate();
+
+        // Option: si trop loin -> message direct
+        if (d.isAfter(java.time.LocalDate.now().plusDays(16))) {
+            weatherLabel.setText("🌤 Weather: not available yet (max 16 days ahead)");
+            return;
+        }
+
+        Services.EmailAsync.run(() -> {
+            try {
+                var info = weatherService.getDaily(d, DEFAULT_LAT, DEFAULT_LON);
+                String label = Services.WeatherService.labelFromCode(info.weatherCode);
+
+                String txt = String.format(
+                        "Weather: %s | %.0f°-%.0f° | Rain %d%%",
+                        label, info.tMin, info.tMax, info.rainProbMax
+                );
+
+                javafx.application.Platform.runLater(() -> weatherLabel.setText(txt));
+            } catch (Exception ex) {
+                javafx.application.Platform.runLater(() ->
+                        weatherLabel.setText("Weather: unavailable"));
+            }
+        });
+    }
 
     // TODO: Replace with SessionService.getInstance().getCurrentUser().getId()
     // Temporary logged user (until integration with User module)
@@ -120,8 +154,12 @@ public class EventDetailsController {
         EmailAsync.run(() -> {
             try {
                 String prompt =
-                        "Create a short preparation checklist for the event.\n" +
-                                "\" If details are unclear, keep it generic and safe.\\n\"Rules: max 3 bullet points. No invented details. Practical.\n\n" +
+                        "TASK: Create a short preparation checklist for the event.\n" +
+                                "If details are unclear, keep it generic and safe.\n" +
+                                "Rules:\n" +
+                                "- Max 3 bullet points.\n" +
+                                "- No invented details.\n" +
+                                "- Practical.\n\n" +
                                 baseEventContext();
 
                 String out = aiEventService.generate(prompt);
@@ -141,7 +179,7 @@ public class EventDetailsController {
         titleLabel.setText(event.getTitle());
         descriptionLabel.setText(event.getDescription());
         dateLabel.setText("Date: " + event.getEventDate().toLocalDateTime());
-
+        loadWeather();
         updateJoinButton();
         loadParticipants();
     }

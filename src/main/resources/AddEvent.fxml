@@ -24,6 +24,7 @@
 
                 <TextField fx:id="eventtitle" promptText="Event title" styleClass="form-field"/>
                 <DatePicker fx:id="eventdate" styleClass="form-field"/>
+                <Label fx:id="weatherPreviewLabel" styleClass="muted-text" text="Weather: (pick a date)"/>
                 <TextArea fx:id="eventdescription" promptText="Describe the event..." prefRowCount="4" styleClass="form-field"/>
                 <TextField fx:id="eventcapacity" promptText="Capacity" styleClass="form-field"/>
 

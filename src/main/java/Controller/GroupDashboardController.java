@@ -152,14 +152,15 @@
                     try {
                         GroupJoinRequestCRUD requestCRUD = new GroupJoinRequestCRUD();
 
-                        if (group.getIsPrivate() &&
-                                requestCRUD.hasPendingRequest(group.getId(), currentUserId)) {
+                        if (group.getIsPrivate() && requestCRUD.hasPendingRequest(group.getId(), currentUserId)) {
 
-                            joinButton.setText("Request Pending");
-                            joinButton.setDisable(true);
+                            setJoinButtonPendingState();
+
                         } else {
+
                             joinButton.setText("Join Group");
                             joinButton.setDisable(false);
+                            joinButton.setOnAction(e -> joinGroup());
                         }
 
                     } catch (SQLException e) {
@@ -213,6 +214,15 @@
                 System.out.println(e.getMessage());
             }
         }
+        private void cancelJoinRequest() {
+            try {
+                GroupJoinRequestCRUD requestCRUD = new GroupJoinRequestCRUD();
+                requestCRUD.cancelPendingRequest(group.getId(), currentUserId);
+                checkMembership(); // refresh clean
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
         private void approveRequest(GroupJoinRequest req) {
 
             GroupJoinRequestCRUD crud = new GroupJoinRequestCRUD();
@@ -256,8 +266,7 @@
                     GroupJoinRequestCRUD requestCRUD = new GroupJoinRequestCRUD();
 
                     if (requestCRUD.hasPendingRequest(group.getId(), currentUserId)) {
-                        joinButton.setText("Request Pending");
-                        joinButton.setDisable(true);
+                        setJoinButtonPendingState();
                         return;
                     }
 
@@ -265,8 +274,8 @@
                             new GroupJoinRequest(group.getId(), currentUserId)
                     );
 
-                    joinButton.setText("Request Sent");
-                    joinButton.setDisable(true);
+                    setJoinButtonPendingState();
+
 
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
@@ -285,6 +294,11 @@
             }
 
             checkMembership();
+        }
+        private void setJoinButtonPendingState() {
+            joinButton.setText("Request Pending • Cancel");
+            joinButton.setDisable(false);
+            joinButton.setOnAction(e -> cancelJoinRequest());
         }
         private void deleteThread(int threadId) {
 

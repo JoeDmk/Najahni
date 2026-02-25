@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -39,7 +39,11 @@
 
                 <!-- Composer Card -->
                 <VBox styleClass="card" spacing="10">
-                    <Label text="Share something…" styleClass="section-title-sm"/>
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Share something…" styleClass="section-title-sm"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="charCountLabel" text="0 / 500" styleClass="muted-text"/>
+                    </HBox>
 
                     <TextArea fx:id="contentArea"
                               promptText="What’s on your mind?"
@@ -47,9 +51,26 @@
                               prefRowCount="3"
                               styleClass="form-field"/>
 
+                    <!-- Image preview (hidden if none) -->
+                    <StackPane fx:id="composerImageWrap"
+                               visible="false" managed="false"
+                               style="-fx-background-color:#f1f5f9; -fx-padding:10; -fx-background-radius:12;">
+                        <ImageView fx:id="composerImagePreview"
+                                   fitWidth="360"
+                                   fitHeight="220"
+                                   preserveRatio="true"
+                                   smooth="true"/>
+                    </StackPane>
+
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Button text="📷 Add Image"
                                 onAction="#handlePickImage"
+                                styleClass="btn-secondary"/>
+
+                        <Button fx:id="removeSelectedImageBtn"
+                                text="Remove"
+                                onAction="#handleRemoveSelectedImage"
+                                visible="false" managed="false"
                                 styleClass="btn-secondary"/>
 
                         <Label fx:id="imageStatusLabel"
@@ -58,7 +79,8 @@
 
                         <Region HBox.hgrow="ALWAYS"/>
 
-                        <Button text="Post"
+                        <Button fx:id="postBtn"
+                                text="Post"
                                 onAction="#handleCreatePost"
                                 styleClass="btn-primary"/>
                     </HBox>

@@ -25,6 +25,7 @@ public class GroupJoinRequestCRUD {
         pst.executeUpdate();
     }
 
+
     public boolean hasPendingRequest(int groupId, int userId) throws SQLException {
 
         String sql = "SELECT * FROM group_join_request WHERE group_id=? AND user_id=? AND status='PENDING'";
@@ -77,6 +78,13 @@ public class GroupJoinRequestCRUD {
         String sql = "UPDATE group_join_request SET status='REJECTED' WHERE id=?";
         PreparedStatement pst = conn.prepareStatement(sql);
         pst.setInt(1, requestId);
+        pst.executeUpdate();
+    }
+    public void cancelPendingRequest(int groupId, int userId) throws SQLException {
+        String sql = "DELETE FROM group_join_request WHERE group_id=? AND user_id=? AND status='PENDING'";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, groupId);
+        pst.setInt(2, userId);
         pst.executeUpdate();
     }
 
