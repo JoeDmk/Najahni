@@ -10,7 +10,7 @@
     -fx-padding: 10 20;
     -fx-background-radius: 8;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
 }
 
 .button:hover {
@@ -31,7 +31,7 @@
 .nav-bar {
     -fx-background-color: white;
     -fx-padding: 15;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 5);
 }
 
 .nav-button {
@@ -61,7 +61,7 @@
 .table-view {
     -fx-background-color: white;
     -fx-background-radius: 12;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 5);
     -fx-table-cell-border-color: transparent;
 }
 
@@ -84,11 +84,14 @@
     -fx-background-color: white;
     -fx-padding: 30;
     -fx-background-radius: 12;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 5);
     -fx-max-width: 600;
 }
 
-.text-field, .text-area, .combo-box, .date-picker {
+.text-field,
+.text-area,
+.combo-box,
+.date-picker {
     -fx-background-color: #f9fafb;
     -fx-border-color: #e5e7eb;
     -fx-border-radius: 6;
@@ -96,7 +99,10 @@
     -fx-padding: 8;
 }
 
-.text-field:focused, .text-area:focused, .combo-box:focused, .date-picker:focused {
+.text-field:focused,
+.text-area:focused,
+.combo-box:focused,
+.date-picker:focused {
     -fx-border-color: #4f46e5;
     -fx-background-color: white;
 }
@@ -104,4 +110,24 @@
 .label {
     -fx-text-fill: #374151;
     -fx-font-weight: 600;
+}
+
+/* Card layout styles */
+.cards-scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.cards-scroll-pane>.viewport {
+    -fx-background-color: transparent;
+}
+
+.progress-bar>.track {
+    -fx-background-color: #e5e7eb;
+    -fx-background-radius: 4;
+}
+
+.progress-bar>.bar {
+    -fx-background-radius: 4;
 }

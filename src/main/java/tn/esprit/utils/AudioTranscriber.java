@@ -10,13 +10,40 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class AudioTranscriber {
 
-    public static void recordAndTranscribe(TextArea textArea, Button micButton, int recordSeconds) {
-        micButton.setDisable(true);
-        micButton.setText("🔴 Recording...");
+    // Keep track of active recording sessions by button to allow toggling
+    private static final Map<Button, RecordingSession> activeSessions = new HashMap<>();
+
+    private static class RecordingSession {
+        TargetDataLine line;
+        Thread recorderThread;
+        File wavFile;
+
+        public RecordingSession(TargetDataLine line, Thread recorderThread, File wavFile) {
+            this.line = line;
+            this.recorderThread = recorderThread;
+            this.wavFile = wavFile;
+        }
+    }
+
+    public static void toggleRecording(TextArea textArea, Button micButton) {
+        if (activeSessions.containsKey(micButton)) {
+            // Stop recording
+            stopRecordingAndTranscribe(textArea, micButton);
+        } else {
+            // Start recording
+            startRecording(textArea, micButton);
+        }
+    }
+
+    private static void startRecording(TextArea textArea, Button micButton) {
+        micButton.setText("⏹ Stop");
+        micButton.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
 
         new Thread(() -> {
             try {
@@ -27,7 +54,7 @@ public class AudioTranscriber {
                 if (!AudioSystem.isLineSupported(info)) {
                     Platform.runLater(() -> {
                         textArea.appendText("\n[Microphone not supported]");
-                        resetButton(micButton, recordSeconds);
+                        resetButton(micButton);
                     });
                     return;
                 }
@@ -36,27 +63,50 @@ public class AudioTranscriber {
                 line.open(format);
                 line.start();
 
-                File wavFile = new File("temp_record.wav");
+                File wavFile = new File("temp_record_" + System.currentTimeMillis() + ".wav");
                 AudioInputStream ais = new AudioInputStream(line);
 
-                // Start recording in a separate thread so we can close line on timer
                 Thread recorderThread = new Thread(() -> {
                     try {
                         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        // Exception will be thrown when stream is closed intentionally
                     }
                 });
                 recorderThread.start();
 
-                Thread.sleep(recordSeconds * 1000L); // configurable recording time
-                line.stop();
-                line.close();
+                // Store session
+                activeSessions.put(micButton, new RecordingSession(line, recorderThread, wavFile));
 
-                Platform.runLater(() -> micButton.setText("⏳ Transcribing..."));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    textArea.appendText("\n[Error recording: " + e.getMessage() + "]");
+                    resetButton(micButton);
+                });
+            }
+        }).start();
+    }
+
+    private static void stopRecordingAndTranscribe(TextArea textArea, Button micButton) {
+        RecordingSession session = activeSessions.remove(micButton);
+        if (session == null) return;
+
+        micButton.setDisable(true);
+        micButton.setText("⏳ Transcribing...");
+        micButton.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: wait;");
+
+        new Thread(() -> {
+            try {
+                // Stop audio capture
+                session.line.stop();
+                session.line.close();
+                
+                // Wait briefly for file write to complete
+                Thread.sleep(200);
 
                 // Upload to FastAPI
-                String transcription = uploadAndTranscribe(wavFile);
+                String transcription = uploadAndTranscribe(session.wavFile);
 
                 Platform.runLater(() -> {
                     String currentText = textArea.getText();
@@ -64,22 +114,28 @@ public class AudioTranscriber {
                         textArea.appendText("\n");
                     }
                     textArea.appendText(transcription);
-                    resetButton(micButton, recordSeconds);
+                    resetButton(micButton);
                 });
+
+                // Cleanup temp file
+                if (session.wavFile.exists()) {
+                    session.wavFile.delete();
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
-                    textArea.appendText("\n[Error recording: " + e.getMessage() + "]");
-                    resetButton(micButton, recordSeconds);
+                    textArea.appendText("\n[Transcription error: " + e.getMessage() + "]");
+                    resetButton(micButton);
                 });
             }
         }).start();
     }
 
-    private static void resetButton(Button micButton, int recordSeconds) {
-        micButton.setText("🎤 Record (" + recordSeconds + "s)");
+    private static void resetButton(Button micButton) {
+        micButton.setText("🎤 Record");
         micButton.setDisable(false);
+        micButton.setStyle("-fx-background-color: #ffffff; -fx-text-fill: #4f46e5; -fx-border-color: #4f46e5; -fx-border-radius: 8; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
     }
 
     private static String uploadAndTranscribe(File file) {

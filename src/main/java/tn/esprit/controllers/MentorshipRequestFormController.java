@@ -79,10 +79,10 @@ public class MentorshipRequestFormController implements Initializable {
         btnAvailability.setOnAction(e -> navigateTo("/FXML/MentorAvailabilityList.fxml"));
         btnChatbot.setOnAction(e -> handleChatbot());
         if (btnMicMotivation != null) {
-            btnMicMotivation.setOnAction(e -> AudioTranscriber.recordAndTranscribe(taMotivation, btnMicMotivation, 10));
+            btnMicMotivation.setOnAction(e -> AudioTranscriber.toggleRecording(taMotivation, btnMicMotivation));
         }
         if (btnMicGoals != null) {
-            btnMicGoals.setOnAction(e -> AudioTranscriber.recordAndTranscribe(taGoals, btnMicGoals, 10));
+            btnMicGoals.setOnAction(e -> AudioTranscriber.toggleRecording(taGoals, btnMicGoals));
         }
     }
 

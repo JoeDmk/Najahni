@@ -52,13 +52,13 @@
 
                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.valignment="TOP">
                         <Label text="Motivation:" />
-                        <Button fx:id="btnMicMotivation" text="🎤 Record (10s)" styleClass="button-secondary" />
+                        <Button fx:id="btnMicMotivation" text="🎤 Record" styleClass="button-secondary" />
                    </VBox>
                    <TextArea fx:id="taMotivation" prefColumnCount="20" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="8" GridPane.valignment="TOP">
                         <Label text="Goals:" />
-                        <Button fx:id="btnMicGoals" text="🎤 Record (10s)" styleClass="button-secondary" />
+                        <Button fx:id="btnMicGoals" text="🎤 Record" styleClass="button-secondary" />
                    </VBox>
                    <TextArea fx:id="taGoals" prefColumnCount="20" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
                </GridPane>
