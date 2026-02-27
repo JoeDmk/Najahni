@@ -161,12 +161,6 @@
 /* ============================================
    FORM STYLES - Modern Input Fields
    ============================================ */
-.form-container {
-    -fx-padding: 25px;
-    -fx-background-color: white;
-    -fx-background-radius: 12px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);
-}
 
 .form-label {
     -fx-font-size: 13px;
@@ -342,14 +336,7 @@
 /* ============================================
    TABLE STYLES - Premium DataGrid
    ============================================ */
-.table-view {
-    -fx-background-color: white;
-    -fx-border-color: transparent;
-    -fx-background-radius: 10px;
-    -fx-border-radius: 10px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12, 0, 0, 3);
-    -fx-padding: 0;
-}
+/* table-view — consolidated below */
 
 .table-view .column-header {
     -fx-background-color: linear-gradient(to bottom, #3d566e, #34495e);
@@ -388,17 +375,7 @@
     -fx-background-color: white;
 }
 
-.table-row-cell:hover {
-    -fx-background-color: rgba(52, 152, 219, 0.08);
-}
-
-.table-row-cell:selected {
-    -fx-background-color: linear-gradient(to right, rgba(52, 152, 219, 0.15), rgba(52, 152, 219, 0.25));
-}
-
-.table-row-cell:selected:hover {
-    -fx-background-color: linear-gradient(to right, rgba(52, 152, 219, 0.2), rgba(52, 152, 219, 0.3));
-}
+/* table-row-cell hover/selected — consolidated below */
 
 .table-row-cell:selected .text {
     -fx-fill: #2c3e50;
@@ -460,21 +437,7 @@
 /* ============================================
    DASHBOARD STATS - Premium Cards
    ============================================ */
-.stat-card {
-    -fx-background-color: white;
-    -fx-background-radius: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);
-    -fx-padding: 25px 20px;
-    -fx-border-color: transparent;
-    -fx-border-width: 0 0 3px 0;
-    -fx-border-radius: 14px;
-}
-
-.stat-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 6);
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-}
+/* stat-card — consolidated below */
 
 .stat-value {
     -fx-font-size: 42px;
@@ -609,10 +572,7 @@
     -fx-padding: 12px 0;
 }
 
-.separator .line {
-    -fx-border-color: rgba(255, 255, 255, 0.15);
-    -fx-border-width: 1px 0 0 0;
-}
+/* separator .line — consolidated below */
 
 /* ============================================
    TOOLBAR - Modern Bar
@@ -699,14 +659,7 @@
 /* ============================================
    TOOLTIP - Modern Popup
    ============================================ */
-.tooltip {
-    -fx-background-color: #2c3e50;
-    -fx-text-fill: white;
-    -fx-font-size: 12px;
-    -fx-padding: 8px 12px;
-    -fx-background-radius: 6px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);
-}
+/* tooltip — consolidated below */
 
 /* ============================================
    LABELS - Typography
@@ -1817,4 +1770,774 @@
 
 .card-field-error {
     -fx-border-color: #e74c3c;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM VISUAL ENHANCEMENTS v3.0 — Beyond Imagination
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Missing: Currency Bar ── */
+.currency-bar {
+    -fx-background-color: linear-gradient(to right, #f8f9fa, white);
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 16px;
+    -fx-border-color: rgba(0,0,0,0.06);
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 6, 0, 0, 2);
+}
+
+/* ── Login Page — Full Glassmorphism ── */
+.login-background {
+    -fx-background-color: linear-gradient(to bottom right, #0f0c29, #302b63, #24243e);
+}
+
+.login-branding {
+    -fx-alignment: center;
+}
+
+.login-branding-title {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.5), 20, 0.3, 0, 0);
+}
+
+.login-branding-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: rgba(255,255,255,0.7);
+}
+
+.login-branding-feature {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255,255,255,0.55);
+    -fx-padding: 3 0;
+}
+
+.login-form-card {
+    -fx-background-color: rgba(255,255,255,0.07);
+    -fx-background-radius: 24px;
+    -fx-border-color: rgba(255,255,255,0.12);
+    -fx-border-radius: 24px;
+    -fx-border-width: 1px;
+    -fx-padding: 40px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 30, 0.15, 0, 8);
+}
+
+.login-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.login-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255,255,255,0.5);
+}
+
+.login-field {
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-background-radius: 12px;
+    -fx-border-color: rgba(255,255,255,0.15);
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px 18px;
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(255,255,255,0.35);
+}
+
+.login-field:focused {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-border-color: #e94560;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.25), 10, 0, 0, 0);
+}
+
+.login-btn {
+    -fx-background-color: linear-gradient(to right, #e94560, #c0392b);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 14px 0;
+    -fx-background-radius: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.4), 12, 0.3, 0, 4);
+}
+
+.login-btn:hover {
+    -fx-background-color: linear-gradient(to right, #d63851, #a93226);
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.6), 18, 0.3, 0, 6);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.login-btn:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.login-status {
+    -fx-font-size: 13px;
+    -fx-text-fill: #e74c3c;
+    -fx-background-color: rgba(231,76,60,0.1);
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 14px;
+}
+
+.login-link {
+    -fx-text-fill: rgba(255,255,255,0.5);
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.login-link:hover {
+    -fx-text-fill: #e94560;
+}
+
+/* ── Front Office Logout Button ── */
+.fo-btn-logout {
+    -fx-background-color: rgba(231,76,60,0.15);
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(231,76,60,0.3);
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+}
+
+.fo-btn-logout:hover {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-border-color: #e74c3c;
+    -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.4), 10, 0, 0, 3);
+}
+
+/* ── Front Office Hero Banner — Enhanced ── */
+.fo-hero-banner {
+    -fx-background-color: linear-gradient(to right, #0f3460, #16213e, #1a1a2e);
+    -fx-background-radius: 20px;
+    -fx-padding: 35px 40px;
+    -fx-effect: dropshadow(gaussian, rgba(15,52,96,0.4), 22, 0.08, 0, 8);
+}
+
+.fo-hero-title {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 1);
+}
+
+.fo-hero-subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: rgba(255,255,255,0.65);
+}
+
+/* ── Front Office Stat Cards — Glassmorphism Gradient ── */
+.fo-stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14px;
+    -fx-padding: 20px 18px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 3);
+    -fx-border-width: 0 0 3px 0;
+    -fx-border-radius: 14px;
+}
+
+.fo-stat-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.14), 18, 0, 0, 5);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.fo-stat-card-green {
+    -fx-border-color: #27ae60;
+}
+
+.fo-stat-card-blue {
+    -fx-border-color: #2980b9;
+}
+
+.fo-stat-card-purple {
+    -fx-border-color: #8e44ad;
+}
+
+.fo-stat-card-red {
+    -fx-border-color: #e74c3c;
+}
+
+.fo-stat-card-orange {
+    -fx-border-color: #f39c12;
+}
+
+.fo-stat-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.fo-stat-value-green { -fx-text-fill: #27ae60; }
+.fo-stat-value-blue  { -fx-text-fill: #2980b9; }
+.fo-stat-value-purple { -fx-text-fill: #8e44ad; }
+.fo-stat-value-red   { -fx-text-fill: #e74c3c; }
+.fo-stat-value-orange { -fx-text-fill: #f39c12; }
+
+.fo-stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #95a5a6;
+    -fx-font-weight: bold;
+}
+
+/* ── Risk Analysis — Premium Indicator Cards ── */
+.risk-indicator-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14px;
+    -fx-padding: 22px 18px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);
+    -fx-border-width: 0 0 3px 0;
+    -fx-border-radius: 14px;
+}
+
+.risk-indicator-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 16, 0, 0, 5);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.risk-indicator-low    { -fx-border-color: #27ae60; }
+.risk-indicator-medium { -fx-border-color: #f39c12; }
+.risk-indicator-high   { -fx-border-color: #e74c3c; }
+.risk-indicator-info   { -fx-border-color: #3498db; }
+
+.risk-indicator-emoji {
+    -fx-font-size: 28px;
+}
+
+.risk-indicator-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.risk-indicator-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #95a5a6;
+    -fx-font-weight: bold;
+}
+
+/* ── Risk Score Gauge / Result ── */
+.risk-score-container {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-padding: 30px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 18, 0, 0, 5);
+    -fx-border-color: rgba(0,0,0,0.04);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+.risk-score-label {
+    -fx-font-size: 60px;
+    -fx-font-weight: bold;
+}
+
+.risk-score-low    { -fx-text-fill: #27ae60; }
+.risk-score-medium { -fx-text-fill: #f39c12; }
+.risk-score-high   { -fx-text-fill: #e74c3c; }
+
+/* ── Gamification Stat Cards ── */
+.gamification-stat-card {
+    -fx-background-radius: 14px;
+    -fx-padding: 20px 18px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0.05, 0, 4);
+}
+
+.gamification-stat-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0.05, 0, 6);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.gamification-card-xp {
+    -fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2);
+}
+
+.gamification-card-level {
+    -fx-background-color: linear-gradient(to bottom right, #f093fb, #f5576c);
+}
+
+.gamification-card-courses {
+    -fx-background-color: linear-gradient(to bottom right, #4facfe, #00f2fe);
+}
+
+.gamification-card-badges {
+    -fx-background-color: linear-gradient(to bottom right, #43e97b, #38f9d7);
+}
+
+.gamification-stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 3, 0, 0, 1);
+}
+
+.gamification-stat-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255,255,255,0.85);
+}
+
+/* ── Portfolio Hero ── */
+.portfolio-hero {
+    -fx-background-color: linear-gradient(to right, #0f3460, #16213e, #1a1a2e);
+    -fx-background-radius: 18px;
+    -fx-padding: 30px 35px;
+    -fx-effect: dropshadow(gaussian, rgba(15,52,96,0.4), 20, 0.08, 0, 6);
+}
+
+.portfolio-hero-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.portfolio-hero-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255,255,255,0.6);
+}
+
+/* ── Premium Glow Effects ── */
+.glow-blue {
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.5), 20, 0.3, 0, 0);
+}
+
+.glow-green {
+    -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.5), 20, 0.3, 0, 0);
+}
+
+.glow-red {
+    -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.5), 20, 0.3, 0, 0);
+}
+
+.glow-purple {
+    -fx-effect: dropshadow(gaussian, rgba(142,68,173,0.5), 20, 0.3, 0, 0);
+}
+
+/* ── Gradient Text Colors (via -fx-text-fill with glow) ── */
+.text-gradient-blue {
+    -fx-text-fill: #3498db;
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 4, 0, 0, 0);
+}
+
+.text-gradient-green {
+    -fx-text-fill: #27ae60;
+    -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 4, 0, 0, 0);
+}
+
+/* ── Neumorphic Card ── */
+.card-neumorphic {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 12, 0, 5, 5);
+    -fx-padding: 25px;
+}
+
+/* ── Section container with accent line ── */
+.section-container {
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-padding: 24px;
+    -fx-border-color: transparent transparent transparent #3498db;
+    -fx-border-width: 0 0 0 4px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 3);
+}
+
+/* ── Animated card entrance support ── */
+.card-animated {
+    -fx-opacity: 0;
+}
+
+/* ── Empty state placeholder ── */
+.empty-state-icon {
+    -fx-font-size: 48px;
+    -fx-text-fill: #bdc3c7;
+}
+
+.empty-state-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: #95a5a6;
+    -fx-font-weight: bold;
+}
+
+.empty-state-subtext {
+    -fx-font-size: 13px;
+    -fx-text-fill: #bdc3c7;
+}
+
+/* ── Premium chip/tag styles ── */
+.chip {
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 14px;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.chip-blue {
+    -fx-background-color: rgba(52,152,219,0.12);
+    -fx-text-fill: #2980b9;
+}
+
+.chip-green {
+    -fx-background-color: rgba(39,174,96,0.12);
+    -fx-text-fill: #1e8449;
+}
+
+.chip-red {
+    -fx-background-color: rgba(231,76,60,0.12);
+    -fx-text-fill: #c0392b;
+}
+
+.chip-orange {
+    -fx-background-color: rgba(243,156,18,0.12);
+    -fx-text-fill: #d68910;
+}
+
+.chip-purple {
+    -fx-background-color: rgba(142,68,173,0.12);
+    -fx-text-fill: #7d3c98;
+}
+
+/* ── Investment Opportunity Form Section ── */
+.opportunity-form-section {
+    -fx-background-color: white;
+    -fx-background-radius: 14px;
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);
+    -fx-border-color: rgba(52,152,219,0.08);
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+}
+
+.opportunity-form-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a2e;
+}
+
+/* ── Notification badge (inbox count) ── */
+.notification-badge {
+    -fx-background-color: #e94560;
+    -fx-background-radius: 50;
+    -fx-min-width: 20px;
+    -fx-min-height: 20px;
+    -fx-alignment: center;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.5), 6, 0.3, 0, 0);
+}
+
+/* ── Premium Hover Shine ── */
+.shine-hover:hover {
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.15),
+        rgba(255,255,255,0),
+        rgba(255,255,255,0.08)
+    );
+}
+
+/* ── Accent divider ── */
+.accent-divider {
+    -fx-border-color: linear-gradient(to right, transparent, #3498db, transparent);
+    -fx-border-width: 2px 0 0 0;
+    -fx-padding: 0;
+}
+
+/* ── Subtle card border glow on focus ── */
+.card-focusable:focused {
+    -fx-border-color: rgba(52,152,219,0.4);
+    -fx-border-width: 2px;
+    -fx-border-radius: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.2), 12, 0.2, 0, 0);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RISK ANALYSIS PAGE — Complete Style System
+   ═══════════════════════════════════════════════════════════ */
+
+.risk-indicator-purple { -fx-border-color: #8e44ad; }
+
+.risk-value-blue   { -fx-text-fill: #2980b9; }
+.risk-value-purple { -fx-text-fill: #8e44ad; }
+.risk-value-green  { -fx-text-fill: #27ae60; }
+.risk-value-red    { -fx-text-fill: #e74c3c; }
+
+.risk-section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.risk-card-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.risk-card-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: #7f8c8d;
+    -fx-line-spacing: 2;
+}
+
+.risk-btn-calculate {
+    -fx-background-color: linear-gradient(to right, #0f3460, #16213e);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(15,52,96,0.4), 10, 0, 0, 3);
+}
+
+.risk-btn-calculate:hover {
+    -fx-background-color: linear-gradient(to right, #16213e, #0f3460);
+    -fx-effect: dropshadow(gaussian, rgba(15,52,96,0.6), 14, 0, 0, 5);
+}
+
+.risk-btn-calculate:pressed {
+    -fx-background-color: linear-gradient(to right, #0a2540, #0f3460);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+.risk-result-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
+}
+
+.risk-score-value-display {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.risk-level-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.risk-breakdown-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.risk-breakdown-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #34495e;
+}
+
+.risk-progress-blue .bar   { -fx-background-color: linear-gradient(to right, #3498db, #2980b9); -fx-background-radius: 7; }
+.risk-progress-blue .track  { -fx-background-color: #eaf2f8; -fx-background-radius: 7; }
+
+.risk-progress-orange .bar  { -fx-background-color: linear-gradient(to right, #f39c12, #e67e22); -fx-background-radius: 7; }
+.risk-progress-orange .track { -fx-background-color: #fef5e7; -fx-background-radius: 7; }
+
+.risk-progress-red .bar     { -fx-background-color: linear-gradient(to right, #e74c3c, #c0392b); -fx-background-radius: 7; }
+.risk-progress-red .track    { -fx-background-color: #fdedec; -fx-background-radius: 7; }
+
+.risk-recommendation-box {
+    -fx-background-color: linear-gradient(to bottom right, #f8f9fa, #eef1f5);
+    -fx-background-radius: 12;
+    -fx-padding: 18;
+    -fx-border-color: rgba(52,152,219,0.1);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.risk-recommendation-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.risk-recommendation-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+    -fx-line-spacing: 3;
+}
+
+.risk-status-loading {
+    -fx-text-fill: #f39c12;
+    -fx-font-size: 12px;
+}
+
+.risk-status-time {
+    -fx-text-fill: rgba(255,255,255,0.5);
+    -fx-font-size: 11px;
+}
+
+.risk-country-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.risk-footer-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #bdc3c7;
+}
+
+.risk-calculator-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 25 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);
+    -fx-border-color: rgba(52,152,219,0.15);
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+}
+
+.risk-opportunities-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+}
+
+.risk-opportunities-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #95a5a6;
+}
+
+.risk-loading-text {
+    -fx-text-fill: #95a5a6;
+    -fx-font-style: italic;
+}
+
+/* ============================================
+   AI CHATBOT WIDGET — NAJAHNI AI
+   ============================================ */
+
+.ai-chat-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+}
+
+.ai-chat-header {
+    -fx-background-color: linear-gradient(to right, #1a1a2e, #16213e, #0f3460);
+    -fx-background-radius: 16 16 0 0;
+}
+
+.ai-chat-close-btn {
+    -fx-background-color: rgba(255,255,255,0.15);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 4 10;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+.ai-chat-close-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.3);
+}
+
+.ai-chat-scroll {
+    -fx-background-color: #f5f7fa;
+    -fx-background: #f5f7fa;
+}
+
+.ai-chat-messages {
+    -fx-background-color: #f5f7fa;
+}
+
+.ai-chat-quick-actions {
+    -fx-background-color: #f0f2f5;
+    -fx-border-color: #e8eaed;
+    -fx-border-width: 1 0;
+}
+
+.ai-quick-btn {
+    -fx-background-color: white;
+    -fx-text-fill: #667eea;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 10;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: #667eea;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+.ai-quick-btn:hover {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+}
+
+.ai-chat-input-area {
+    -fx-background-color: white;
+    -fx-border-color: #e8eaed;
+    -fx-border-width: 1 0 0 0;
+}
+
+.ai-chat-input {
+    -fx-background-color: #f0f2f5;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 10 18;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #95a5a6;
+}
+.ai-chat-input:focused {
+    -fx-background-color: white;
+    -fx-border-color: #667eea;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+}
+
+.ai-chat-send-btn {
+    -fx-background-color: #e94560;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 8 14;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+.ai-chat-send-btn:hover {
+    -fx-background-color: #c73a52;
+}
+.ai-chat-send-btn:disabled {
+    -fx-opacity: 0.5;
+}
+
+.ai-msg-user {
+    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+    -fx-background-radius: 16 16 4 16;
+}
+
+.ai-msg-bot {
+    -fx-background-color: white;
+    -fx-background-radius: 16 16 16 4;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2);
+}
+
+/* ── AI Insights Button (Opportunity Cards) ── */
+
+.front-btn-ai {
+    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 14;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.front-btn-ai:hover {
+    -fx-background-color: linear-gradient(to right, #5a6fd6, #6a4296);
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 10, 0, 0, 3);
 }

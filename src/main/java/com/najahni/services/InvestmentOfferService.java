@@ -20,11 +20,54 @@ public class InvestmentOfferService {
 
     public InvestmentOfferService() {
         this.cnx = DBConnection.getInstance().getConnection();
+        ensurePaymentColumns();
     }
 
     /** Constructeur pour les tests unitaires. */
     public InvestmentOfferService(Connection cnx) {
         this.cnx = cnx;
+    }
+
+    /**
+     * Auto-migration: ensures the payment-tracking columns exist in the investment_offer table.
+     * Adds 'paid', 'payment_intent_id', and 'paid_at' if they are missing.
+     */
+    private void ensurePaymentColumns() {
+        try {
+            DatabaseMetaData meta = cnx.getMetaData();
+
+            // Check and add 'paid' column
+            try (ResultSet rs = meta.getColumns(null, null, "investment_offer", "paid")) {
+                if (!rs.next()) {
+                    try (Statement stmt = cnx.createStatement()) {
+                        stmt.executeUpdate("ALTER TABLE investment_offer ADD COLUMN paid TINYINT(1) DEFAULT 0");
+                        System.out.println("✓ Migration: added 'paid' column to investment_offer");
+                    }
+                }
+            }
+
+            // Check and add 'payment_intent_id' column
+            try (ResultSet rs = meta.getColumns(null, null, "investment_offer", "payment_intent_id")) {
+                if (!rs.next()) {
+                    try (Statement stmt = cnx.createStatement()) {
+                        stmt.executeUpdate("ALTER TABLE investment_offer ADD COLUMN payment_intent_id VARCHAR(255) DEFAULT NULL");
+                        System.out.println("✓ Migration: added 'payment_intent_id' column to investment_offer");
+                    }
+                }
+            }
+
+            // Check and add 'paid_at' column
+            try (ResultSet rs = meta.getColumns(null, null, "investment_offer", "paid_at")) {
+                if (!rs.next()) {
+                    try (Statement stmt = cnx.createStatement()) {
+                        stmt.executeUpdate("ALTER TABLE investment_offer ADD COLUMN paid_at TIMESTAMP NULL DEFAULT NULL");
+                        System.out.println("✓ Migration: added 'paid_at' column to investment_offer");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("⚠ Warning: could not verify payment columns: " + e.getMessage());
+        }
     }
 
     // ─── CRUD ────────────────────────────────────────────────
@@ -33,6 +76,8 @@ public class InvestmentOfferService {
         validateOffer(offer);
         validateInvestorRole(offer.getInvestorId());
         validateOpportunityOpen(offer.getOpportunityId());
+        validateUniqueOffer(offer.getInvestorId(), offer.getOpportunityId(), 0);
+        validateAmountVsTarget(offer.getProposedAmount(), offer.getOpportunityId());
 
         String sql = "INSERT INTO investment_offer (proposed_amount, status, investor_id, opportunity_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -241,6 +286,36 @@ public class InvestmentOfferService {
     }
 
     /**
+     * Finds all unpaid offers for a given investor (offers page — excludes portfolio items).
+     */
+    public List<InvestmentOffer> findUnpaidByInvestor(int investorId) {
+        List<InvestmentOffer> offers = new ArrayList<>();
+        String sql = """
+            SELECT io.*,
+                   CONCAT(u.firstname, ' ', u.lastname) AS investor_name,
+                   iop.description AS opportunity_description,
+                   p.title AS project_title,
+                   p.sector AS project_sector
+            FROM investment_offer io
+            LEFT JOIN user u ON io.investor_id = u.id
+            LEFT JOIN investment_opportunity iop ON io.opportunity_id = iop.id
+            LEFT JOIN projet p ON iop.project_id = p.id
+            WHERE io.investor_id = ? AND (io.paid = 0 OR io.paid IS NULL)
+            ORDER BY io.created_at DESC
+            """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, investorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) offers.add(mapResultSetToOffer(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error finding unpaid offers: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return offers;
+    }
+
+    /**
      * Finds all paid offers for a given investor (portfolio).
      */
     public List<InvestmentOffer> findPaidByInvestor(int investorId) {
@@ -282,14 +357,62 @@ public class InvestmentOfferService {
 
     // ─── VALIDATION ──────────────────────────────────────────
 
+    private static final BigDecimal MAX_OFFER_AMOUNT = new BigDecimal("10000000"); // 10 millions €
+
     private void validateOffer(InvestmentOffer offer) throws IllegalArgumentException {
-        if (offer == null) throw new IllegalArgumentException("Offer cannot be null");
+        if (offer == null) throw new IllegalArgumentException("L'offre ne peut pas être nulle.");
         if (offer.getProposedAmount() == null || offer.getProposedAmount().compareTo(BigDecimal.ZERO) <= 0)
-            throw new IllegalArgumentException("Proposed amount must be greater than zero");
+            throw new IllegalArgumentException("Le montant proposé doit être supérieur à zéro.");
+        if (offer.getProposedAmount().compareTo(MAX_OFFER_AMOUNT) > 0)
+            throw new IllegalArgumentException("Le montant proposé ne peut pas dépasser 10 000 000 €.");
+        if (offer.getProposedAmount().scale() > 2)
+            throw new IllegalArgumentException("Le montant ne peut avoir que 2 décimales maximum.");
         if (offer.getInvestorId() <= 0)
-            throw new IllegalArgumentException("Investor ID is required");
+            throw new IllegalArgumentException("L'ID de l'investisseur est obligatoire.");
         if (offer.getOpportunityId() <= 0)
-            throw new IllegalArgumentException("Opportunity ID is required");
+            throw new IllegalArgumentException("L'ID de l'opportunité est obligatoire.");
+    }
+
+    /**
+     * Vérifie qu'un investisseur n'a pas déjà une offre PENDING sur la même opportunité.
+     * Un investisseur ne peut avoir qu'une seule offre en attente par opportunité.
+     */
+    public void validateUniqueOffer(int investorId, int opportunityId, int excludeOfferId) throws IllegalArgumentException {
+        String sql = "SELECT COUNT(*) FROM investment_offer WHERE investor_id = ? AND opportunity_id = ? AND status = 'PENDING' AND id != ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, investorId);
+            ps.setInt(2, opportunityId);
+            ps.setInt(3, excludeOfferId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new IllegalArgumentException("Vous avez déjà une offre en attente sur cette opportunité.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error checking unique offer: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Vérifie que le montant proposé ne dépasse pas le montant cible de l'opportunité.
+     */
+    private void validateAmountVsTarget(BigDecimal proposedAmount, int opportunityId) throws IllegalArgumentException {
+        String sql = "SELECT target_amount FROM investment_opportunity WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, opportunityId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    BigDecimal target = rs.getBigDecimal("target_amount");
+                    if (target != null && proposedAmount.compareTo(target) > 0) {
+                        throw new IllegalArgumentException(
+                                "Le montant proposé (" + String.format("%,.2f", proposedAmount)
+                                + " €) dépasse le montant cible de l'opportunité (" + String.format("%,.2f", target) + " €).");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error validating amount vs target: " + e.getMessage());
+        }
     }
 
     private void validateInvestorRole(int investorId) throws IllegalArgumentException {

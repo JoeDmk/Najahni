@@ -203,11 +203,11 @@ public class Progression {
      * Retourne le pourcentage de progression vers le prochain niveau.
      */
     public double getProgressionNiveau() {
-        if (niveau >= SEUILS_NIVEAU.length) {
+        if (niveau <= 0 || niveau >= SEUILS_NIVEAU.length) {
             return 100.0;
         }
-        int seuilActuel = SEUILS_NIVEAU[niveau - 1];
-        int seuilProchain = SEUILS_NIVEAU[niveau];
+        int seuilActuel = SEUILS_NIVEAU[Math.max(0, niveau - 1)];
+        int seuilProchain = SEUILS_NIVEAU[Math.min(niveau, SEUILS_NIVEAU.length - 1)];
         int pointsDansNiveau = pointsXP - seuilActuel;
         int pointsNecessaires = seuilProchain - seuilActuel;
         return (pointsDansNiveau * 100.0) / pointsNecessaires;

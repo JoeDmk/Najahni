@@ -51,8 +51,16 @@ class InvestmentOfferServiceTest {
     /** PreparedStatement pour la mise à jour d'une offre. */
     @Mock private PreparedStatement psUpdate;
 
+    /** PreparedStatement pour vérifier l'unicité d'une offre PENDING. */
+    @Mock private PreparedStatement psCheckUniqueOffer;
+
+    /** PreparedStatement pour vérifier le montant vs cible. */
+    @Mock private PreparedStatement psCheckTarget;
+
     @Mock private ResultSet rsCheckUser;
     @Mock private ResultSet rsCheckOpp;
+    @Mock private ResultSet rsCheckUniqueOffer;
+    @Mock private ResultSet rsCheckTarget;
     @Mock private ResultSet rsKeys;
     @Mock private ResultSet rsFindById;
 
@@ -89,7 +97,9 @@ class InvestmentOfferServiceTest {
     void testCreateOffer() throws SQLException {
         // ── ARRANGE ──
         // Mock des SELECT de validation (1-arg prepareStatement)
-        when(cnx.prepareStatement(anyString())).thenReturn(psCheckUser, psCheckOpp);
+        // 1: validateInvestorRole, 2: validateOpportunityOpen,
+        // 3: validateUniqueOffer, 4: validateAmountVsTarget
+        when(cnx.prepareStatement(anyString())).thenReturn(psCheckUser, psCheckOpp, psCheckUniqueOffer, psCheckTarget);
 
         // Mock : l'utilisateur 10 est un INVESTISSEUR
         when(psCheckUser.executeQuery()).thenReturn(rsCheckUser);
@@ -100,6 +110,16 @@ class InvestmentOfferServiceTest {
         when(psCheckOpp.executeQuery()).thenReturn(rsCheckOpp);
         when(rsCheckOpp.next()).thenReturn(true);
         when(rsCheckOpp.getString("status")).thenReturn("OPEN");
+
+        // Mock : pas d'offre PENDING existante (count = 0)
+        when(psCheckUniqueOffer.executeQuery()).thenReturn(rsCheckUniqueOffer);
+        when(rsCheckUniqueOffer.next()).thenReturn(true);
+        when(rsCheckUniqueOffer.getInt(1)).thenReturn(0);
+
+        // Mock : montant cible de l'opportunité = 100 000 € (> 15 000 → OK)
+        when(psCheckTarget.executeQuery()).thenReturn(rsCheckTarget);
+        when(rsCheckTarget.next()).thenReturn(true);
+        when(rsCheckTarget.getBigDecimal("target_amount")).thenReturn(new BigDecimal("100000.00"));
 
         // Mock de l'INSERT (2-arg prepareStatement avec RETURN_GENERATED_KEYS)
         when(cnx.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS)))
@@ -201,7 +221,7 @@ class InvestmentOfferServiceTest {
         );
 
         assertTrue(
-                exception.getMessage().contains("greater than zero"),
+                exception.getMessage().toLowerCase().contains("supérieur à zéro"),
                 "Le message doit indiquer que le montant doit être supérieur à zéro"
         );
     }

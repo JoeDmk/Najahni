@@ -30,12 +30,17 @@ public class ProjectService {
             validateEntrepreneur(project.getEntrepreneurId());
         }
 
-        String sql = "INSERT INTO projet (titre, description, secteur, statut) VALUES (?, ?, ?, ?)";
+        String sql = project.getEntrepreneurId() > 0
+                ? "INSERT INTO projet (titre, description, secteur, statut, entrepreneur_id) VALUES (?, ?, ?, ?, ?)"
+                : "INSERT INTO projet (titre, description, secteur, statut) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, project.getTitle());
             ps.setString(2, project.getDescription());
             ps.setString(3, project.getSector());
             ps.setString(4, project.getStatus() != null ? project.getStatus().name() : "DRAFT");
+            if (project.getEntrepreneurId() > 0) {
+                ps.setInt(5, project.getEntrepreneurId());
+            }
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -113,7 +118,19 @@ public class ProjectService {
     // ─── REQUÊTES SPÉCIFIQUES ────────────────────────────────
 
     public List<Project> findByEntrepreneur(int entrepreneurId) {
-        return findAll();
+        List<Project> projects = new ArrayList<>();
+        String sql = "SELECT * FROM projet WHERE entrepreneur_id = ? ORDER BY date_creation DESC";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, entrepreneurId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) projects.add(mapResultSetToProject(rs));
+            }
+        } catch (SQLException e) {
+            // Fallback: if entrepreneur_id column doesn't exist, return all
+            System.err.println("⚠ findByEntrepreneur fallback to findAll: " + e.getMessage());
+            return findAll();
+        }
+        return projects;
     }
 
     public List<Project> findByStatus(ProjectStatus status) {
@@ -203,7 +220,8 @@ public class ProjectService {
             project.setStatus(ProjectStatus.DRAFT);
         }
 
-        project.setEntrepreneurId(0);
+        try { project.setEntrepreneurId(rs.getInt("entrepreneur_id")); }
+        catch (SQLException ignored) { project.setEntrepreneurId(0); }
 
         try {
             java.sql.Date dateCreation = rs.getDate("date_creation");

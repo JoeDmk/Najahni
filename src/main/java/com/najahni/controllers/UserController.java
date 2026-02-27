@@ -229,10 +229,12 @@ public class UserController {
         txtId.setText(String.valueOf(user.getId()));
         txtName.setText(user.getName());
         txtEmail.setText(user.getEmail());
-        txtPassword.setText(user.getPassword());
+        txtPassword.clear(); // Don't load hashed password — user must re-enter
+        txtPassword.setPromptText("Entrer le nouveau mot de passe");
         cboRole.setValue(user.getRole());
         
-        lblFormMessage.setText("");
+        lblFormMessage.setText("ℹ Veuillez re-saisir le mot de passe.");
+        lblFormMessage.setStyle("-fx-text-fill: #3498db;");
     }
 
     /**

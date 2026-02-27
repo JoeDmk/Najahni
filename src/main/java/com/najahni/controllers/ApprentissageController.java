@@ -236,8 +236,12 @@ public class ApprentissageController {
         colLeaderXP.setCellValueFactory(cellData ->
             new javafx.beans.property.SimpleObjectProperty<>((Integer) cellData.getValue()[2]));
 
-        colLeaderNiveau.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleObjectProperty<>((Integer) cellData.getValue()[4]));
+        colLeaderNiveau.setCellValueFactory(cellData -> {
+            Object[] row = cellData.getValue();
+            // Safely access index 3 (cours_completes) as fallback if index 4 doesn't exist
+            int val = row.length > 4 ? ((Number) row[4]).intValue() : (row.length > 3 ? ((Number) row[3]).intValue() : 0);
+            return new javafx.beans.property.SimpleObjectProperty<>(val);
+        });
 
         // Styliser le rang
         colRang.setCellFactory(column -> new TableCell<Object[], Integer>() {

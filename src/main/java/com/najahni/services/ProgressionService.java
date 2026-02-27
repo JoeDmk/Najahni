@@ -294,7 +294,8 @@ public class ProgressionService {
         return 0;
     }
 
-    private int countCoursEnCours(int userId) {
+    /** Count courses currently in progress for a user */
+    public int countCoursEnCours(int userId) {
         String sql = "SELECT COUNT(*) FROM progression WHERE user_id = ? AND etat = 'EN_COURS'";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setInt(1, userId);

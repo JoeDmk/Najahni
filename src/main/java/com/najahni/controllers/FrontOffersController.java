@@ -4,6 +4,7 @@ import com.najahni.models.*;
 import com.najahni.services.*;
 import com.najahni.utils.AlertUtils;
 import com.najahni.utils.AnimationUtils;
+import com.najahni.utils.PDFPreviewPopup;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -139,7 +140,11 @@ public class FrontOffersController {
     // ═══════════════════════════════════════════════════════════
 
     private void loadData() {
-        allOffers = offerService.findAll();
+        // Load all offers, excluding paid ones (paid offers go to portfolio)
+        allOffers = offerService.findAll().stream()
+                .filter(o -> !o.isPaid())
+                .collect(Collectors.toList());
+        System.out.println("[Offers] Found " + allOffers.size() + " unpaid offers");
         updateStats();
         displayCards(allOffers);
     }
@@ -658,14 +663,34 @@ public class FrontOffersController {
             Label paidLabel = new Label("✅ Paiement déjà effectué");
             paidLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 15;");
             paidBox.getChildren().add(paidLabel);
+
+            // PDF Receipt button for already-paid offers
+            Button btnReceiptPDF = new Button("📄  Voir le reçu PDF");
+            btnReceiptPDF.setStyle("-fx-background-color: linear-gradient(to bottom, #3498db, #2980b9); "
+                + "-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; "
+                + "-fx-background-radius: 10; -fx-padding: 8 20; -fx-cursor: hand;");
+            btnReceiptPDF.setMaxWidth(Double.MAX_VALUE);
+            btnReceiptPDF.setOnMouseEntered(ev -> btnReceiptPDF.setStyle(btnReceiptPDF.getStyle().replace("#3498db", "#5dade2")));
+            btnReceiptPDF.setOnMouseExited(ev -> btnReceiptPDF.setStyle(btnReceiptPDF.getStyle().replace("#5dade2", "#3498db")));
+            btnReceiptPDF.setOnAction(ev -> {
+                InvestmentPDFService pdfService = new InvestmentPDFService();
+                byte[] pdf = pdfService.generatePaymentReceipt(offer, opportunity, project);
+                if (pdf != null) {
+                    PDFPreviewPopup.show(pdf, "Reçu de Paiement",
+                        "recu_paiement_" + offer.getId() + ".pdf", root);
+                }
+            });
+
             if (offer.getPaymentIntentId() != null) {
                 Label txId = new Label("🧾 " + offer.getPaymentIntentId());
                 txId.setStyle("-fx-text-fill: #7f8c8d; -fx-font-size: 11;");
-                VBox paidInfo = new VBox(6, paidBox, txId);
+                VBox paidInfo = new VBox(8, paidBox, txId, btnReceiptPDF);
                 paidInfo.setAlignment(Pos.CENTER);
                 footer.getChildren().add(paidInfo);
             } else {
-                footer.getChildren().add(paidBox);
+                VBox paidInfo = new VBox(8, paidBox, btnReceiptPDF);
+                paidInfo.setAlignment(Pos.CENTER);
+                footer.getChildren().add(paidInfo);
             }
             return;
         }
@@ -996,14 +1021,31 @@ public class FrontOffersController {
                         Label txLabel = new Label("🧾 " + result.getPaymentIntentId());
                         txLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #7f8c8d;");
 
-                        Label redirectLabel = new Label("Redirection vers le portefeuille…");
+                        Label redirectLabel = new Label("Redirection vers le portfolio…");
                         redirectLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #27ae60; -fx-font-style: italic;");
 
-                        successBox.getChildren().addAll(confetti, successLabel, txLabel, redirectLabel);
+                        // PDF Receipt button
+                        Button btnPDF = new Button("📄  Télécharger le reçu PDF");
+                        btnPDF.setStyle("-fx-background-color: linear-gradient(to bottom, #3498db, #2980b9); "
+                            + "-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13; "
+                            + "-fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;");
+                        btnPDF.setMaxWidth(Double.MAX_VALUE);
+                        btnPDF.setOnMouseEntered(ev2 -> btnPDF.setStyle(btnPDF.getStyle().replace("#3498db", "#5dade2")));
+                        btnPDF.setOnMouseExited(ev2 -> btnPDF.setStyle(btnPDF.getStyle().replace("#5dade2", "#3498db")));
+                        btnPDF.setOnAction(ev2 -> {
+                            InvestmentPDFService pdfService = new InvestmentPDFService();
+                            byte[] pdf = pdfService.generatePaymentReceipt(offer, opportunity, project);
+                            if (pdf != null) {
+                                PDFPreviewPopup.show(pdf, "Reçu de Paiement",
+                                    "recu_paiement_" + offer.getId() + ".pdf", root);
+                            }
+                        });
+
+                        successBox.getChildren().addAll(confetti, successLabel, txLabel, btnPDF, redirectLabel);
                         footer.getChildren().add(successBox);
 
-                        // Auto-close and navigate to portfolio after 2.5s
-                        PauseTransition pause = new PauseTransition(Duration.seconds(2.5));
+                        // Auto-close and navigate to portfolio after 5s (more time to click PDF)
+                        PauseTransition pause = new PauseTransition(Duration.seconds(5.0));
                         pause.setOnFinished(ev -> {
                             closePopup(overlay, popup, root);
                             // Remove the paid offer from the local list
@@ -1196,6 +1238,9 @@ public class FrontOffersController {
 
             if (amount.compareTo(BigDecimal.ZERO) <= 0)
                 throw new IllegalArgumentException("Le montant doit être supérieur à zéro.");
+
+            if (amount.compareTo(new BigDecimal("10000000")) > 0)
+                throw new IllegalArgumentException("Le montant ne peut pas dépasser 10 000 000 €.");
 
             InvestmentOffer offer = new InvestmentOffer();
             offer.setProposedAmount(amount);

@@ -37,6 +37,7 @@ public enum Role {
                 return role;
             }
         }
+        System.err.println("⚠ Unknown role value: " + dbValue + ", defaulting to ENTREPRENEUR");
         return ENTREPRENEUR; // valeur par défaut
     }
 

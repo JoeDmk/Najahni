@@ -101,6 +101,9 @@ public class FrontOfficeController {
 
         // Show opportunities by default
         showOpportunities();
+
+        // Attach AI chatbot widget
+        AIChatWidget.attachTo(foContentArea);
     }
 
     // ─── ROLE CHECK ──────────────────────────────────────────

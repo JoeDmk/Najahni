@@ -3,6 +3,7 @@ C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\RiskResult.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\utils\DBConnection.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\DeadlineService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\controllers\MainController.java
+C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\GeminiService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\controllers\UserController.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\Project.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\Role.java
@@ -15,11 +16,13 @@ C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\RiskService.jav
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\Progression.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\CoursService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\User.java
+C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\InvestmentPDFService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\ProgressionService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\TypeCours.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\EconomicApiService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\InvestmentOfferService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\ProjectService.java
+C:\Users\user\Documents\pidev\src\main\java\com\najahni\utils\PDFPreviewPopup.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\RiskCalculator.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\Badge.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\CurrencyService.java
@@ -33,6 +36,7 @@ C:\Users\user\Documents\pidev\src\main\java\com\najahni\controllers\InvestmentOp
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\Cours.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\utils\WrappedTextCellFactory.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\models\InvestmentOpportunity.java
+C:\Users\user\Documents\pidev\src\main\java\com\najahni\controllers\AIChatWidget.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\controllers\InvestmentOfferController.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\services\InvestmentOpportunityService.java
 C:\Users\user\Documents\pidev\src\main\java\com\najahni\controllers\ProjectController.java

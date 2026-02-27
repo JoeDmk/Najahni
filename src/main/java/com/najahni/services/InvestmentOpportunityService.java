@@ -33,6 +33,7 @@ public class InvestmentOpportunityService {
     public InvestmentOpportunity createOpportunity(InvestmentOpportunity opportunity) throws IllegalArgumentException {
         validateOpportunity(opportunity);
         validateProjectExists(opportunity.getProjectId());
+        validateUniqueOpenOpportunity(opportunity.getProjectId(), 0);
 
         String sql = "INSERT INTO investment_opportunity (target_amount, description, deadline, status, project_id, risk_score, risk_label) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -100,6 +101,7 @@ public class InvestmentOpportunityService {
 
     public boolean updateOpportunity(InvestmentOpportunity opportunity) throws IllegalArgumentException {
         validateOpportunity(opportunity);
+        validateProjectExists(opportunity.getProjectId());
         String sql = "UPDATE investment_opportunity SET target_amount = ?, description = ?, deadline = ?, status = ?, project_id = ?, risk_score = ?, risk_label = ? WHERE id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setBigDecimal(1, opportunity.getTargetAmount());
@@ -270,17 +272,59 @@ public class InvestmentOpportunityService {
 
     // ─── VALIDATION ──────────────────────────────────────────
 
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("10000000"); // 10 millions €
+    private static final int DESC_MIN_LENGTH = 10;
+    private static final int DESC_MAX_LENGTH = 2000;
+
     private void validateOpportunity(InvestmentOpportunity opportunity) throws IllegalArgumentException {
         if (opportunity == null)
-            throw new IllegalArgumentException("Opportunity cannot be null");
+            throw new IllegalArgumentException("L'opportunité ne peut pas être nulle.");
         if (opportunity.getTargetAmount() == null || opportunity.getTargetAmount().compareTo(BigDecimal.ZERO) <= 0)
-            throw new IllegalArgumentException("Target amount must be greater than zero");
+            throw new IllegalArgumentException("Le montant cible doit être supérieur à zéro.");
+        if (opportunity.getTargetAmount().compareTo(MAX_AMOUNT) > 0)
+            throw new IllegalArgumentException("Le montant cible ne peut pas dépasser 10 000 000 €.");
+        if (opportunity.getTargetAmount().scale() > 2)
+            throw new IllegalArgumentException("Le montant ne peut avoir que 2 décimales maximum.");
         if (opportunity.getDescription() == null || opportunity.getDescription().trim().isEmpty())
-            throw new IllegalArgumentException("Description is required");
-        if (opportunity.getDeadline() != null && opportunity.getDeadline().isBefore(LocalDate.now()))
-            throw new IllegalArgumentException("Deadline cannot be in the past");
+            throw new IllegalArgumentException("La description est obligatoire.");
+        String desc = opportunity.getDescription().trim();
+        if (desc.length() < DESC_MIN_LENGTH)
+            throw new IllegalArgumentException("La description doit contenir au moins " + DESC_MIN_LENGTH + " caractères.");
+        if (desc.length() > DESC_MAX_LENGTH)
+            throw new IllegalArgumentException("La description ne peut pas dépasser " + DESC_MAX_LENGTH + " caractères.");
+        // Sanitize description
+        opportunity.setDescription(sanitize(desc));
+        if (opportunity.getDeadline() == null)
+            throw new IllegalArgumentException("La deadline est obligatoire.");
+        if (opportunity.getDeadline().isBefore(LocalDate.now()))
+            throw new IllegalArgumentException("La deadline ne peut pas être dans le passé.");
         if (opportunity.getProjectId() <= 0)
-            throw new IllegalArgumentException("Project ID is required");
+            throw new IllegalArgumentException("L'ID du projet est obligatoire.");
+    }
+
+    /**
+     * Vérifie qu'il n'existe pas déjà une opportunité OPEN pour ce projet.
+     * Un projet ne peut avoir qu'une seule opportunité ouverte à la fois.
+     */
+    public void validateUniqueOpenOpportunity(int projectId, int excludeOppId) throws IllegalArgumentException {
+        String sql = "SELECT COUNT(*) FROM investment_opportunity WHERE project_id = ? AND status = 'OPEN' AND id != ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, projectId);
+            ps.setInt(2, excludeOppId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new IllegalArgumentException("Ce projet possède déjà une opportunité ouverte. Fermez-la avant d'en créer une nouvelle.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("✗ Error checking unique opportunity: " + e.getMessage());
+        }
+    }
+
+    /** Nettoie le texte des balises HTML/script potentiellement dangereuses. */
+    private String sanitize(String text) {
+        if (text == null) return null;
+        return text.replaceAll("<[^>]*>", "").trim();
     }
 
     private void validateProjectExists(int projectId) throws IllegalArgumentException {

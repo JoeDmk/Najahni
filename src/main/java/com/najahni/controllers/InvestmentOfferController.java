@@ -451,6 +451,9 @@ public class InvestmentOfferController {
             if (proposedAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("Le montant proposé doit être supérieur à zéro.");
             }
+            if (proposedAmount.compareTo(new BigDecimal("10000000")) > 0) {
+                throw new IllegalArgumentException("Le montant proposé ne peut pas dépasser 10 000 000 €.");
+            }
 
             // ── Validation UI : statut ──
             if (cboStatus.getValue() == null) {

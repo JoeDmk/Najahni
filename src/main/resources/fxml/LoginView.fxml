@@ -8,61 +8,61 @@
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.najahni.controllers.LoginController"
       alignment="CENTER" spacing="0"
-      style="-fx-background-color: linear-gradient(to bottom right, #1a1a2e, #16213e, #0f3460);"
+      styleClass="login-background"
       prefWidth="900" prefHeight="600">
 
     <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
 
         <!-- Left Panel — Branding -->
         <VBox alignment="CENTER" spacing="15" HBox.hgrow="ALWAYS"
-              style="-fx-padding: 40;">
-            <Label text="🏦 NAJAHNI" style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Label text="Plateforme Fintech" style="-fx-font-size: 18px; -fx-text-fill: rgba(255,255,255,0.7);"/>
-            <Label text="Entrepreneuriat &amp; Investissement" style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.5);"/>
+              styleClass="login-branding" style="-fx-padding: 40;">
+            <Label text="🏦 NAJAHNI" styleClass="login-branding-title"/>
+            <Label text="Plateforme Fintech" styleClass="login-branding-subtitle"/>
+            <Label text="Entrepreneuriat &amp; Investissement" styleClass="login-branding-feature"/>
 
             <Region prefHeight="20"/>
 
-            <Label text="📊 Analyse de risque IA" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 13px;"/>
-            <Label text="💱 Conversion multi-devises" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 13px;"/>
-            <Label text="📅 Suivi intelligent des deadlines" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 13px;"/>
-            <Label text="💳 Paiement sécurisé Stripe" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 13px;"/>
+            <Label text="📊 Analyse de risque IA" styleClass="login-branding-feature"/>
+            <Label text="💱 Conversion multi-devises" styleClass="login-branding-feature"/>
+            <Label text="📅 Suivi intelligent des deadlines" styleClass="login-branding-feature"/>
+            <Label text="💳 Paiement sécurisé Stripe" styleClass="login-branding-feature"/>
         </VBox>
 
         <!-- Right Panel — Login Form -->
         <VBox alignment="CENTER" spacing="0" HBox.hgrow="ALWAYS"
               style="-fx-padding: 40;">
-            <VBox styleClass="login-card" spacing="20" alignment="CENTER"
-                  maxWidth="360" style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0, 0, 5);">
+            <VBox styleClass="login-form-card" spacing="20" alignment="CENTER"
+                  maxWidth="360">
 
-                <Label text="Connexion" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;"/>
-                <Label text="Accédez à votre espace" style="-fx-font-size: 13px; -fx-text-fill: #95a5a6;"/>
+                <Label text="Connexion" styleClass="login-title"/>
+                <Label text="Accédez à votre espace" styleClass="login-subtitle"/>
 
                 <Region prefHeight="5"/>
 
                 <!-- Email -->
                 <VBox spacing="5" alignment="CENTER_LEFT">
-                    <Label text="📧 Email" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                    <Label text="📧 Email" styleClass="form-label"/>
                     <TextField fx:id="txtEmail" promptText="votre@email.com"
-                               style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #dcdde1; -fx-font-size: 14px;"/>
+                               styleClass="login-field"/>
                 </VBox>
 
                 <!-- Password -->
                 <VBox spacing="5" alignment="CENTER_LEFT">
-                    <Label text="🔒 Mot de passe" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                    <Label text="🔒 Mot de passe" styleClass="form-label"/>
                     <PasswordField fx:id="txtPassword" promptText="••••••••"
-                                   style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #dcdde1; -fx-font-size: 14px;"/>
+                                   styleClass="login-field"/>
                 </VBox>
 
                 <!-- Error Label -->
-                <Label fx:id="lblError" text="" style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;" wrapText="true"/>
+                <Label fx:id="lblError" text="" styleClass="login-status" wrapText="true"/>
 
                 <!-- Login Button -->
                 <Button fx:id="btnLogin" text="Se connecter" onAction="#handleLogin" maxWidth="Infinity"
-                        style="-fx-background-color: #0f3460; -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold; -fx-pref-height: 42; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        styleClass="login-btn"/>
 
                 <Region prefHeight="5"/>
 
-                <Label text="v2.0 — Fintech Platform" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
+                <Label text="v3.0 — Fintech Platform" styleClass="login-link"/>
             </VBox>
         </VBox>
 

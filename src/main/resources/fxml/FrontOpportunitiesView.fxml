@@ -8,8 +8,7 @@
             fx:controller="com.najahni.controllers.FrontOpportunitiesController"
             fitToWidth="true" fitToHeight="true"
             hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-            styleClass="front-scroll"
-            style="-fx-background-color: transparent; -fx-padding: 0;">
+            styleClass="front-scroll">
 <content>
 <VBox spacing="20" styleClass="front-page">
     <padding>
@@ -33,61 +32,53 @@
         <VBox spacing="18" style="-fx-padding: 24 28 28 28;">
 
             <!-- Form header description -->
-            <HBox spacing="10" alignment="CENTER_LEFT"
-                  style="-fx-background-color: #eaf2f8; -fx-background-radius: 12; -fx-padding: 14 18;">
-                <Label text="💡" style="-fx-font-size: 22;"/>
+            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="opportunity-form-section">
+                <Label text="💡" styleClass="risk-indicator-emoji"/>
                 <VBox spacing="2">
                     <Label text="Publiez une opportunité pour attirer des investisseurs"
-                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                           styleClass="form-label"/>
                     <Label text="Renseignez les détails de votre demande de financement ci-dessous."
-                           style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;"/>
+                           styleClass="empty-state-subtext"/>
                 </VBox>
             </HBox>
 
             <!-- Row 1: Project + Amount -->
             <HBox spacing="18" alignment="CENTER_LEFT">
                 <VBox spacing="6" HBox.hgrow="ALWAYS">
-                    <Label text="🏢 Projet" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                    <Label text="🏢 Projet" styleClass="form-label"/>
                     <ComboBox fx:id="cboProject" promptText="Sélectionnez un projet..."
-                              maxWidth="Infinity" prefHeight="40"
-                              style="-fx-font-size: 13px; -fx-background-radius: 10; -fx-border-radius: 10;"/>
+                              maxWidth="Infinity" prefHeight="40" styleClass="front-combo"/>
                 </VBox>
                 <VBox spacing="6" prefWidth="220">
-                    <Label text="💰 Montant cible (€)" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                    <Label text="💰 Montant cible (€)" styleClass="form-label"/>
                     <TextField fx:id="txtTargetAmount" promptText="Ex: 50 000" prefHeight="40"
-                               style="-fx-font-size: 14px; -fx-background-radius: 10; -fx-border-radius: 10;"/>
+                               styleClass="front-search-field"/>
                 </VBox>
             </HBox>
 
             <!-- Row 2: Description -->
             <VBox spacing="6">
-                <Label text="📝 Description" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <Label text="📝 Description" styleClass="form-label"/>
                 <TextArea fx:id="txtOppDescription" promptText="Décrivez l'objectif de financement, l'utilisation des fonds, les étapes clés..."
-                          prefRowCount="4" wrapText="true"
-                          style="-fx-font-size: 13px; -fx-background-radius: 10; -fx-border-radius: 10;"/>
+                          prefRowCount="4" wrapText="true" styleClass="form-field"/>
             </VBox>
 
             <!-- Row 3: Deadline -->
             <HBox spacing="18" alignment="CENTER_LEFT">
                 <VBox spacing="6">
-                    <Label text="📅 Date limite" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
-                    <DatePicker fx:id="dpDeadline" prefHeight="40" prefWidth="220"
-                                style="-fx-font-size: 13px;"/>
+                    <Label text="📅 Date limite" styleClass="form-label"/>
+                    <DatePicker fx:id="dpDeadline" prefHeight="40" prefWidth="220"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
 
             <!-- Error message -->
-            <Label fx:id="lblOppFormMsg" text=""
-                   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            <Label fx:id="lblOppFormMsg" text="" styleClass="login-status"/>
 
             <!-- Action buttons -->
             <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 6 0 0 0;">
-                <Button text="✖  Annuler" onAction="#clearOppForm" styleClass="front-btn-secondary"
-                        style="-fx-padding: 10 22; -fx-font-size: 13px; -fx-background-radius: 10;"/>
-                <Button text="✅  Créer l'Opportunité" onAction="#submitOpportunity" styleClass="front-btn-primary"
-                        style="-fx-padding: 10 28; -fx-font-size: 13px; -fx-background-radius: 10;
-                               -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 8, 0, 0, 2);"/>
+                <Button text="✖  Annuler" onAction="#clearOppForm" styleClass="front-btn-secondary"/>
+                <Button text="✅  Créer l'Opportunité" onAction="#submitOpportunity" styleClass="front-btn-invest"/>
             </HBox>
         </VBox>
     </TitledPane>
@@ -132,9 +123,9 @@
     <!-- ═══ EMPTY STATE ═══ -->
     <VBox fx:id="emptyState" alignment="CENTER" spacing="10" visible="false" managed="false"
           style="-fx-padding: 50;">
-        <Label text="📭" style="-fx-font-size: 48px;"/>
-        <Label text="Aucune opportunité disponible" style="-fx-font-size: 18px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
-        <Label text="Revenez plus tard ou modifiez vos filtres." style="-fx-font-size: 13px; -fx-text-fill: #95a5a6;"/>
+        <Label text="📭" styleClass="empty-state-icon"/>
+        <Label text="Aucune opportunité disponible" styleClass="empty-state-text"/>
+        <Label text="Revenez plus tard ou modifiez vos filtres." styleClass="empty-state-subtext"/>
     </VBox>
 
 </VBox>

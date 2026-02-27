@@ -170,8 +170,8 @@ public class BadgeService {
     }
 
     public int compterBadgesUtilisateur(int userId) {
-        // Count badges earned by a specific user (via progression with completed XP thresholds)
-        return 0; // Stub — badge assignment tracking not in schema
+        // Eligible badges count based on current user stats
+        return findBadgesEligibles(userId).size();
     }
 
     public List<Badge> findBadgesEligibles(int userId) {

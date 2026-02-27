@@ -498,6 +498,29 @@ public class InvestmentOpportunityController {
             if (targetAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("Le montant cible doit être supérieur à zéro.");
             }
+            if (targetAmount.compareTo(new BigDecimal("10000000")) > 0) {
+                throw new IllegalArgumentException("Le montant cible ne peut pas dépasser 10 000 000 €.");
+            }
+
+            // ── Validation UI : description ──
+            String descText = txtDescription.getText() != null ? txtDescription.getText().trim() : "";
+            if (descText.isEmpty()) {
+                throw new IllegalArgumentException("La description est obligatoire.");
+            }
+            if (descText.length() < 10) {
+                throw new IllegalArgumentException("La description doit contenir au moins 10 caractères.");
+            }
+            if (descText.length() > 2000) {
+                throw new IllegalArgumentException("La description ne peut pas dépasser 2000 caractères.");
+            }
+
+            // ── Validation UI : deadline ──
+            if (dpDeadline.getValue() == null) {
+                throw new IllegalArgumentException("La deadline est obligatoire.");
+            }
+            if (dpDeadline.getValue().isBefore(java.time.LocalDate.now())) {
+                throw new IllegalArgumentException("La deadline ne peut pas être dans le passé.");
+            }
 
             // ── Validation UI : statut ──
             if (cboStatus.getValue() == null) {
@@ -512,7 +535,7 @@ public class InvestmentOpportunityController {
             }
 
             opp.setTargetAmount(targetAmount);
-            opp.setDescription(txtDescription.getText().trim().isEmpty() ? null : txtDescription.getText().trim());
+            opp.setDescription(descText);
             opp.setDeadline(dpDeadline.getValue());
             opp.setStatus(cboStatus.getValue());
             opp.setProjectId(cboProject.getValue().getId());

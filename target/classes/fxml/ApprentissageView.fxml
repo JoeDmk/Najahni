@@ -8,7 +8,7 @@
             fx:controller="com.najahni.controllers.ApprentissageController"
             fitToWidth="true" fitToHeight="true"
             hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-            style="-fx-background-color: transparent; -fx-padding: 0;">
+            style="-fx-background-color: transparent;">
 <content>
 <VBox spacing="20" style="-fx-background-color: transparent;">
     
@@ -28,37 +28,37 @@
     
     <!-- Statistiques Utilisateur -->
     <VBox spacing="10">
-        <Label text="📊 Mes Statistiques" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+        <Label text="📊 Mes Statistiques" styleClass="form-title"/>
         
         <HBox spacing="15">
-            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5" 
-                  style="-fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2); -fx-background-radius: 10;">
-                <Label fx:id="lblTotalXP" text="0 XP" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <Label text="⭐ Points XP Total" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.9);"/>
+            <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5" 
+                  styleClass="gamification-stat-card, gamification-card-xp">
+                <Label fx:id="lblTotalXP" text="0 XP" styleClass="gamification-stat-value"/>
+                <Label text="⭐ Points XP Total" styleClass="gamification-stat-label"/>
             </VBox>
-            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
-                  style="-fx-background-color: linear-gradient(to bottom right, #11998e, #38ef7d); -fx-background-radius: 10;">
-                <Label fx:id="lblNiveau" text="Niveau 1" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <Label text="📈 Niveau Actuel" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.9);"/>
+            <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                  styleClass="gamification-stat-card, gamification-card-courses">
+                <Label fx:id="lblNiveau" text="Niveau 1" styleClass="gamification-stat-value"/>
+                <Label text="📈 Niveau Actuel" styleClass="gamification-stat-label"/>
             </VBox>
-            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
-                  style="-fx-background-color: linear-gradient(to bottom right, #fc4a1a, #f7b733); -fx-background-radius: 10;">
-                <Label fx:id="lblCoursCompletes" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <Label text="✅ Cours Complétés" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.9);"/>
+            <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                  styleClass="gamification-stat-card" style="-fx-background-color: linear-gradient(to bottom right, #fc4a1a, #f7b733);">
+                <Label fx:id="lblCoursCompletes" text="0" styleClass="gamification-stat-value"/>
+                <Label text="✅ Cours Complétés" styleClass="gamification-stat-label"/>
             </VBox>
-            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
-                  style="-fx-background-color: linear-gradient(to bottom right, #f093fb, #f5576c); -fx-background-radius: 10;">
-                <Label fx:id="lblBadges" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <Label text="🏆 Badges Obtenus" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.9);"/>
+            <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                  styleClass="gamification-stat-card, gamification-card-level">
+                <Label fx:id="lblBadges" text="0" styleClass="gamification-stat-value"/>
+                <Label text="🏆 Badges Obtenus" styleClass="gamification-stat-label"/>
             </VBox>
         </HBox>
         
         <!-- Progression vers le prochain niveau -->
-        <VBox spacing="5" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 15;">
+        <VBox spacing="5" styleClass="opportunity-form-section">
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Progression vers le prochain niveau:" style="-fx-font-weight: bold;"/>
+                <Label text="Progression vers le prochain niveau:" styleClass="form-label"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="lblProgressNiveau" text="0 XP restants" style="-fx-text-fill: #666;"/>
+                <Label fx:id="lblProgressNiveau" text="0 XP restants" styleClass="empty-state-subtext"/>
             </HBox>
             <ProgressBar fx:id="progressNiveau" progress="0.0" prefHeight="20" maxWidth="Infinity"
                         style="-fx-accent: #667eea;"/>
@@ -74,7 +74,7 @@
             <!-- Ma Progression -->
             <VBox spacing="10">
                 <HBox alignment="CENTER_LEFT">
-                    <Label text="📚 Ma Progression" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                    <Label text="📚 Ma Progression" styleClass="form-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <ComboBox fx:id="cboEtatFilter" promptText="Filtrer par état" prefWidth="150"/>
                     <Button text="Filtrer" onAction="#filterProgressions" styleClass="btn-primary" style="-fx-margin-left: 10;"/>
@@ -99,10 +99,10 @@
             
             <!-- Mes Badges -->
             <VBox spacing="10">
-                <Label text="🏆 Mes Badges" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                <Label text="🏆 Mes Badges" styleClass="form-title"/>
                 <FlowPane fx:id="badgesContainer" hgap="10" vgap="10" prefWrapLength="600"
-                         style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 15;">
-                    <Label text="Chargement des badges..." style="-fx-text-fill: #999;"/>
+                         styleClass="opportunity-form-section">
+                    <Label text="Chargement des badges..." styleClass="empty-state-subtext"/>
                 </FlowPane>
             </VBox>
             
@@ -110,9 +110,9 @@
         
         <!-- Leaderboard -->
         <VBox fx:id="leaderboardContainer" spacing="10" minWidth="300" maxWidth="300">
-            <Label text="🏅 Classement" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <Label text="🏅 Classement" styleClass="form-title"/>
             
-            <VBox style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 10;">
+            <VBox styleClass="opportunity-form-section">
                 <TableView fx:id="leaderboardTable" prefHeight="350">
                     <columns>
                         <TableColumn fx:id="colRang" text="#" prefWidth="45" minWidth="40"/>
@@ -128,13 +128,13 @@
                 <Separator/>
                 
                 <VBox spacing="5" style="-fx-padding: 10 0 0 0;">
-                    <Label text="💡 Conseils" style="-fx-font-weight: bold; -fx-font-size: 12px;"/>
+                    <Label text="💡 Conseils" styleClass="form-label"/>
                     <Label text="• Complétez des cours pour gagner des XP" wrapText="true" 
-                           style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+                           styleClass="empty-state-subtext"/>
                     <Label text="• Réussissez les quiz pour des bonus" wrapText="true"
-                           style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+                           styleClass="empty-state-subtext"/>
                     <Label text="• Débloquez des badges pour monter dans le classement" wrapText="true"
-                           style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+                           styleClass="empty-state-subtext"/>
                 </VBox>
             </VBox>
         </VBox>

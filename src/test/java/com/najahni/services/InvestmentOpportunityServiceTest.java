@@ -47,7 +47,11 @@ class InvestmentOpportunityServiceTest {
     /** PreparedStatement pour la mise à jour. */
     @Mock private PreparedStatement psUpdate;
 
+    /** PreparedStatement pour vérifier l'unicité d'une opportunité OPEN. */
+    @Mock private PreparedStatement psCheckUnique;
+
     @Mock private ResultSet rsCheckProject;
+    @Mock private ResultSet rsCheckUnique;
     @Mock private ResultSet rsKeys;
     @Mock private ResultSet rsFindById;
 
@@ -77,10 +81,16 @@ class InvestmentOpportunityServiceTest {
     void testCreateOpportunity() throws SQLException {
         // ── ARRANGE ──
         // Mock du SELECT de validation (1-arg prepareStatement)
-        when(cnx.prepareStatement(anyString())).thenReturn(psCheckProject);
+        // 1er appel : validateProjectExists → count=1 (existe)
+        // 2ème appel : validateUniqueOpenOpportunity → count=0 (pas de doublon)
+        when(cnx.prepareStatement(anyString())).thenReturn(psCheckProject, psCheckUnique);
         when(psCheckProject.executeQuery()).thenReturn(rsCheckProject);
         when(rsCheckProject.next()).thenReturn(true);
         when(rsCheckProject.getInt(1)).thenReturn(1); // Le projet existe (count = 1)
+
+        when(psCheckUnique.executeQuery()).thenReturn(rsCheckUnique);
+        when(rsCheckUnique.next()).thenReturn(true);
+        when(rsCheckUnique.getInt(1)).thenReturn(0); // Pas d'opportunité OPEN existante
 
         // Mock de l'INSERT (2-arg prepareStatement)
         when(cnx.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS)))
@@ -139,7 +149,7 @@ class InvestmentOpportunityServiceTest {
         );
 
         assertTrue(
-                exception.getMessage().contains("greater than zero"),
+                exception.getMessage().toLowerCase().contains("supérieur à zéro"),
                 "Le message doit indiquer que le montant doit être supérieur à zéro"
         );
     }
@@ -206,7 +216,7 @@ class InvestmentOpportunityServiceTest {
         );
 
         assertTrue(
-                exception.getMessage().contains("past"),
+                exception.getMessage().toLowerCase().contains("passé"),
                 "Le message doit indiquer que la deadline ne peut pas être dans le passé"
         );
     }
@@ -250,19 +260,24 @@ class InvestmentOpportunityServiceTest {
     @DisplayName("testCloseOpportunity - Fermeture passe le statut à CLOSED")
     void testCloseOpportunity() throws SQLException {
         // ── ARRANGE ──
-        // findById (1ère requête) puis updateOpportunity (2ème requête)
-        when(cnx.prepareStatement(anyString())).thenReturn(psFindById, psUpdate);
+        // findById (1ère requête), validateProjectExists (2ème), UPDATE (3ème)
+        when(cnx.prepareStatement(anyString())).thenReturn(psFindById, psCheckProject, psUpdate);
 
         // Mock : findById retourne une opportunité existante
         when(psFindById.executeQuery()).thenReturn(rsFindById);
         when(rsFindById.next()).thenReturn(true);
         when(rsFindById.getInt("id")).thenReturn(1);
         when(rsFindById.getBigDecimal("target_amount")).thenReturn(new BigDecimal("50000.00"));
-        when(rsFindById.getString("description")).thenReturn("Test");
+        when(rsFindById.getString("description")).thenReturn("Description de test valide pour l'opportunité");
         when(rsFindById.getDate("deadline"))
                 .thenReturn(java.sql.Date.valueOf(LocalDate.now().plusDays(30)));
         when(rsFindById.getString("status")).thenReturn("OPEN");
         when(rsFindById.getInt("project_id")).thenReturn(1);
+
+        // Mock : validateProjectExists → le projet existe (count = 1)
+        when(psCheckProject.executeQuery()).thenReturn(rsCheckProject);
+        when(rsCheckProject.next()).thenReturn(true);
+        when(rsCheckProject.getInt(1)).thenReturn(1);
 
         // Mock : UPDATE réussit (1 ligne modifiée)
         when(psUpdate.executeUpdate()).thenReturn(1);

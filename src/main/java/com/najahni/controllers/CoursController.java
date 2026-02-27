@@ -346,11 +346,19 @@ public class CoursController {
         cours.setNiveau(cboNiveau.getValue());
 
         if (!txtPointsXP.getText().isEmpty()) {
-            cours.setPointsXP(Integer.parseInt(txtPointsXP.getText()));
+            try {
+                cours.setPointsXP(Integer.parseInt(txtPointsXP.getText().trim()));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Les points XP doivent être un nombre entier.");
+            }
         }
 
         if (!txtDuree.getText().isEmpty()) {
-            cours.setDureeMinutes(Integer.parseInt(txtDuree.getText()));
+            try {
+                cours.setDureeMinutes(Integer.parseInt(txtDuree.getText().trim()));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("La durée doit être un nombre entier (en minutes).");
+            }
         }
 
         cours.setCertification(chkCertification.isSelected());

@@ -25,16 +25,10 @@ public class DBConnection {
      */
     private DBConnection() {
         try {
-            // Load MySQL JDBC Driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            // Establish connection
+            // Driver auto-registered via SPI in modern JDBC
             this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("✓ Database connection established successfully!");
             
-        } catch (ClassNotFoundException e) {
-            System.err.println("✗ MySQL JDBC Driver not found!");
-            e.printStackTrace();
         } catch (SQLException e) {
             System.err.println("✗ Failed to connect to database!");
             e.printStackTrace();

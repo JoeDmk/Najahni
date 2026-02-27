@@ -4,6 +4,7 @@ import com.najahni.models.EconomicData;
 import com.najahni.models.InvestmentOpportunity;
 import com.najahni.services.EconomicApiService;
 import com.najahni.services.EconomicRiskEngine;
+import com.najahni.services.GeminiService;
 import com.najahni.services.InvestmentOpportunityService;
 
 import javafx.animation.*;
@@ -93,6 +94,7 @@ public class FrontRiskAnalysisController {
     private final EconomicApiService apiService;
     private final EconomicRiskEngine riskEngine;
     private final InvestmentOpportunityService opportunityService;
+    private final GeminiService geminiService;
 
     private EconomicData currentData;
 
@@ -100,6 +102,7 @@ public class FrontRiskAnalysisController {
         this.apiService = new EconomicApiService();
         this.riskEngine = new EconomicRiskEngine();
         this.opportunityService = new InvestmentOpportunityService();
+        this.geminiService = new GeminiService();
     }
 
     // ─── Initialisation ──────────────────────────────────────
@@ -299,6 +302,110 @@ public class FrontRiskAnalysisController {
         setBarColor(pbAmount, amountFactor);
         setBarColor(pbDuration, durationFactor);
         setBarColor(pbEconomic, economicFactor);
+
+        // ── AI Deep Analysis Button ──
+        addAIDeepAnalysisButton(score, amount, deadline);
+    }
+
+    /**
+     * Adds an AI deep analysis section below the risk result.
+     * Uses Gemini to provide an argumentative risk assessment.
+     */
+    private void addAIDeepAnalysisButton(int score, BigDecimal amount, LocalDate deadline) {
+        // Check if AI section already exists
+        String aiSectionId = "ai-deep-analysis-section";
+        resultPanel.getChildren().removeIf(n -> aiSectionId.equals(n.getId()));
+
+        VBox aiSection = new VBox(12);
+        aiSection.setId(aiSectionId);
+        aiSection.setStyle("-fx-background-color: white; -fx-background-radius: 16; "
+                + "-fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.15), 15, 0, 0, 5);");
+
+        Label aiTitle = new Label("🤖 Analyse IA Approfondie — Gemini");
+        aiTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
+        Label aiDesc = new Label("Obtenez une analyse détaillée et argumentée de votre investissement par l'intelligence artificielle.");
+        aiDesc.setWrapText(true);
+        aiDesc.setStyle("-fx-font-size: 12px; -fx-text-fill: #7f8c8d;");
+
+        Button btnAI = new Button("🧠 Lancer l'Analyse Gemini");
+        btnAI.setMaxWidth(Double.MAX_VALUE);
+        btnAI.setStyle("-fx-background-color: linear-gradient(to right, #667eea, #764ba2); "
+                + "-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; "
+                + "-fx-padding: 14 20; -fx-background-radius: 10; -fx-cursor: hand;");
+
+        VBox aiResultBox = new VBox(10);
+        aiResultBox.setVisible(false);
+
+        btnAI.setOnAction(e -> {
+            btnAI.setDisable(true);
+            btnAI.setText("⏳ Analyse en cours...");
+
+            // Show loading
+            ProgressIndicator pi = new ProgressIndicator();
+            pi.setPrefSize(30, 30);
+            pi.setStyle("-fx-progress-color: #667eea;");
+            aiResultBox.getChildren().clear();
+            aiResultBox.getChildren().add(pi);
+            aiResultBox.setVisible(true);
+
+            String deadlineStr = deadline.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String country = cmbFoCountry.getValue() != null ? cmbFoCountry.getValue() : "Tunisie";
+
+            geminiService.analyzeRisk("Investissement personnalisé", country,
+                    amount.doubleValue(), deadlineStr,
+                    "Montant: " + amount + "€, Contexte: " + country, score)
+                    .thenAccept(response -> Platform.runLater(() -> {
+                        aiResultBox.getChildren().clear();
+
+                        // Parse response into styled TextFlow
+                        javafx.scene.text.TextFlow tf = parseAIText(response);
+                        tf.setLineSpacing(3);
+                        tf.setPadding(new Insets(10));
+
+                        VBox responseCard = new VBox(8);
+                        responseCard.setStyle("-fx-background-color: #f8f9ff; -fx-background-radius: 10; -fx-padding: 15;");
+                        responseCard.getChildren().add(tf);
+
+                        Label powered = new Label("⚡ Powered by Google Gemini AI");
+                        powered.setStyle("-fx-font-size: 10px; -fx-text-fill: #95a5a6;");
+
+                        aiResultBox.getChildren().addAll(responseCard, powered);
+                        btnAI.setText("🔄 Relancer l'Analyse");
+                        btnAI.setDisable(false);
+                    }));
+        });
+
+        aiSection.getChildren().addAll(aiTitle, aiDesc, btnAI, aiResultBox);
+
+        // Animate in
+        aiSection.setOpacity(0);
+        resultPanel.getChildren().add(aiSection);
+        FadeTransition ft = new FadeTransition(Duration.millis(500), aiSection);
+        ft.setFromValue(0); ft.setToValue(1);
+        ft.setDelay(Duration.millis(300));
+        ft.play();
+    }
+
+    /**
+     * Parse AI text with **bold** markers into a styled TextFlow.
+     */
+    private javafx.scene.text.TextFlow parseAIText(String text) {
+        javafx.scene.text.TextFlow flow = new javafx.scene.text.TextFlow();
+        String[] parts = text.split("\\*\\*");
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].isEmpty()) continue;
+            String[] lines = parts[i].split("\n");
+            for (int j = 0; j < lines.length; j++) {
+                Text t = new Text(lines[j]);
+                t.setFill(Color.web("#2c3e50"));
+                t.setFont(Font.font("Segoe UI",
+                        i % 2 == 1 ? FontWeight.BOLD : FontWeight.NORMAL, 13));
+                flow.getChildren().add(t);
+                if (j < lines.length - 1) flow.getChildren().add(new Text("\n"));
+            }
+        }
+        return flow;
     }
 
     private void buildFrontGauge(int score) {

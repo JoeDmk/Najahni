@@ -26,7 +26,7 @@
             <Button fx:id="btnFoOffers" text="📨 Mes Offres"
                     onAction="#showOffers"
                     styleClass="fo-nav-link"/>
-            <Button fx:id="btnFoPortfolio" text="💼 Portefeuille"
+            <Button fx:id="btnFoPortfolio" text="💼 Portfolio"
                     onAction="#showPortfolio"
                     styleClass="fo-nav-link"/>
             <Button fx:id="btnFoRiskAnalysis" text="🧠 Analyse IA"
@@ -41,7 +41,7 @@
             <Button text="⬅ Back Office" onAction="#goBackOffice"
                     styleClass="fo-btn-back"/>
             <Button text="🚪 Déconnexion" onAction="#handleLogout"
-                    style="-fx-background-color: rgba(231,76,60,0.2); -fx-text-fill: #e74c3c; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-size: 12px; -fx-padding: 6 12;"/>
+                    styleClass="fo-btn-logout"/>
         </HBox>
     </top>
 

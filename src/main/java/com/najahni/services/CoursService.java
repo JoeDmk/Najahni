@@ -164,7 +164,19 @@ public class CoursService {
     }
 
     public List<Cours> trouverParCreateur(int createurId) {
-        return trouverTous();
+        List<Cours> coursList = new ArrayList<>();
+        String sql = "SELECT * FROM cours WHERE createur_id = ? ORDER BY created_at DESC";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, createurId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) coursList.add(mapResultSetToCours(rs));
+            }
+        } catch (SQLException e) {
+            // Fallback if createur_id column doesn't exist
+            System.err.println("⚠ trouverParCreateur fallback to trouverTous: " + e.getMessage());
+            return trouverTous();
+        }
+        return coursList;
     }
 
     public List<Cours> rechercher(String motCle) {
@@ -210,11 +222,25 @@ public class CoursService {
     }
 
     public int compterCertifiants() {
-        return trouverCoursCertifiants().size();
+        String sql = "SELECT COUNT(*) FROM cours WHERE certification = true";
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public int calculerTotalXP() {
-        return trouverTous().stream().mapToInt(Cours::getPointsXP).sum();
+        String sql = "SELECT COALESCE(SUM(points_xp), 0) FROM cours";
+        try (Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     // ─── MAPPING ─────────────────────────────────────────────

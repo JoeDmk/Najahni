@@ -136,7 +136,12 @@ public class UserService {
             ps.setString(1, parts[0]);
             ps.setString(2, parts[1]);
             ps.setString(3, user.getEmail());
-            ps.setString(4, hashPassword(user.getPassword()));
+            // Only hash if not already a SHA-256 hash (64 hex chars)
+            String pwd = user.getPassword();
+            if (pwd.length() != 64 || !pwd.matches("[0-9a-f]{64}")) {
+                pwd = hashPassword(pwd);
+            }
+            ps.setString(4, pwd);
             ps.setString(5, user.getRole().getDbValue());
             ps.setInt(6, user.getId());
             return ps.executeUpdate() > 0;

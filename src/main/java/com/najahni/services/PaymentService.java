@@ -30,12 +30,11 @@ public class PaymentService {
 
     /**
      * Clé secrète de test Stripe.
-     * Chargée depuis la variable d'environnement STRIPE_SECRET_KEY.
-     * Configurer avec : set STRIPE_SECRET_KEY=sk_test_...
+     * IMPORTANT : remplacer par votre propre clé sk_test_... depuis https://dashboard.stripe.com/test/apikeys
      */
     private static final String TEST_SECRET_KEY = System.getenv("STRIPE_SECRET_KEY") != null
             ? System.getenv("STRIPE_SECRET_KEY")
-            : "VOTRE_CLE_ICI";
+            : "REPLACE_WITH_STRIPE_KEY";
 
     private static final String STRIPE_API = "https://api.stripe.com/v1";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
