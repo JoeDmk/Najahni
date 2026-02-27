@@ -84,9 +84,6 @@
             <Button text="🌙" onAction="#handleThemeToggle" styleClass="btn-nav" style="-fx-font-size: 15px;">
                 <tooltip><Tooltip text="Thème sombre/clair"/></tooltip>
             </Button>
-            <Button text="🌐" onAction="#handleLanguageToggle" styleClass="btn-nav" style="-fx-font-size: 15px;">
-                <tooltip><Tooltip text="Changer la langue"/></tooltip>
-            </Button>
             <StackPane>
                 <Button text="🔔" onAction="#handleNotifications" styleClass="btn-nav" style="-fx-font-size: 15px;">
                     <tooltip><Tooltip text="Notifications"/></tooltip>

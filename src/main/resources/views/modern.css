@@ -403,6 +403,7 @@
 .stat-card-value {
     -fx-font-size: 32px;
     -fx-font-weight: bold;
+    -fx-text-fill: #2D3436;
 }
 
 /* ============================================================

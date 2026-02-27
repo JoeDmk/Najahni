@@ -12,8 +12,15 @@ public class ThemeService {
     private boolean darkMode = false;
 
     private static final String DARK_THEME_CSS = "/views/dark-theme.css";
+    private final String cachedDarkCssUrl; // Cache the resolved URL once
 
-    private ThemeService() {}
+    private ThemeService() {
+        java.net.URL url = getClass().getResource(DARK_THEME_CSS);
+        cachedDarkCssUrl = url != null ? url.toExternalForm() : null;
+        if (cachedDarkCssUrl == null) {
+            System.err.println("Dark theme CSS not found!");
+        }
+    }
 
     public static ThemeService getInstance() {
         if (instance == null) {
@@ -42,23 +49,14 @@ public class ThemeService {
      * Apply current theme to a scene.
      */
     public void applyTheme(Scene scene) {
-        if (scene == null) return;
-
-        String darkCss = getClass().getResource(DARK_THEME_CSS) != null
-                ? getClass().getResource(DARK_THEME_CSS).toExternalForm()
-                : null;
-
-        if (darkCss == null) {
-            System.err.println("Dark theme CSS not found!");
-            return;
-        }
+        if (scene == null || cachedDarkCssUrl == null) return;
 
         if (darkMode) {
-            if (!scene.getStylesheets().contains(darkCss)) {
-                scene.getStylesheets().add(darkCss);
+            if (!scene.getStylesheets().contains(cachedDarkCssUrl)) {
+                scene.getStylesheets().add(cachedDarkCssUrl);
             }
         } else {
-            scene.getStylesheets().remove(darkCss);
+            scene.getStylesheets().remove(cachedDarkCssUrl);
         }
     }
 

@@ -254,9 +254,23 @@ public class FaceLoginController {
         try {
             User user = userService.getUserbyID(userId);
 
+            // Verify this user actually has face_registered = true in DB
+            if (!user.isFaceRegistered()) {
+                showError("Ce visage n'est pas enregistré pour cet utilisateur.");
+                btnRetry.setVisible(true);
+                return;
+            }
+
             // Check if banned
             if (user.getRole() != Type.ADMIN && user.getIsBanned()) {
                 showError("Votre compte est banni.");
+                btnRetry.setVisible(true);
+                return;
+            }
+
+            // Check if inactive
+            if (!user.getIsActive()) {
+                showError("Votre compte est désactivé.");
                 btnRetry.setVisible(true);
                 return;
             }
@@ -305,10 +319,9 @@ public class FaceLoginController {
                     System.err.println("Suspicious login check failed: " + ex.getMessage());
                 }
 
-                // Load theme/language preferences
+                // Load theme preferences
                 try {
                     ThemeService.getInstance().loadPreference(user.getPreferredTheme());
-                    LanguageService.getInstance().setLanguage(user.getPreferredLanguage());
                 } catch (Exception ex) {
                     System.err.println("Failed to load preferences: " + ex.getMessage());
                 }

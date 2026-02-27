@@ -36,15 +36,21 @@ public final class SceneHelper {
 
     /**
      * Switch the scene of {@code stage} to show {@code root}.
-     * Preserves the current maximized / windowed state and wires
-     * the keyboard shortcuts for toggling.
+     * Reuses the existing Scene object when possible to preserve stylesheets
+     * and avoid unnecessary Scene creation overhead.
      */
     public static void switchScene(Stage stage, Parent root) {
         boolean wasMaximized = stage.isMaximized();
         boolean wasFullScreen = stage.isFullScreen();
 
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
+        Scene scene = stage.getScene();
+        if (scene != null) {
+            // Reuse existing scene — preserves stylesheets and avoids GC overhead
+            scene.setRoot(root);
+        } else {
+            scene = new Scene(root);
+            stage.setScene(scene);
+        }
         stage.setResizable(true);
 
         if (wasFullScreen) {
@@ -52,7 +58,6 @@ public final class SceneHelper {
         } else if (wasMaximized) {
             stage.setMaximized(true);
         }
-        // else keep current windowed size
 
         wireKeyboardShortcuts(stage, scene);
         stage.show();

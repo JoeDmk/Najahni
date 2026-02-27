@@ -53,8 +53,12 @@ public class FaceRecognitionService {
     /** Number of face samples to capture during enrollment */
     public static final int ENROLLMENT_SAMPLES = 20;
 
+    /** Path to the persisted global model file */
+    private static final String GLOBAL_MODEL_PATH = FACE_DATA_DIR
+            + File.separator + "global_model.yml";
+
     /** Confidence threshold: lower = stricter (LBPH returns distance, lower is better) */
-    public static final double RECOGNITION_THRESHOLD = 55.0;
+    public static final double RECOGNITION_THRESHOLD = 65.0;
 
     /** Haar cascade for frontal face detection */
     private CascadeClassifier faceDetector;
@@ -65,12 +69,33 @@ public class FaceRecognitionService {
     /** Whether the recognizer model has been trained */
     private boolean modelTrained = false;
 
-    /** Frame converters for Mat → JavaFX Image (thread-safe instances created per call) */
-    private final OpenCVFrameConverter.ToMat matConverter = new OpenCVFrameConverter.ToMat();
-    private final Java2DFrameConverter java2dConverter = new Java2DFrameConverter();
+    /**
+     * Retained training data — prevents native memory deallocation that can
+     * corrupt the LBPH model's internal histogram references in JavaCV.
+     */
+    private List<Mat> retainedFaceList;
+    private MatVector retainedFaceMats;
+    private Mat retainedLabels;
+
+    /**
+     * Frame converters are NOT thread-safe in JavaCV.
+     * Each call to matToJavaFXImage creates local converter instances.
+     */
 
     private FaceRecognitionService() {
+        ensureFaceDataDirExists();
         initializeFaceDetector();
+    }
+
+    /**
+     * Ensures the face data base directory exists.
+     */
+    private void ensureFaceDataDirExists() {
+        File dir = new File(FACE_DATA_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+            System.out.println("Created face data directory: " + FACE_DATA_DIR);
+        }
     }
 
     public static FaceRecognitionService getInstance() {
@@ -191,11 +216,11 @@ public class FaceRecognitionService {
         System.out.println("Warming up webcam...");
         Mat warmup = new Mat();
         int warmupSuccess = 0;
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 40; i++) {
             if (camera.read(warmup) && !warmup.empty()) {
                 warmupSuccess++;
             }
-            try { Thread.sleep(50); } catch (InterruptedException ignored) {}
+            try { Thread.sleep(80); } catch (InterruptedException ignored) {}
         }
         warmup.close();
         if (warmupSuccess == 0) {
@@ -213,9 +238,13 @@ public class FaceRecognitionService {
     public Mat captureFrame(VideoCapture camera) {
         Mat frame = new Mat();
         if (camera != null && camera.isOpened()) {
-            // grab() + retrieve() is more reliable than read() on DSHOW
+            // Try grab() + retrieve() first (more reliable on DSHOW)
             if (camera.grab()) {
                 camera.retrieve(frame);
+            }
+            // Fallback to read() if retrieve returned empty
+            if (frame.empty()) {
+                camera.read(frame);
             }
         }
         return frame;
@@ -371,6 +400,10 @@ public class FaceRecognitionService {
             // Force retrain global model on next recognition attempt
             modelTrained = false;
 
+            // Delete the saved global model so it's rebuilt with fresh data
+            File globalModel = new File(GLOBAL_MODEL_PATH);
+            if (globalModel.exists()) globalModel.delete();
+
             // Clean up
             userRecognizer.close();
             for (Mat face : faces) face.close();
@@ -441,21 +474,31 @@ public class FaceRecognitionService {
                 labelsMat.ptr(i).putInt(allLabels.get(i));
             }
 
+            // Release previous model and retained training data
+            releaseModelData();
+
             // Train global LBPH recognizer
-            if (recognizer != null) {
-                recognizer.close();
-            }
             recognizer = LBPHFaceRecognizer.create(1, 8, 8, 8, RECOGNITION_THRESHOLD);
             recognizer.train(faceMats, labelsMat);
             modelTrained = true;
 
+            // Save global model to disk for persistence across restarts
+            try {
+                new File(GLOBAL_MODEL_PATH).getParentFile().mkdirs();
+                recognizer.save(GLOBAL_MODEL_PATH);
+                System.out.println("Global model saved to: " + GLOBAL_MODEL_PATH);
+            } catch (Exception saveEx) {
+                System.err.println("Warning: Could not save global model: " + saveEx.getMessage());
+            }
+
+            // Retain training data references — prevents native memory deallocation
+            // that can corrupt the recognizer's internal histogram pointers
+            retainedFaceList = allFaces;
+            retainedFaceMats = faceMats;
+            retainedLabels = labelsMat;
+
             System.out.println("Global face model trained with " + allFaces.size() +
                     " samples from " + userDirs.length + " users.");
-
-            // Clean up
-            for (Mat face : allFaces) face.close();
-            faceMats.close();
-            labelsMat.close();
 
             return true;
         } catch (Exception e) {
@@ -468,6 +511,7 @@ public class FaceRecognitionService {
     /**
      * Recognizes a face from a frame.
      * Returns a RecognitionResult with the predicted userId and confidence.
+     * Two-pass verification: global model first, then user-specific model for confirmation.
      */
     public RecognitionResult recognizeFace(Mat faceROI) {
         if (!modelTrained) {
@@ -490,6 +534,14 @@ public class FaceRecognitionService {
 
             boolean matched = conf < RECOGNITION_THRESHOLD && predictedUserId > 0;
 
+            // Second pass: verify against user-specific model for stronger uniqueness
+            if (matched) {
+                matched = verifyWithUserModel(predictedUserId, faceROI);
+                if (!matched) {
+                    System.out.println("Second-pass verification failed for userId=" + predictedUserId);
+                }
+            }
+
             System.out.println("Recognition result: userId=" + predictedUserId + ", confidence=" +
                     String.format("%.2f", conf) + ", matched=" + matched);
 
@@ -498,6 +550,75 @@ public class FaceRecognitionService {
             System.err.println("Error during face recognition: " + e.getMessage());
             return new RecognitionResult(-1, Double.MAX_VALUE, false);
         }
+    }
+
+    /**
+     * Verifies a face against a specific user's trained model for stronger confirmation.
+     * Returns true only if the user-specific model also confidently matches.
+     */
+    private boolean verifyWithUserModel(int userId, Mat faceROI) {
+        String userModelPath = FACE_DATA_DIR + File.separator + userId + File.separator + "model.yml";
+        File modelFile = new File(userModelPath);
+        if (!modelFile.exists()) {
+            System.err.println("No user-specific model found for userId=" + userId);
+            return false;
+        }
+
+        LBPHFaceRecognizer userRecognizer = null;
+        try {
+            userRecognizer = LBPHFaceRecognizer.create(1, 8, 8, 8, RECOGNITION_THRESHOLD);
+            userRecognizer.read(userModelPath);
+
+            IntPointer userLabel = new IntPointer(1);
+            DoublePointer userConf = new DoublePointer(1);
+            userRecognizer.predict(faceROI, userLabel, userConf);
+
+            int userPredicted = userLabel.get(0);
+            double userConfidence = userConf.get(0);
+
+            userLabel.close();
+            userConf.close();
+
+            System.out.println("User model verification: predicted=" + userPredicted +
+                    ", confidence=" + String.format("%.2f", userConfidence));
+
+            return userPredicted == userId && userConfidence < RECOGNITION_THRESHOLD;
+        } catch (Exception e) {
+            System.err.println("Error verifying with user model: " + e.getMessage());
+            return false;
+        } finally {
+            if (userRecognizer != null) {
+                try { userRecognizer.close(); } catch (Exception ignored) {}
+            }
+        }
+    }
+
+    // ==================== Resource Management ====================
+
+    /**
+     * Releases the current recognizer and any retained training data.
+     * Called before retraining to prevent memory leaks.
+     */
+    private void releaseModelData() {
+        if (recognizer != null) {
+            try { recognizer.close(); } catch (Exception ignored) {}
+            recognizer = null;
+        }
+        if (retainedFaceList != null) {
+            for (Mat m : retainedFaceList) {
+                try { m.close(); } catch (Exception ignored) {}
+            }
+            retainedFaceList = null;
+        }
+        if (retainedFaceMats != null) {
+            try { retainedFaceMats.close(); } catch (Exception ignored) {}
+            retainedFaceMats = null;
+        }
+        if (retainedLabels != null) {
+            try { retainedLabels.close(); } catch (Exception ignored) {}
+            retainedLabels = null;
+        }
+        modelTrained = false;
     }
 
     // ==================== Cleanup ====================
@@ -518,6 +639,9 @@ public class FaceRecognitionService {
                 }
                 dir.delete();
                 modelTrained = false; // Force retrain
+                // Delete the saved global model so it's rebuilt
+                File globalModel = new File(GLOBAL_MODEL_PATH);
+                if (globalModel.exists()) globalModel.delete();
                 System.out.println("Face data deleted for user " + userId);
             }
             return true;
@@ -525,6 +649,39 @@ public class FaceRecognitionService {
             System.err.println("Error deleting face data: " + e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Deletes ALL face data for every user and the global model.
+     */
+    public boolean deleteAllFaceData() {
+        try {
+            File baseDir = new File(FACE_DATA_DIR);
+            if (baseDir.exists()) {
+                deleteDirectoryRecursive(baseDir);
+                System.out.println("All face data deleted.");
+            }
+            releaseModelData();
+            File globalModel = new File(GLOBAL_MODEL_PATH);
+            if (globalModel.exists()) globalModel.delete();
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error deleting all face data: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void deleteDirectoryRecursive(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDirectoryRecursive(f);
+                }
+                f.delete();
+            }
+        }
+        dir.delete();
     }
 
     /**
@@ -555,12 +712,17 @@ public class FaceRecognitionService {
     public javafx.scene.image.Image matToJavaFXImage(Mat mat) {
         if (mat == null || mat.empty()) return null;
         try {
+            // Create local converters — OpenCVFrameConverter and Java2DFrameConverter
+            // are NOT thread-safe, so we must not share them across threads.
+            OpenCVFrameConverter.ToMat localMatConverter = new OpenCVFrameConverter.ToMat();
+            Java2DFrameConverter localJava2dConverter = new Java2DFrameConverter();
+
             // Mat → Frame (OpenCV format → JavaCV universal frame)
-            Frame frame = matConverter.convert(mat);
+            Frame frame = localMatConverter.convert(mat);
             if (frame == null) return null;
 
             // Frame → BufferedImage (Java2D)
-            BufferedImage bi = java2dConverter.convert(frame);
+            BufferedImage bi = localJava2dConverter.convert(frame);
             if (bi == null) return null;
 
             // BufferedImage → JavaFX WritableImage

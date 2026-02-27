@@ -80,6 +80,13 @@ public class ProfilController {
     }
 
     public void setCurrentUser(User user) {
+        if (user == null) {
+            user = services.SessionManager.getCurrentUser();
+        }
+        if (user == null) {
+            System.err.println("ProfilController: No user available.");
+            return;
+        }
         this.currentUser = user;
         this.originalEmail = user.getEmail();
         this.originalPhone = user.getPhone() != null ? user.getPhone() : "";

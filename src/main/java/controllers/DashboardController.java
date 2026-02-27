@@ -3,6 +3,7 @@ package controllers;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -66,11 +67,48 @@ public class DashboardController {
         if (welcomeLabel != null && user != null) {
             welcomeLabel.setText("Bienvenue, " + user.getFullName());
         }
-        loadStats();
-        loadUsers(null);
-        updateNotificationBadge();
 
-        // Apply theme
+        // Load all data in background to keep UI responsive
+        Task<Void> loadTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                // Fetch all data on background thread
+                int total = userService.countTotal();
+                int entrepreneurs = userService.countByRole(Type.ENTREPRENEUR);
+                int mentors = userService.countByRole(Type.MENTOR);
+                int investisseurs = userService.countByRole(Type.INVESTISSEUR);
+                int banned = userService.countBanned();
+                java.util.List<User> users = userService.getUsers();
+                int unread = user != null ? notificationService.getUnreadCount(user.getId()) : 0;
+
+                // Update UI on FX thread
+                javafx.application.Platform.runLater(() -> {
+                    if (totalUsersLabel != null) totalUsersLabel.setText(String.valueOf(total));
+                    if (entrepreneursLabel != null) entrepreneursLabel.setText(String.valueOf(entrepreneurs));
+                    if (mentorsLabel != null) mentorsLabel.setText(String.valueOf(mentors));
+                    if (investisseursLabel != null) investisseursLabel.setText(String.valueOf(investisseurs));
+                    if (bannedLabel != null) bannedLabel.setText(String.valueOf(banned));
+
+                    usersList.setAll(users);
+                    if (usersTable != null) usersTable.setItems(usersList);
+
+                    if (notificationBadge != null) {
+                        if (unread > 0) {
+                            notificationBadge.setText(String.valueOf(unread));
+                            notificationBadge.setVisible(true);
+                        } else {
+                            notificationBadge.setVisible(false);
+                        }
+                    }
+                });
+                return null;
+            }
+        };
+        Thread t = new Thread(loadTask);
+        t.setDaemon(true);
+        t.start();
+
+        // Apply theme (lightweight, OK on FX thread)
         if (welcomeLabel != null && welcomeLabel.getScene() != null) {
             themeService.applyTheme(welcomeLabel.getScene());
         }
@@ -259,6 +297,13 @@ public class DashboardController {
     @FXML
     private void handleMyProfile() {
         try {
+            if (currentUser == null) {
+                currentUser = services.SessionManager.getCurrentUser();
+            }
+            if (currentUser == null) {
+                System.err.println("handleMyProfile: No logged-in user found.");
+                return;
+            }
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Profil.fxml"));
             Parent root = loader.load();
             ProfilController ctrl = loader.getController();
@@ -300,7 +345,7 @@ public class DashboardController {
         File file = fileChooser.showSaveDialog(SceneHelper.stageOf(usersTable));
         if (file != null) {
             try {
-                ExportService.getInstance().exportToCSV(userService.getUsers(), file);
+                ExportService.getInstance().exportToCSV(new java.util.ArrayList<>(usersList), file);
                 showAlert(Alert.AlertType.INFORMATION, "Export CSV réussi !\nFichier: " + file.getName());
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Erreur lors de l'export CSV: " + e.getMessage());
@@ -317,7 +362,7 @@ public class DashboardController {
         File file = fileChooser.showSaveDialog(SceneHelper.stageOf(usersTable));
         if (file != null) {
             try {
-                ExportService.getInstance().exportToPDF(userService.getUsers(), file);
+                ExportService.getInstance().exportToPDF(new java.util.ArrayList<>(usersList), file);
                 showAlert(Alert.AlertType.INFORMATION, "Export PDF réussi !\nFichier: " + file.getName());
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Erreur lors de l'export PDF: " + e.getMessage());
@@ -367,10 +412,29 @@ public class DashboardController {
                     ButtonType.YES, ButtonType.NO);
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.YES) {
-                    EmailService emailService = new EmailService();
-                    emailService.sendBroadcastToAll(emails, subjectField.getText().trim(), messageArea.getText().trim());
-                    showAlert(Alert.AlertType.INFORMATION, "Emails en cours d'envoi !");
-                    dialog.close();
+                    sendBtn.setDisable(true);
+                    sendBtn.setText("Envoi en cours...");
+                    String subject = subjectField.getText().trim();
+                    String message = messageArea.getText().trim();
+                    Task<Void> sendTask = new Task<>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            new EmailService().sendBroadcastToAll(emails, subject, message);
+                            return null;
+                        }
+                    };
+                    sendTask.setOnSucceeded(ev -> {
+                        showAlert(Alert.AlertType.INFORMATION, "Emails envoyés avec succès !");
+                        dialog.close();
+                    });
+                    sendTask.setOnFailed(ev -> {
+                        sendBtn.setDisable(false);
+                        sendBtn.setText("Envoyer à tous");
+                        showAlert(Alert.AlertType.ERROR, "Erreur lors de l'envoi des emails.");
+                    });
+                    Thread t = new Thread(sendTask);
+                    t.setDaemon(true);
+                    t.start();
                 }
             });
         });
@@ -531,22 +595,7 @@ public class DashboardController {
         dialog.show();
     }
 
-    @FXML
-    private void handleLanguageToggle() {
-        LanguageService langService = LanguageService.getInstance();
-        String current = langService.getCurrentLanguageCode();
-        String next = switch (current) {
-            case "fr" -> "en";
-            case "en" -> "ar";
-            default -> "fr";
-        };
-        langService.setLanguage(next);
-        if (currentUser != null) {
-            userService.saveLanguagePreference(currentUser.getId(), next);
-        }
-        showAlert(Alert.AlertType.INFORMATION, "Langue changée: " + langService.getCurrentLanguageName() +
-                "\nLes changements seront appliqués au prochain chargement de page.");
-    }
+
 
     private void updateNotificationBadge() {
         if (notificationBadge != null && currentUser != null) {

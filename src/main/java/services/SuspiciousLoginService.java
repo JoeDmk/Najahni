@@ -132,8 +132,9 @@ public class SuspiciousLoginService {
         sb.append("• Tentatives échouées: ").append(failedLogins).append("\n");
         sb.append("• Adresses IP uniques: ").append(uniqueIPs).append("\n");
         sb.append("• Appareils connus: ").append(devices.size()).append("\n");
-        sb.append("• Score de risque actuel: ").append(analyzeLogin(user)).append("/100\n");
-        sb.append("• Niveau: ").append(getRiskLevel(analyzeLogin(user)));
+        int currentRiskScore = analyzeLogin(user);
+        sb.append("• Score de risque actuel: ").append(currentRiskScore).append("/100\n");
+        sb.append("• Niveau: ").append(getRiskLevel(currentRiskScore));
 
         return sb.toString();
     }

@@ -661,6 +661,20 @@ public class UserService implements UserInterface {
         return users;
     }
 
+    /**
+     * Resets face_registered to false for ALL users (used when clearing all face data).
+     */
+    public void resetAllFaceRegistered() {
+        String sql = "UPDATE user SET face_registered = false, updated_at = ? WHERE face_registered = true";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            int rows = ps.executeUpdate();
+            System.out.println("Reset face_registered for " + rows + " users.");
+        } catch (SQLException ex) {
+            System.err.println("Error resetting face_registered: " + ex.getMessage());
+        }
+    }
+
     // ==================== Crypto Helpers ====================
 
     public String cryptPassword(String passwordToCrypt) {

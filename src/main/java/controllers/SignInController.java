@@ -2,6 +2,7 @@ package controllers;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -49,40 +50,43 @@ public class SignInController {
         // Set Google "G" logo on the Google button
         setupGoogleButtonGraphic();
 
-        // Check existing session
-        String[] session = SessionManager.loadSession();
-        if (session != null && session.length == 3) {
-            String email = session[0];
-            LocalDateTime lastLogin = LocalDateTime.parse(session[2]);
-
-            if (lastLogin.isAfter(LocalDateTime.now().minusHours(24))) {
-                try {
-                    User user = userService.getUserbyEmail(email);
-                    if (user != null) {
-                        final User finalUser = user;
-                        javafx.application.Platform.runLater(() -> redirectToHome(finalUser));
-                        return;
+        // Check existing session in background thread to avoid blocking UI
+        Task<User> sessionTask = new Task<>() {
+            @Override
+            protected User call() throws Exception {
+                String[] session = SessionManager.loadSession();
+                if (session != null && session.length == 3) {
+                    String email = session[0];
+                    LocalDateTime lastLogin = LocalDateTime.parse(session[2]);
+                    if (lastLogin.isAfter(LocalDateTime.now().minusHours(24))) {
+                        try {
+                            return userService.getUserbyEmail(email);
+                        } catch (Exception e) {
+                            // Session invalid
+                        }
                     }
-                } catch (UserNotFoundException e) {
-                    // Session invalid
                 }
+                return null;
             }
-        }
+        };
+        sessionTask.setOnSucceeded(e -> {
+            User user = sessionTask.getValue();
+            if (user != null) {
+                redirectToHome(user);
+            }
+        });
+        Thread sessionThread = new Thread(sessionTask);
+        sessionThread.setDaemon(true);
+        sessionThread.start();
     }
 
     private void setupGoogleButtonGraphic() {
         if (btnGoogle == null) return;
 
-        // Use an ImageView loading the official Google "G" icon from the web
-        javafx.scene.image.ImageView googleIcon = new javafx.scene.image.ImageView(
-                new javafx.scene.image.Image(
-                        "https://developers.google.com/identity/images/g-logo.png",
-                        20, 20, true, true, true
-                )
-        );
-        googleIcon.setFitWidth(20);
-        googleIcon.setFitHeight(20);
-        googleIcon.setPreserveRatio(true);
+        // Use a local "G" label instead of downloading from the internet
+        Label googleIcon = new Label("G");
+        googleIcon.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #4285F4; " +
+                "-fx-min-width: 20; -fx-min-height: 20; -fx-alignment: center;");
 
         btnGoogle.setGraphic(googleIcon);
         btnGoogle.setContentDisplay(javafx.scene.control.ContentDisplay.LEFT);
@@ -125,73 +129,97 @@ public class SignInController {
         }
 
         // --- CAPTCHA VALIDATION ---
-        // The user must have clicked the "I'm not a robot" checkbox and
-        // successfully answered the math challenge before logging in.
         if (!captchaGenerator.isVerified()) {
             showError("Veuillez cocher \"Je ne suis pas un robot\".");
             return;
         }
 
-        try {
-            if (sessionService.isAccountLocked(email)) {
-                throw new AccountLockedException("Votre compte est banni. Réinitialisez votre mot de passe.");
-            }
+        // Disable login button to prevent double-click
+        btnLogin.setDisable(true);
 
-            User user = userService.getUserbyEmail(email);
-
-            if (user.getRole() != Type.ADMIN && user.getIsBanned()) {
-                throw new AccountLockedException("Votre compte est banni.");
-            }
-
-            if (userService.verifyPassword(password, user.getPassword())) {
-                sessionService.setCurrentUser(user);
-                SessionManager.saveSession(user.getEmail(), user.getRole().name());
-                loginAttemptsMap.put(email, 0);
-
-                // Record successful login
-                LoginHistoryService.getInstance().recordLogin(user.getId(), "PASSWORD", true);
-
-                // Suspicious login detection
-                SuspiciousLoginService suspiciousService = SuspiciousLoginService.getInstance();
-                int riskScore = suspiciousService.analyzeLogin(user);
-                if (riskScore >= 30) {
-                    suspiciousService.handleSuspiciousLogin(user, riskScore);
+        // Run all DB + bcrypt work on a background thread
+        Task<User> loginTask = new Task<>() {
+            @Override
+            protected User call() throws Exception {
+                if (sessionService.isAccountLocked(email)) {
+                    throw new AccountLockedException("Votre compte est banni. Réinitialisez votre mot de passe.");
                 }
 
-                // Load user preferences
-                ThemeService.getInstance().loadPreference(user.getPreferredTheme());
-                LanguageService.getInstance().setLanguage(user.getPreferredLanguage());
+                User user = userService.getUserbyEmail(email);
 
-                redirectToHome(user);
-            } else {
-                int attempts = loginAttemptsMap.getOrDefault(email, 0) + 1;
-                loginAttemptsMap.put(email, attempts);
+                if (user.getRole() != Type.ADMIN && user.getIsBanned()) {
+                    throw new AccountLockedException("Votre compte est banni.");
+                }
 
-                // Record failed login attempt
-                try {
-                    LoginHistoryService.getInstance().recordLogin(user.getId(), "PASSWORD", false);
-                } catch (Exception ignored) {}
+                if (userService.verifyPassword(password, user.getPassword())) {
+                    sessionService.setCurrentUser(user);
+                    SessionManager.saveSession(user.getEmail(), user.getRole().name());
 
-                if (attempts >= sessionService.MAX_LOGIN_ATTEMPTS) {
-                    if (user.getRole() != Type.ADMIN) {
-                        sessionService.lockAccount(email);
-                        showError("Trop de tentatives. Votre compte est verrouillé.");
-                    } else {
-                        showError("Trop de tentatives.");
+                    // Record successful login
+                    LoginHistoryService.getInstance().recordLogin(user.getId(), "PASSWORD", true);
+
+                    // Suspicious login detection (background - don't block redirect)
+                    SuspiciousLoginService suspiciousService = SuspiciousLoginService.getInstance();
+                    int riskScore = suspiciousService.analyzeLogin(user);
+                    if (riskScore >= 30) {
+                        suspiciousService.handleSuspiciousLogin(user, riskScore);
                     }
+
+                    // Load user preferences
+                    ThemeService.getInstance().loadPreference(user.getPreferredTheme());
+
+                    return user;
                 } else {
-                    showError("Email ou mot de passe incorrect. Tentatives restantes: " +
-                            (sessionService.MAX_LOGIN_ATTEMPTS - attempts));
+                    int attempts = loginAttemptsMap.getOrDefault(email, 0) + 1;
+                    loginAttemptsMap.put(email, attempts);
+
+                    // Record failed login attempt
+                    try {
+                        LoginHistoryService.getInstance().recordLogin(user.getId(), "PASSWORD", false);
+                    } catch (Exception ignored) {}
+
+                    if (attempts >= sessionService.MAX_LOGIN_ATTEMPTS) {
+                        if (user.getRole() != Type.ADMIN) {
+                            sessionService.lockAccount(email);
+                            throw new AccountLockedException("Trop de tentatives. Votre compte est verrouillé.");
+                        } else {
+                            throw new IncorrectPasswordException("Trop de tentatives.");
+                        }
+                    } else {
+                        throw new IncorrectPasswordException("Email ou mot de passe incorrect. Tentatives restantes: " +
+                                (sessionService.MAX_LOGIN_ATTEMPTS - attempts));
+                    }
                 }
             }
-        } catch (AccountLockedException e) {
-            showError(e.getMessage());
-        } catch (UserNotFoundException e) {
-            showError("Aucun utilisateur trouvé avec cet email.");
-        } catch (Exception e) {
-            showError("Erreur lors de la connexion.");
-            e.printStackTrace();
-        }
+        };
+
+        loginTask.setOnSucceeded(e -> {
+            btnLogin.setDisable(false);
+            User user = loginTask.getValue();
+            if (user != null) {
+                loginAttemptsMap.put(email, 0);
+                redirectToHome(user);
+            }
+        });
+
+        loginTask.setOnFailed(e -> {
+            btnLogin.setDisable(false);
+            Throwable ex = loginTask.getException();
+            if (ex instanceof AccountLockedException) {
+                showError(ex.getMessage());
+            } else if (ex instanceof UserNotFoundException) {
+                showError("Aucun utilisateur trouvé avec cet email.");
+            } else if (ex instanceof IncorrectPasswordException) {
+                showError(ex.getMessage());
+            } else {
+                showError("Erreur lors de la connexion.");
+                ex.printStackTrace();
+            }
+        });
+
+        Thread loginThread = new Thread(loginTask);
+        loginThread.setDaemon(true);
+        loginThread.start();
     }
 
     @FXML
@@ -202,25 +230,43 @@ public class SignInController {
             return;
         }
 
-        try {
-            userService.getUserbyEmail(email); // Verify user exists
-            PasswordResetService resetService = PasswordResetService.getInstance();
-            String code = resetService.generateAndStoreCode(email);
+        Task<String> resetTask = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                userService.getUserbyEmail(email); // Verify user exists
+                PasswordResetService resetService = PasswordResetService.getInstance();
+                String code = resetService.generateAndStoreCode(email);
+                new EmailService().sendVerificationEmail(email, code);
+                return code;
+            }
+        };
 
-            EmailService emailService = new EmailService();
-            emailService.sendVerificationEmail(email, code);
+        resetTask.setOnSucceeded(e -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/RandomCode.fxml"));
+                Parent root = loader.load();
+                RandomCodeController ctrl = loader.getController();
+                ctrl.setEmail(email);
+                SceneHelper.switchScene(SceneHelper.stageOf(txtEmail), root);
+            } catch (Exception ex) {
+                showError("Erreur lors du chargement de la page.");
+                ex.printStackTrace();
+            }
+        });
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/RandomCode.fxml"));
-            Parent root = loader.load();
-            RandomCodeController ctrl = loader.getController();
-            ctrl.setEmail(email);
-            SceneHelper.switchScene(SceneHelper.stageOf(txtEmail), root);
-        } catch (UserNotFoundException e) {
-            showError("Aucun utilisateur trouvé avec cet email.");
-        } catch (Exception e) {
-            showError("Erreur lors de l'envoi du code.");
-            e.printStackTrace();
-        }
+        resetTask.setOnFailed(e -> {
+            Throwable ex = resetTask.getException();
+            if (ex instanceof UserNotFoundException) {
+                showError("Aucun utilisateur trouvé avec cet email.");
+            } else {
+                showError("Erreur lors de l'envoi du code.");
+                ex.printStackTrace();
+            }
+        });
+
+        Thread t = new Thread(resetTask);
+        t.setDaemon(true);
+        t.start();
     }
 
     /**
@@ -331,7 +377,6 @@ public class SignInController {
 
                     // Load user preferences
                     ThemeService.getInstance().loadPreference(user.getPreferredTheme());
-                    LanguageService.getInstance().setLanguage(user.getPreferredLanguage());
 
                     System.out.println("Google login successful for: " + user.getEmail());
                     redirectToHome(user);

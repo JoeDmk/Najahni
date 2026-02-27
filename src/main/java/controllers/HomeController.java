@@ -1,6 +1,7 @@
 package controllers;
 
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -42,32 +43,54 @@ public class HomeController {
     public void setCurrentUser(User user) {
         this.currentUser = user;
         SessionService.getInstance().setCurrentUser(user);
-        updateUI();
-        updateNotificationBadge();
-        loadSuggestions();
 
-        // Apply theme
+        // Set static labels immediately (no DB needed)
+        if (currentUser != null) {
+            if (welcomeLabel != null) welcomeLabel.setText("Bienvenue, " + currentUser.getFullName() + " !");
+            if (roleLabel != null) roleLabel.setText(currentUser.getRole().name());
+        }
+
+        // Load DB data in background
+        Task<Void> loadTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                int followers = connectionService.countFollowers(currentUser.getId());
+                int following = connectionService.countFollowing(currentUser.getId());
+                int unread = notificationService.getUnreadCount(currentUser.getId());
+                List<User> similar = userService.getSimilarUsers(currentUser.getId(), 5);
+
+                javafx.application.Platform.runLater(() -> {
+                    if (followersCountLabel != null) followersCountLabel.setText(String.valueOf(followers));
+                    if (followingCountLabel != null) followingCountLabel.setText(String.valueOf(following));
+
+                    if (notificationBadge != null) {
+                        if (unread > 0) {
+                            notificationBadge.setText(String.valueOf(unread));
+                            notificationBadge.setVisible(true);
+                        } else {
+                            notificationBadge.setVisible(false);
+                        }
+                    }
+
+                    buildSuggestionCards(similar);
+                });
+                return null;
+            }
+        };
+        Thread t = new Thread(loadTask);
+        t.setDaemon(true);
+        t.start();
+
+        // Apply theme (lightweight, OK on FX thread)
         if (welcomeLabel != null && welcomeLabel.getScene() != null) {
             themeService.applyTheme(welcomeLabel.getScene());
         }
     }
 
-    private void updateUI() {
-        if (currentUser != null) {
-            if (welcomeLabel != null) welcomeLabel.setText("Bienvenue, " + currentUser.getFullName() + " !");
-            if (roleLabel != null) roleLabel.setText(currentUser.getRole().name());
-            if (followersCountLabel != null)
-                followersCountLabel.setText(String.valueOf(connectionService.countFollowers(currentUser.getId())));
-            if (followingCountLabel != null)
-                followingCountLabel.setText(String.valueOf(connectionService.countFollowing(currentUser.getId())));
-        }
-    }
-
-    private void loadSuggestions() {
-        if (suggestionsBox == null || currentUser == null) return;
+    private void buildSuggestionCards(List<User> similar) {
+        if (suggestionsBox == null) return;
         suggestionsBox.getChildren().clear();
 
-        List<User> similar = userService.getSimilarUsers(currentUser.getId(), 5);
         if (similar.isEmpty()) {
             Label noSuggestions = new Label("Aucune suggestion disponible");
             noSuggestions.setStyle("-fx-text-fill: #636E72;");
@@ -99,10 +122,25 @@ public class HomeController {
             followBtn.setStyle("-fx-background-color: #6C63FF; -fx-text-fill: white; " +
                     "-fx-background-radius: 8; -fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 5 12;");
             followBtn.setOnAction(e -> {
-                connectionService.follow(currentUser.getId(), u.getId());
-                followBtn.setText("\u2713");
                 followBtn.setDisable(true);
-                updateUI();
+                followBtn.setText("...");
+                Task<Void> followTask = new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        connectionService.follow(currentUser.getId(), u.getId());
+                        int followers = connectionService.countFollowers(currentUser.getId());
+                        int following = connectionService.countFollowing(currentUser.getId());
+                        javafx.application.Platform.runLater(() -> {
+                            followBtn.setText("\u2713");
+                            if (followersCountLabel != null) followersCountLabel.setText(String.valueOf(followers));
+                            if (followingCountLabel != null) followingCountLabel.setText(String.valueOf(following));
+                        });
+                        return null;
+                    }
+                };
+                Thread ft = new Thread(followTask);
+                ft.setDaemon(true);
+                ft.start();
             });
 
             card.getChildren().addAll(info, spacer, followBtn);
@@ -186,24 +224,7 @@ public class HomeController {
         }
     }
 
-    @FXML
-    private void handleLanguageToggle() {
-        LanguageService langService = LanguageService.getInstance();
-        String current = langService.getCurrentLanguageCode();
-        String next = switch (current) {
-            case "fr" -> "en";
-            case "en" -> "ar";
-            default -> "fr";
-        };
-        langService.setLanguage(next);
-        if (currentUser != null) {
-            userService.saveLanguagePreference(currentUser.getId(), next);
-        }
-        Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                "Langue chang\u00e9e: " + langService.getCurrentLanguageName() +
-                "\nLes changements seront appliqu\u00e9s au prochain chargement de page.");
-        alert.showAndWait();
-    }
+
 
     @FXML
     private void handleNotifications() {
@@ -292,78 +313,94 @@ public class HomeController {
         Label title = new Label("\uD83D\uDCCB Mon historique de connexion");
         title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;");
 
-        // Risk score display
-        SuspiciousLoginService suspiciousService = SuspiciousLoginService.getInstance();
-        int riskScore = suspiciousService.analyzeLogin(currentUser);
-        String riskLevel = suspiciousService.getRiskLevel(riskScore);
-        String riskColor = suspiciousService.getRiskColor(riskScore);
-
-        HBox riskBox = new HBox(10);
-        riskBox.setAlignment(Pos.CENTER_LEFT);
-        riskBox.setPadding(new Insets(10));
-        riskBox.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: " + riskColor + "; -fx-border-radius: 10;");
-
-        Label riskLabel = new Label("\uD83D\uDEE1 Score de risque: " + riskScore + "/100");
-        riskLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        Label riskLevelLabel = new Label("(" + riskLevel + ")");
-        riskLevelLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " + riskColor + "; -fx-font-weight: bold;");
-        riskBox.getChildren().addAll(riskLabel, riskLevelLabel);
-
-        TableView<LoginHistory> historyTable = new TableView<>();
-        historyTable.setPrefHeight(300);
-
-        TableColumn<LoginHistory, String> methodCol = new TableColumn<>("M\u00e9thode");
-        methodCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getLoginMethod()));
-        methodCol.setPrefWidth(90);
-
-        TableColumn<LoginHistory, String> ipCol = new TableColumn<>("IP");
-        ipCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getIpAddress()));
-        ipCol.setPrefWidth(120);
-
-        TableColumn<LoginHistory, String> deviceCol = new TableColumn<>("Appareil");
-        deviceCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getDeviceInfo()));
-        deviceCol.setPrefWidth(200);
-
-        TableColumn<LoginHistory, String> statusCol = new TableColumn<>("Statut");
-        statusCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getSuccessDisplay()));
-        statusCol.setPrefWidth(70);
-
-        TableColumn<LoginHistory, String> timeCol = new TableColumn<>("Date");
-        timeCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
-                c.getValue().getLoginTime() != null
-                        ? c.getValue().getLoginTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
-                        : ""));
-        timeCol.setPrefWidth(150);
-
-        historyTable.getColumns().addAll(methodCol, ipCol, deviceCol, statusCol, timeCol);
-
-        List<LoginHistory> history = LoginHistoryService.getInstance().getLoginHistory(currentUser.getId(), 50);
-        historyTable.setItems(FXCollections.observableArrayList(history));
-
-        // Unique devices
-        List<String> devices = LoginHistoryService.getInstance().getUniqueDevices(currentUser.getId());
-        Label devicesLabel = new Label("\uD83D\uDCF1 Appareils connus: " + devices.size());
-        devicesLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #636E72;");
-
-        Button clearBtn = new Button("Effacer l'historique");
-        clearBtn.setStyle("-fx-background-color: #E17055; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
-        clearBtn.setOnAction(e -> {
-            LoginHistoryService.getInstance().clearHistory(currentUser.getId());
-            historyTable.getItems().clear();
-        });
-
-        Button closeBtn = new Button("Fermer");
-        closeBtn.setStyle("-fx-background-color: #6C63FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
-        closeBtn.setOnAction(e -> dialog.close());
-
-        HBox buttons = new HBox(10, clearBtn, closeBtn);
-        buttons.setAlignment(Pos.CENTER_RIGHT);
-
-        layout.getChildren().addAll(title, riskBox, historyTable, devicesLabel, buttons);
+        // Show loading state first
+        Label loadingLabel = new Label("Chargement...");
+        loadingLabel.setStyle("-fx-text-fill: #636E72; -fx-font-size: 14px;");
+        layout.getChildren().addAll(title, loadingLabel);
 
         Scene scene = new Scene(layout, 700, 520);
         dialog.setScene(scene);
         dialog.show();
+
+        // Load all data in background
+        Task<Void> loadTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                SuspiciousLoginService suspiciousService = SuspiciousLoginService.getInstance();
+                int riskScore = suspiciousService.analyzeLogin(currentUser);
+                String riskLevel = suspiciousService.getRiskLevel(riskScore);
+                String riskColor = suspiciousService.getRiskColor(riskScore);
+                List<LoginHistory> history = LoginHistoryService.getInstance().getLoginHistory(currentUser.getId(), 50);
+                List<String> devices = LoginHistoryService.getInstance().getUniqueDevices(currentUser.getId());
+
+                javafx.application.Platform.runLater(() -> {
+                    layout.getChildren().remove(loadingLabel);
+
+                    HBox riskBox = new HBox(10);
+                    riskBox.setAlignment(Pos.CENTER_LEFT);
+                    riskBox.setPadding(new Insets(10));
+                    riskBox.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: " + riskColor + "; -fx-border-radius: 10;");
+
+                    Label riskLabel = new Label("\uD83D\uDEE1 Score de risque: " + riskScore + "/100");
+                    riskLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+                    Label riskLevelLabel = new Label("(" + riskLevel + ")");
+                    riskLevelLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " + riskColor + "; -fx-font-weight: bold;");
+                    riskBox.getChildren().addAll(riskLabel, riskLevelLabel);
+
+                    TableView<LoginHistory> historyTable = new TableView<>();
+                    historyTable.setPrefHeight(300);
+
+                    TableColumn<LoginHistory, String> methodCol = new TableColumn<>("M\u00e9thode");
+                    methodCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getLoginMethod()));
+                    methodCol.setPrefWidth(90);
+
+                    TableColumn<LoginHistory, String> ipCol = new TableColumn<>("IP");
+                    ipCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getIpAddress()));
+                    ipCol.setPrefWidth(120);
+
+                    TableColumn<LoginHistory, String> deviceCol = new TableColumn<>("Appareil");
+                    deviceCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getDeviceInfo()));
+                    deviceCol.setPrefWidth(200);
+
+                    TableColumn<LoginHistory, String> statusCol = new TableColumn<>("Statut");
+                    statusCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getSuccessDisplay()));
+                    statusCol.setPrefWidth(70);
+
+                    TableColumn<LoginHistory, String> timeCol = new TableColumn<>("Date");
+                    timeCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                            c.getValue().getLoginTime() != null
+                                    ? c.getValue().getLoginTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
+                                    : ""));
+                    timeCol.setPrefWidth(150);
+
+                    historyTable.getColumns().addAll(methodCol, ipCol, deviceCol, statusCol, timeCol);
+                    historyTable.setItems(FXCollections.observableArrayList(history));
+
+                    Label devicesLabel = new Label("\uD83D\uDCF1 Appareils connus: " + devices.size());
+                    devicesLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #636E72;");
+
+                    Button clearBtn = new Button("Effacer l'historique");
+                    clearBtn.setStyle("-fx-background-color: #E17055; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+                    clearBtn.setOnAction(e -> {
+                        LoginHistoryService.getInstance().clearHistory(currentUser.getId());
+                        historyTable.getItems().clear();
+                    });
+
+                    Button closeBtn = new Button("Fermer");
+                    closeBtn.setStyle("-fx-background-color: #6C63FF; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+                    closeBtn.setOnAction(e -> dialog.close());
+
+                    HBox buttons = new HBox(10, clearBtn, closeBtn);
+                    buttons.setAlignment(Pos.CENTER_RIGHT);
+
+                    layout.getChildren().addAll(riskBox, historyTable, devicesLabel, buttons);
+                });
+                return null;
+            }
+        };
+        Thread t = new Thread(loadTask);
+        t.setDaemon(true);
+        t.start();
     }
 
     private void updateNotificationBadge() {
