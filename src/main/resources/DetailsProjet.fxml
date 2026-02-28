@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.najahni.controllers.DetailsProjetController"
+            fitToWidth="true"
+            styleClass="scroll-pane"
+            style="-fx-background-color: #ecf0f1; -fx-background: #ecf0f1;">
+
+    <VBox spacing="0" style="-fx-background-color: #ecf0f1;">
+
+        <!-- ========== HEADER GRADIENT BANNER ========== -->
+        <VBox style="-fx-background-color: linear-gradient(to right, #2c3e50, #3498db);
+                     -fx-padding: 28 40 28 40;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="🤖  RAPPORT D'ÉVALUATION IA — NAJAHNI"
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: rgba(255,255,255,0.65);"/>
+                    <Label fx:id="lblTitre"
+                           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label fx:id="lblStatut"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: white;
+                                      -fx-padding: 3 12; -fx-background-radius: 20;
+                                      -fx-background-color: rgba(255,255,255,0.18);
+                                      -fx-border-color: rgba(255,255,255,0.35); -fx-border-radius: 20; -fx-border-width: 1;"/>
+                        <Label fx:id="lblSecteur"
+                               style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.85);
+                                      -fx-padding: 3 12; -fx-background-radius: 20;
+                                      -fx-background-color: rgba(255,255,255,0.1);"/>
+                        <Label fx:id="lblEtape"
+                               style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.85);
+                                      -fx-padding: 3 12; -fx-background-radius: 20;
+                                      -fx-background-color: rgba(255,255,255,0.1);"/>
+                    </HBox>
+                </VBox>
+                <VBox alignment="CENTER_RIGHT" spacing="6">
+                    <Label text="Date de création" style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.55);"/>
+                    <Label fx:id="lblDateCreation"
+                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                    <Label fx:id="lblMessage" text=""
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2ecc71;
+                                  -fx-padding: 4 10; -fx-background-radius: 12;
+                                  -fx-background-color: rgba(0,0,0,0.25);"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- ========== MAIN CONTENT ========== -->
+        <VBox spacing="18" style="-fx-padding: 24 30 30 30;">
+
+            <!-- ===== ROW 1: Description + Score ===== -->
+            <HBox spacing="18" fillHeight="true">
+
+                <!-- Description -->
+                <VBox spacing="14" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12;
+                             -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                             -fx-border-color: #f0f0f0; -fx-border-width: 1; -fx-border-radius: 12;">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="📝" style="-fx-font-size: 16px;"/>
+                        <Label text="Description du projet"
+                               style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    </HBox>
+                    <Separator/>
+                    <Label fx:id="lblDescription" wrapText="true"
+                           style="-fx-padding: 12; -fx-background-color: #f8f9fa; -fx-background-radius: 8;
+                                  -fx-text-fill: #555; -fx-font-size: 13px;
+                                  -fx-border-color: #ececec; -fx-border-radius: 8; -fx-border-width: 1;"/>
+                </VBox>
+
+                <!-- Score -->
+                <VBox spacing="14" minWidth="280" maxWidth="320"
+                      alignment="CENTER" HBox.hgrow="NEVER"
+                      style="-fx-background-color: white; -fx-background-radius: 12;
+                             -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                             -fx-border-color: #f0f0f0; -fx-border-width: 1; -fx-border-radius: 12;">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="⭐" style="-fx-font-size: 16px;"/>
+                        <Label text="Score IA Global"
+                               style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    </HBox>
+                    <Separator/>
+                    <VBox alignment="CENTER" spacing="12" VBox.vgrow="ALWAYS">
+                        <Label fx:id="lblScoreGlobal" text="—"
+                               style="-fx-font-size: 56px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                        <ProgressBar fx:id="progressScore"
+                                     prefHeight="12" progress="0"
+                                     maxWidth="Infinity"
+                                     style="-fx-accent: #3498db; -fx-control-inner-background: #ecf0f1;"/>
+                        <Label fx:id="lblCategorie" text="En attente d'évaluation..."
+                               wrapText="true"
+                               maxWidth="Infinity"
+                               alignment="CENTER"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 6 16;
+                                      -fx-background-radius: 20; -fx-background-color: #ecf0f1;
+                                      -fx-text-fill: #7f8c8d;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+
+            <!-- ===== ROW 2: Données Business ===== -->
+            <VBox spacing="14"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                         -fx-border-color: #f0f0f0; -fx-border-width: 1; -fx-border-radius: 12;">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📊" style="-fx-font-size: 16px;"/>
+                    <Label text="Données Business"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                </HBox>
+                <Separator/>
+                <HBox spacing="12">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER"
+                          style="-fx-background-color: linear-gradient(to bottom right, #fff5f5, #ffeaea);
+                                 -fx-background-radius: 10; -fx-padding: 14;
+                                 -fx-border-color: #ffcccc; -fx-border-width: 1; -fx-border-radius: 10;">
+                        <Label text="💸 Coûts estimés"
+                               style="-fx-font-size: 10px; -fx-text-fill: #c0392b; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblCouts" wrapText="true" alignment="CENTER"
+                               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER"
+                          style="-fx-background-color: linear-gradient(to bottom right, #f0fff4, #d5f5e3);
+                                 -fx-background-radius: 10; -fx-padding: 14;
+                                 -fx-border-color: #a9dfbf; -fx-border-width: 1; -fx-border-radius: 10;">
+                        <Label text="💰 Revenus attendus"
+                               style="-fx-font-size: 10px; -fx-text-fill: #1a7a3f; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblRevenus" wrapText="true" alignment="CENTER"
+                               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER"
+                          style="-fx-background-color: linear-gradient(to bottom right, #f0f4ff, #dce8ff);
+                                 -fx-background-radius: 10; -fx-padding: 14;
+                                 -fx-border-color: #aec6f7; -fx-border-width: 1; -fx-border-radius: 10;">
+                        <Label text="📈 Marge estimée"
+                               style="-fx-font-size: 10px; -fx-text-fill: #1a5276; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblMarge"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2980b9;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER"
+                          style="-fx-background-color: linear-gradient(to bottom right, #fdf9f0, #fdebd0);
+                                 -fx-background-radius: 10; -fx-padding: 14;
+                                 -fx-border-color: #f5cba7; -fx-border-width: 1; -fx-border-radius: 10;">
+                        <Label text="⚖️ Ratio rentabilité"
+                               style="-fx-font-size: 10px; -fx-text-fill: #935116; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblRatio"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="12">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 10;
+                                 -fx-border-color: #ececec; -fx-border-width: 1; -fx-border-radius: 8;">
+                        <Label text="🏪  Taille marché"
+                               style="-fx-font-size: 10px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblTailleMarche" wrapText="true"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 10;
+                                 -fx-border-color: #ececec; -fx-border-width: 1; -fx-border-radius: 8;">
+                        <Label text="🔄  Modèle de revenu"
+                               style="-fx-font-size: 10px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblModeleRevenu" wrapText="true"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="SOMETIMES" minWidth="100"
+                          style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 10;
+                                 -fx-border-color: #ececec; -fx-border-width: 1; -fx-border-radius: 8;">
+                        <Label text="👥  Force équipe"
+                               style="-fx-font-size: 10px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblForceEquipe" wrapText="false"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 10;
+                                 -fx-border-color: #ececec; -fx-border-width: 1; -fx-border-radius: 8;">
+                        <Label text="⚠️  Niveau de risque"
+                               style="-fx-font-size: 10px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblNiveauRisque" wrapText="true"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- ===== ROW 3: Indicateurs ===== -->
+            <VBox spacing="14"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
+                         -fx-border-color: #f0f0f0; -fx-border-width: 1; -fx-border-radius: 12;">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📉" style="-fx-font-size: 16px;"/>
+                    <Label text="Indicateurs de Performance"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                </HBox>
+                <Separator/>
+                <HBox spacing="20">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="🌍  Score Marché"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblScoreMarche"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+                        </HBox>
+                        <ProgressBar prefWidth="1000" prefHeight="9" progress="0.5"
+                                     style="-fx-accent: #3498db; -fx-control-inner-background: #ecf0f1;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="💰  Score Financier"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblScoreFinancier"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                        </HBox>
+                        <ProgressBar prefWidth="1000" prefHeight="9" progress="0.5"
+                                     style="-fx-accent: #27ae60; -fx-control-inner-background: #ecf0f1;"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="20">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="👥  Score Équipe"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblScoreEquipe"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #9b59b6;"/>
+                        </HBox>
+                        <ProgressBar prefWidth="1000" prefHeight="9" progress="0.5"
+                                     style="-fx-accent: #9b59b6; -fx-control-inner-background: #ecf0f1;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="⚠️  Score Risque"
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblScoreRisque"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #e67e22;"/>
+                        </HBox>
+                        <ProgressBar prefWidth="1000" prefHeight="9" progress="0.5"
+                                     style="-fx-accent: #e67e22; -fx-control-inner-background: #ecf0f1;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- ===== ROW 4: RAPPORT IA STYLISÉ ===== -->
+            <VBox fx:id="iaSection" spacing="0"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.15), 16, 0, 0, 5);
+                         -fx-border-color: rgba(52,152,219,0.25); -fx-border-width: 1.5; -fx-border-radius: 12;">
+                <VBox style="-fx-background-color: linear-gradient(to right, #1a2a3a, #2c3e50);
+                             -fx-padding: 18 24; -fx-background-radius: 12 12 0 0;">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="🤖" style="-fx-font-size: 22px;"/>
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Rapport d'Évaluation Complet"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                            <Label text="Analyse intelligente générée par Gemini AI"
+                                   style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.5);"/>
+                        </VBox>
+                        <Label text="✨ Gemini AI"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #3498db;
+                                      -fx-padding: 4 12; -fx-background-radius: 20;
+                                      -fx-background-color: rgba(52,152,219,0.2);
+                                      -fx-border-color: rgba(52,152,219,0.4); -fx-border-radius: 20; -fx-border-width: 1;"/>
+                    </HBox>
+                </VBox>
+                <VBox fx:id="rapportContainer" spacing="0" style="-fx-background-color: transparent;"/>
+                <VBox fx:id="loadingBox" alignment="CENTER" spacing="12"
+                      style="-fx-padding: 50; -fx-background-color: #f8f9fa; -fx-background-radius: 0 0 12 12;">
+                    <Label text="⏳" style="-fx-font-size: 40px;"/>
+                    <Label fx:id="lblLoading" text="Analyse IA en cours, veuillez patienter..."
+                           style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;"/>
+                </VBox>
+            </VBox>
+
+            <!-- ===== VERDICT FINAL ===== -->
+            <VBox fx:id="verdictBox" visible="false" managed="false"
+                  style="-fx-background-radius: 12; -fx-border-radius: 12;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0, 0, 5);">
+                <HBox fx:id="verdictHeader" alignment="CENTER" spacing="20"
+                      style="-fx-padding: 24 30; -fx-background-radius: 12;
+                             -fx-background-color: linear-gradient(to right, #27ae60, #2ecc71);">
+                    <Label text="🏆" style="-fx-font-size: 32px;"/>
+                    <VBox alignment="CENTER_LEFT" spacing="3" HBox.hgrow="ALWAYS">
+                        <Label text="VERDICT FINAL"
+                               style="-fx-font-size: 10px; -fx-font-weight: bold;
+                                      -fx-text-fill: rgba(255,255,255,0.7); -fx-letter-spacing: 2px;"/>
+                        <Label fx:id="lblVerdictText"
+                               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                    </VBox>
+                    <VBox alignment="CENTER_RIGHT" spacing="2">
+                        <Label text="SCORE GLOBAL"
+                               style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.7); -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="lblScoreVerdictFinal"
+                               style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- ===== FOOTER ===== -->
+            <!-- ✅ AJOUT : bouton PDF + bouton Fermer côte à côte -->
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+
+                <!-- Bouton PDF — caché par défaut, visible après analyse -->
+                <Button fx:id="btnTelechargerPdf"
+                        text="📄  Télécharger le Rapport PDF"
+                        onAction="#telechargerPdf"
+                        visible="false"
+                        managed="false"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 13px;
+                               -fx-padding: 11 28; -fx-background-radius: 8; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.4), 8, 0, 0, 3);"/>
+
+                <!-- Bouton Fermer — inchangé -->
+                <Button fx:id="btnFermer" text="✕   Fermer" onAction="#fermer"
+                        style="-fx-background-color: #34495e; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 13px;
+                               -fx-padding: 11 28; -fx-background-radius: 8; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 3);"/>
+            </HBox>
+
+        </VBox>
+    </VBox>
+</ScrollPane>

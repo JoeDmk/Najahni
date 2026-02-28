@@ -111,4 +111,52 @@ public class Projet {
     public void setDonneesBusiness(donneesBusiness donneesBusiness) {
         this.donneesBusiness = donneesBusiness;
     }
+    // ========== NOUVEAUX CHAMPS POUR MÉTIERS AVANCÉS ==========
+    private StatutProjet statutProjet = StatutProjet.BROUILLON;
+    private double scoreGlobal;
+    private String diagnosticIA;
+    private LocalDate dateSoumission;
+    private LocalDate dateEvaluation;
+
+// ========== GETTERS/SETTERS (à ajouter à la fin du fichier) ==========
+
+    public StatutProjet getStatutProjet() {
+        return statutProjet;
+    }
+
+    public void setStatutProjet(StatutProjet statutProjet) {
+        this.statutProjet = statutProjet;
+    }
+
+    public double getScoreGlobal() {
+        return scoreGlobal;
+    }
+
+    public void setScoreGlobal(double scoreGlobal) {
+        this.scoreGlobal = scoreGlobal;
+    }
+
+    public String getDiagnosticIA() {
+        return diagnosticIA;
+    }
+
+    public void setDiagnosticIA(String diagnosticIA) {
+        this.diagnosticIA = diagnosticIA;
+    }
+
+    public LocalDate getDateSoumission() {
+        return dateSoumission;
+    }
+
+    public void setDateSoumission(LocalDate dateSoumission) {
+        this.dateSoumission = dateSoumission;
+    }
+
+    public LocalDate getDateEvaluation() {
+        return dateEvaluation;
+    }
+
+    public void setDateEvaluation(LocalDate dateEvaluation) {
+        this.dateEvaluation = dateEvaluation;
+    }
 }

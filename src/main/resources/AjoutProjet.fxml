@@ -4,67 +4,151 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
+<ScrollPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.najahni.controllers.AjouterProjet"
-            styleClass="root">
+            fitToWidth="true"
+            style="-fx-background-color: #f5f6fa; -fx-background: #f5f6fa;">
 
-    <center>
-        <!-- Conteneur principal FULL WIDTH -->
-        <VBox spacing="40" styleClass="card">
+    <VBox spacing="30" style="-fx-background-color: #f5f6fa; -fx-padding: 40;">
 
-            <padding>
-                <Insets top="50" right="80" bottom="50" left="80"/>
-            </padding>
+        <!-- Titre principal -->
+        <Label text="Ajouter un Projet"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
+               maxWidth="Infinity"
+               alignment="CENTER"/>
 
-            <!-- Titre -->
-            <Label text="Ajouter un Projet"
-                   styleClass="card-title"
-                   maxWidth="Infinity"
-                   alignment="CENTER"/>
+        <!-- Sous-titre liberté -->
+        <Label text="✨  Écrivez librement — l'IA Gemini analysera intelligemment vos réponses, même en langage naturel"
+               style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;"
+               maxWidth="Infinity"
+               alignment="CENTER"/>
 
-            <!-- Deux colonnes -->
-            <HBox spacing="80" HBox.hgrow="ALWAYS">
+        <!-- Deux colonnes centrées -->
+        <HBox spacing="30" alignment="CENTER" maxWidth="Infinity" fillHeight="true">
+            <HBox.margin>
+                <Insets left="60" right="60"/>
+            </HBox.margin>
 
-                <!-- Colonne Projet -->
-                <VBox spacing="20" HBox.hgrow="ALWAYS">
-                    <Label text="Projet" styleClass="form-label"/>
-                    <TextField fx:id="userIdField"  promptText="ID User *" styleClass="form-field"/>
-                    <TextField fx:id="titre" promptText="Titre *" styleClass="form-field"/>
-                    <TextArea fx:id="description" promptText="Description"
-                              prefHeight="140"
-                              styleClass="form-field"/>
-                    <TextField fx:id="secteur" promptText="Secteur *" styleClass="form-field"/>
-                    <TextField fx:id="etape" promptText="Étape *" styleClass="form-field"/>
-                    <TextField fx:id="statut" promptText="Statut *" styleClass="form-field"/>
-                </VBox>
+            <!-- Colonne Gauche : Projet -->
+            <VBox spacing="15" HBox.hgrow="ALWAYS" maxWidth="520"
+                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25;
+                         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 3);">
 
-                <!-- Colonne Business -->
-                <VBox spacing="20" HBox.hgrow="ALWAYS">
-                    <Label text="Données Business (obligatoires)" styleClass="form-label"/>
+                <Label text="📁 Informations du Projet"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-                    <TextField fx:id="tailleMarche" promptText="Taille marché *" styleClass="form-field"/>
-                    <TextField fx:id="modeleRevenu" promptText="Modèle revenu *" styleClass="form-field"/>
-                    <TextField fx:id="couts" promptText="Coûts estimés *" styleClass="form-field"/>
-                    <TextField fx:id="revenus" promptText="Revenus attendus *" styleClass="form-field"/>
-                    <TextField fx:id="risque" promptText="Niveau risque *" styleClass="form-field"/>
-                    <TextField fx:id="forceEquipe" promptText="Force équipe (1-10) *" styleClass="form-field"/>
-                </VBox>
+                <Separator/>
 
-            </HBox>
 
-            <!-- Boutons -->
-            <HBox alignment="CENTER_RIGHT" spacing="30">
-                <Button text="Valider"
-                        onAction="#AjouterProjet"
-                        styleClass="btn-primary"/>
 
-                <Button text="Annuler"
-                        onAction="#annuler"
-                        styleClass="btn-secondary"/>
-            </HBox>
+                <Label text="Titre *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="titre"
+                           promptText="Donnez un nom à votre projet"
+                           style="-fx-font-size: 14px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
 
-        </VBox>
-    </center>
+                <Label text="Description" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextArea fx:id="description"
+                          promptText="Décrivez votre projet librement — idée, problème résolu, solution, cible... Plus vous écrivez, mieux Gemini analyse !"
+                          prefHeight="130"
+                          wrapText="true"
+                          style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 6;
+                                 -fx-border-color: #ddd; -fx-border-radius: 6;"/>
 
-</BorderPane>
+                <Label text="Secteur *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="secteur"
+                           promptText="Ex: Technologie, Agriculture, Santé, Éducation..."
+                           style="-fx-font-size: 14px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+                <Label text="Étape *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="etape"
+                           promptText="Ex: Idée, MVP, Prototype, Croissance... ou décrivez librement"
+                           style="-fx-font-size: 14px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+
+
+            </VBox>
+
+            <!-- Colonne Droite : Données Business -->
+            <VBox spacing="15" HBox.hgrow="ALWAYS" maxWidth="520"
+                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25;
+                         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 3);">
+
+                <Label text="📊 Données Business"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <Label text="💡 Écrivez ce que vous savez — Gemini interprétera vos réponses"
+                       style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-style: italic;"/>
+
+                <Separator/>
+
+                <Label text="Taille du marché *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="tailleMarche"
+                           promptText="Ex: Grand, Moyen, Niche, national, régional, ou décrivez..."
+                           style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+                <Label text="Modèle de revenu *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="modeleRevenu"
+                           promptText="Ex: Abonnement, B2B, Freemium, commission, vente directe..."
+                           style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+                <Label text="Coûts estimés *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="couts"
+                           promptText="Ex: 50000, environ 50K DT, pas encore défini, demande à l'IA..."
+                           style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+                <Label text="Revenus attendus *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="revenus"
+                           promptText="Ex: 120000, j'espère 3x les coûts, objectif 1er année 100K..."
+                           style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+                <Label text="Niveau de risque *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="risque"
+                           promptText="Ex: Faible, Modéré, Élevé, ou expliquez vos risques..."
+                           style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+                <Label text="Force de l'équipe *" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <TextField fx:id="forceEquipe"
+                           promptText="Ex: 8, équipe de 3 ingénieurs expérimentés, solo fondateur..."
+                           style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 6;
+                                  -fx-border-color: #ddd; -fx-border-radius: 6;"
+                           maxWidth="Infinity"/>
+
+            </VBox>
+        </HBox>
+
+        <!-- Boutons -->
+        <HBox alignment="CENTER_RIGHT" spacing="20">
+            <HBox.margin>
+                <Insets left="60" right="60"/>
+            </HBox.margin>
+            <Button text="Annuler"
+                    onAction="#annuler"
+                    style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 30;
+                           -fx-background-color: #95a5a6; -fx-text-fill: white;
+                           -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+            <Button text="✔ Valider &amp; Soumettre à l'IA"
+                    onAction="#AjouterProjet"
+                    style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 30;
+                           -fx-background-color: #3498db; -fx-text-fill: white;
+                           -fx-background-radius: 8; -fx-cursor: hand;"/>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

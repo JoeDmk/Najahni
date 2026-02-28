@@ -33,7 +33,6 @@ public class mainTest {
             projetSansDB.setDescription("Tentative interdite");
             projetSansDB.setSecteur("Test");
             projetSansDB.setEtape("BROUILLON");
-            projetSansDB.setStatut("NOUVEAU");
             projetSansDB.setDateCreation(LocalDate.now());
 
             // Attention : PAS de setDonneesBusiness → null
@@ -60,7 +59,6 @@ public class mainTest {
             projetAvecDB.setDescription("Projet valide avec toutes les données business");
             projetAvecDB.setSecteur("FinTech");
             projetAvecDB.setEtape("SOUMIS");
-            projetAvecDB.setStatut("EN_COURS");
             projetAvecDB.setDateCreation(LocalDate.now());
 
             // OBLIGATOIRE : on fournit les données business
@@ -112,7 +110,6 @@ public class mainTest {
             System.out.println("  Description        : " + p.getDescription());
             System.out.println("  Secteur            : " + p.getSecteur());
             System.out.println("  Étape              : " + p.getEtape());
-            System.out.println("  Statut             : " + p.getStatut());
             System.out.println("  Date création      : " + p.getDateCreation());
 
             donneesBusiness db = p.getDonneesBusiness();
