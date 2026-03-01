@@ -18,14 +18,14 @@ public class GeminiService {
 
     // ── Hugging Face (primary) ──
     private static final String HF_TOKEN = System.getenv("HF_TOKEN") != null
-            ? System.getenv("HF_TOKEN") : "REPLACE_WITH_HF_TOKEN";
+            ? System.getenv("HF_TOKEN") : "VOTRE_CLE_HF";
     private static final String HF_MODEL = "meta-llama/Llama-3.2-3B-Instruct";
     private static final String HF_URL =
             "https://router.huggingface.co/v1/chat/completions";
 
     // ── Gemini (cloud fallback) ──
     private static final String GEMINI_API_KEY = System.getenv("GEMINI_API_KEY") != null
-            ? System.getenv("GEMINI_API_KEY") : "REPLACE_WITH_GEMINI_KEY";
+            ? System.getenv("GEMINI_API_KEY") : "VOTRE_CLE_GEMINI";
     private static final String GEMINI_URL =
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
 

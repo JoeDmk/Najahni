@@ -20,6 +20,26 @@ public class ProjectService {
 
     public ProjectService() {
         this.cnx = DBConnection.getInstance().getConnection();
+        ensureEntrepreneurColumn();
+    }
+
+    /**
+     * Auto-migration: adds entrepreneur_id column to projet table if missing.
+     */
+    private void ensureEntrepreneurColumn() {
+        try {
+            DatabaseMetaData meta = cnx.getMetaData();
+            try (ResultSet rs = meta.getColumns(null, null, "projet", "entrepreneur_id")) {
+                if (!rs.next()) {
+                    try (Statement stmt = cnx.createStatement()) {
+                        stmt.executeUpdate("ALTER TABLE projet ADD COLUMN entrepreneur_id INT DEFAULT NULL");
+                        System.out.println("✓ Migration: added entrepreneur_id column to projet");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("⚠ Could not add entrepreneur_id column: " + e.getMessage());
+        }
     }
 
     // ─── CRUD ────────────────────────────────────────────────
@@ -88,13 +108,20 @@ public class ProjectService {
             validateEntrepreneur(project.getEntrepreneurId());
         }
 
-        String sql = "UPDATE projet SET titre = ?, description = ?, secteur = ?, statut = ? WHERE id = ?";
+        String sql = project.getEntrepreneurId() > 0
+                ? "UPDATE projet SET titre = ?, description = ?, secteur = ?, statut = ?, entrepreneur_id = ? WHERE id = ?"
+                : "UPDATE projet SET titre = ?, description = ?, secteur = ?, statut = ? WHERE id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setString(1, project.getTitle());
             ps.setString(2, project.getDescription());
             ps.setString(3, project.getSector());
             ps.setString(4, project.getStatus() != null ? project.getStatus().name() : "DRAFT");
-            ps.setInt(5, project.getId());
+            if (project.getEntrepreneurId() > 0) {
+                ps.setInt(5, project.getEntrepreneurId());
+                ps.setInt(6, project.getId());
+            } else {
+                ps.setInt(5, project.getId());
+            }
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("✗ Error updating project: " + e.getMessage());
@@ -119,7 +146,8 @@ public class ProjectService {
 
     public List<Project> findByEntrepreneur(int entrepreneurId) {
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT * FROM projet WHERE entrepreneur_id = ? ORDER BY date_creation DESC";
+        // Return projects owned by this entrepreneur OR unowned projects (entrepreneur_id IS NULL)
+        String sql = "SELECT * FROM projet WHERE entrepreneur_id = ? OR entrepreneur_id IS NULL ORDER BY date_creation DESC";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setInt(1, entrepreneurId);
             try (ResultSet rs = ps.executeQuery()) {

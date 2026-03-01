@@ -35,6 +35,9 @@
             <Button fx:id="btnInbox" text="📬 Inbox" visible="false" managed="false"
                     onAction="#toggleInbox"
                     styleClass="fo-nav-link"/>
+            <Button fx:id="btnAdvanced" text="🚀 Avancé"
+                    onAction="#showAdvanced"
+                    styleClass="fo-nav-link"/>
 
             <Region prefWidth="20"/>
 

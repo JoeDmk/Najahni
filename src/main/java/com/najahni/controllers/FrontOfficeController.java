@@ -62,6 +62,9 @@ public class FrontOfficeController {
     @FXML
     private Button btnInbox;
 
+    @FXML
+    private Button btnAdvanced;
+
     private Button activeNavLink;
 
     // ─── Inbox state ─────────────────────────────────────────
@@ -152,6 +155,16 @@ public class FrontOfficeController {
         closeInboxIfOpen();
         loadView("/fxml/FrontPortfolioView.fxml");
         setActiveNavLink(btnFoPortfolio);
+    }
+
+    /**
+     * Shows the Advanced Investment Dashboard (contracts, matching, charts, comparator, ratings).
+     */
+    @FXML
+    public void showAdvanced() {
+        closeInboxIfOpen();
+        loadView("/fxml/AdvancedInvestmentView.fxml");
+        setActiveNavLink(btnAdvanced);
     }
 
     /**
@@ -250,7 +263,7 @@ public class FrontOfficeController {
         header.setPadding(new Insets(16, 18, 16, 18));
 
         Label title = new Label("📬 Boîte de réception");
-        title.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        title.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         Button btnClose = new Button("✕");
@@ -271,9 +284,9 @@ public class FrontOfficeController {
             Label emptyIcon = new Label("📭");
             emptyIcon.setStyle("-fx-font-size: 40px;");
             Label emptyText = new Label("Aucune offre reçue");
-            emptyText.setStyle("-fx-font-size: 14px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;");
+            emptyText.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b; -fx-font-weight: bold;");
             Label emptyHint = new Label("Les investisseurs verront vos opportunités\net pourront y soumettre des offres.");
-            emptyHint.setStyle("-fx-font-size: 12px; -fx-text-fill: #bdc3c7; -fx-text-alignment: center;");
+            emptyHint.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-text-alignment: center;");
             emptyHint.setWrapText(true);
             empty.getChildren().addAll(emptyIcon, emptyText, emptyHint);
             cardList.getChildren().add(empty);
@@ -282,7 +295,7 @@ public class FrontOfficeController {
             long pendingCount = offers.stream().filter(o -> o.getStatus() == OfferStatus.PENDING).count();
             if (pendingCount > 0) {
                 Label badge = new Label("🔔 " + pendingCount + " offre(s) en attente");
-                badge.setStyle("-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-padding: 8 14; "
+                badge.setStyle("-fx-background-color: #fef3c7; -fx-text-fill: #92400e; -fx-padding: 8 14; "
                     + "-fx-background-radius: 8; -fx-font-size: 12px; -fx-font-weight: bold;");
                 badge.setMaxWidth(Double.MAX_VALUE);
                 badge.setAlignment(Pos.CENTER);
@@ -326,12 +339,12 @@ public class FrontOfficeController {
 
         // Amount
         Label lblAmount = new Label(offer.getFormattedAmount());
-        lblAmount.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        lblAmount.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
 
         // Investor
         String investorText = offer.getInvestorName() != null ? offer.getInvestorName() : "Investisseur #" + offer.getInvestorId();
         Label lblInvestor = new Label("👤 " + investorText);
-        lblInvestor.setStyle("-fx-font-size: 12px; -fx-text-fill: #7f8c8d;");
+        lblInvestor.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
 
         // Opportunity
         String oppText = offer.getOpportunityDescription() != null
@@ -340,7 +353,7 @@ public class FrontOfficeController {
                 : offer.getOpportunityDescription())
             : "Opportunité #" + offer.getOpportunityId();
         Label lblOpp = new Label("💰 " + oppText);
-        lblOpp.setStyle("-fx-font-size: 11px; -fx-text-fill: #95a5a6;");
+        lblOpp.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
         lblOpp.setWrapText(true);
 
         card.getChildren().addAll(topBar, lblAmount, lblInvestor, lblOpp);
@@ -367,11 +380,11 @@ public class FrontOfficeController {
             card.getChildren().add(actions);
         } else if (offer.getStatus() == OfferStatus.ACCEPTED) {
             Label lbl = new Label("✅ Offre acceptée");
-            lbl.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 0 0 0;");
+            lbl.setStyle("-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 0 0 0;");
             card.getChildren().add(lbl);
         } else {
             Label lbl = new Label("❌ Offre refusée");
-            lbl.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic; -fx-font-size: 11px; -fx-padding: 4 0 0 0;");
+            lbl.setStyle("-fx-text-fill: #ef4444; -fx-font-style: italic; -fx-font-size: 11px; -fx-padding: 4 0 0 0;");
             card.getChildren().add(lbl);
         }
 

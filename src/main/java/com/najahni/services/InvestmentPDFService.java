@@ -7,6 +7,7 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
+import com.najahni.models.InvestmentContract;
 import com.najahni.models.InvestmentOffer;
 import com.najahni.models.InvestmentOpportunity;
 import com.najahni.models.Project;
@@ -395,6 +396,105 @@ public class InvestmentPDFService {
 
         } catch (Exception e) {
             LOG.severe("✗ Erreur génération PDF opportunité: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  4. PDF CONTRAT NUMÉRIQUE
+    // ═══════════════════════════════════════════════════════════
+
+    /**
+     * Génère un PDF de contrat d'investissement numérique.
+     *
+     * @param contract    Le contrat
+     * @param offer       L'offre associée (peut être null)
+     * @param opportunity L'opportunité associée (peut être null)
+     * @param project     Le projet associé (peut être null)
+     * @return byte[] contenant le PDF, ou null en cas d'erreur
+     */
+    public byte[] generateContractPDF(InvestmentContract contract, InvestmentOffer offer,
+                                       InvestmentOpportunity opportunity, Project project) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            Document doc = new Document(PageSize.A4, 50, 50, 40, 40);
+            PdfWriter.getInstance(doc, baos);
+            doc.open();
+
+            // ── Header ──
+            addHeader(doc, "CONTRAT D'INVESTISSEMENT");
+
+            // ── Référence ──
+            PdfPTable refTable = new PdfPTable(2);
+            refTable.setWidthPercentage(100);
+            refTable.setSpacingBefore(12);
+            addRefRow(refTable, "N° Contrat :", contract.getContractNumber());
+            addRefRow(refTable, "Statut :", contract.getStatusEmoji() + " " + contract.getStatus().getDisplayName());
+            addRefRow(refTable, "Date :", contract.getCreatedAt() != null
+                    ? contract.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")) : "N/A");
+            doc.add(refTable);
+
+            doc.add(new Paragraph(" "));
+
+            // ── Parties ──
+            addSectionTitle(doc, "📋 Parties contractantes");
+            PdfPTable partiesTable = createDetailTable();
+            addDetailRow(partiesTable, "Investisseur",
+                    contract.getInvestorName() != null ? contract.getInvestorName() : "Investisseur #" + contract.getInvestorId());
+            addDetailRow(partiesTable, "Entrepreneur",
+                    contract.getEntrepreneurName() != null ? contract.getEntrepreneurName() : "Entrepreneur #" + contract.getEntrepreneurId());
+            if (project != null) {
+                addDetailRow(partiesTable, "Projet", project.getTitle());
+                if (project.getSector() != null) addDetailRow(partiesTable, "Secteur", project.getSector());
+            }
+            if (offer != null) {
+                addDetailRow(partiesTable, "Montant investi", offer.getFormattedAmount());
+            }
+            if (opportunity != null) {
+                addDetailRow(partiesTable, "Montant cible", opportunity.getFormattedAmount());
+            }
+            doc.add(partiesTable);
+
+            // ── Termes du contrat ──
+            addSectionTitle(doc, "📜 Termes et conditions");
+            if (contract.getTermsText() != null) {
+                Font termsFont = new Font(Font.HELVETICA, 9, Font.NORMAL, DARK);
+                Paragraph terms = new Paragraph(contract.getTermsText(), termsFont);
+                terms.setSpacingBefore(6);
+                terms.setLeading(14f);
+                doc.add(terms);
+            }
+
+            // ── Signatures ──
+            addSectionTitle(doc, "✍️ Signatures numériques");
+            PdfPTable sigTable = createDetailTable();
+            addDetailRow(sigTable, "Signature Investisseur",
+                    contract.getInvestorSignature() != null
+                            ? "✓ Signé" + (contract.getInvestorSignedAt() != null
+                            ? " le " + contract.getInvestorSignedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")) : "")
+                            : "⏳ En attente");
+            addDetailRow(sigTable, "Signature Entrepreneur",
+                    contract.getEntrepreneurSignature() != null
+                            ? "✓ Signé" + (contract.getEntrepreneurSignedAt() != null
+                            ? " le " + contract.getEntrepreneurSignedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")) : "")
+                            : "⏳ En attente");
+            doc.add(sigTable);
+
+            // ── Intégrité SHA-256 ──
+            addSectionTitle(doc, "🔐 Intégrité du document");
+            PdfPTable hashTable = createDetailTable();
+            addDetailRow(hashTable, "Hash SHA-256", contract.getSha256Hash() != null ? contract.getSha256Hash() : "N/A");
+            doc.add(hashTable);
+
+            // ── Footer ──
+            addFooter(doc, "Ce document est un contrat numérique émis par NAJAHNI. L'intégrité est vérifiable via le hash SHA-256.");
+
+            doc.close();
+            LOG.info("✓ PDF contrat généré: " + contract.getContractNumber());
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+            LOG.severe("✗ Erreur génération PDF contrat: " + e.getMessage());
             e.printStackTrace();
             return null;
         }

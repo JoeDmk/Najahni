@@ -34,7 +34,7 @@ public class PaymentService {
      */
     private static final String TEST_SECRET_KEY = System.getenv("STRIPE_SECRET_KEY") != null
             ? System.getenv("STRIPE_SECRET_KEY")
-            : "REPLACE_WITH_STRIPE_KEY";
+            : "VOTRE_CLE_STRIPE";
 
     private static final String STRIPE_API = "https://api.stripe.com/v1";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
