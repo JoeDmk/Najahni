@@ -31,7 +31,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:controller="controllers.StatsController"
-            stylesheets="@modern.css"
+            stylesheets="@najahni-master.css"
             style="-fx-background-color: #F0F2F5;"
             xmlns="http://javafx.com/javafx/17.0.14"
             xmlns:fx="http://javafx.com/fxml/1">

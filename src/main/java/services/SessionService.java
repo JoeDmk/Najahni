@@ -2,6 +2,7 @@ package services;
 
 import exceptions.*;
 import models.User;
+import services.investissement.GeoLocationService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class SessionService {
         if (userService.verifyPassword(password, user.getPassword())) {
             currentUser = user;
             loginAttempts.remove(email);
+            detectAndSaveCurrency(user);
             return true;
         } else {
             // Track failed attempts
@@ -75,7 +77,25 @@ public class SessionService {
 
     public void logout() {
         currentUser = null;
+        GeoLocationService.resetCache();
         SessionManager.clearSession();
+    }
+
+    /**
+     * Détecte automatiquement la devise de l'utilisateur à partir de son IP
+     * publique et la sauvegarde dans son profil.
+     */
+    private void detectAndSaveCurrency(User user) {
+        try {
+            String detected = GeoLocationService.detectCurrency();
+            if (detected != null && GeoLocationService.isSupportedCurrency(detected)) {
+                user.setPreferredCurrency(detected);
+                userService.saveCurrencyPreference(user.getId(), detected);
+                System.out.println("[Session] Devise détectée et sauvegardée : " + detected + " pour " + user.getEmail());
+            }
+        } catch (Exception e) {
+            System.err.println("[Session] Erreur de détection de devise : " + e.getMessage());
+        }
     }
 
     public void lockAccount(String email) {

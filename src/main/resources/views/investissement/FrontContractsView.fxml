@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="rootStack" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.investissement.FrontContractsController"
+           styleClass="fo-content"
+           style="-fx-background-color: transparent;">
+
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                style="-fx-background-color: transparent; -fx-background: transparent;">
+        <VBox spacing="16" alignment="TOP_CENTER" style="-fx-padding: 24 20 40 20;">
+
+            <!-- Hero Section -->
+            <VBox alignment="CENTER" spacing="6"
+                  style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-background-radius: 18; -fx-padding: 28 30 22 30;">
+                <Label text="📜 Contrats d'Investissement"
+                       style="-fx-font-family: 'Segoe UI'; -fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label fx:id="lblSubtitle" text="Gérez et signez vos contrats"
+                       style="-fx-font-family: 'Segoe UI'; -fx-font-size: 13; -fx-text-fill: #e0d4ff;"/>
+                <Label fx:id="lblTitle" text="" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Info Banner -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #eef0ff; -fx-background-radius: 12; -fx-padding: 14 20; -fx-border-color: #667eea33; -fx-border-radius: 12; -fx-border-width: 1;">
+                <Label text="🔐"
+                       style="-fx-font-size: 18;"/>
+                <VBox spacing="2">
+                    <Label text="Signature numérique SHA-256"
+                           style="-fx-font-family: 'Segoe UI'; -fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #667eea;"/>
+                    <Label text="Chaque signature est certifiée par un hachage cryptographique unique et irréversible."
+                           style="-fx-font-family: 'Segoe UI'; -fx-font-size: 11; -fx-text-fill: #7f8c8d;" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <!-- Contracts Container -->
+            <VBox fx:id="contractsContainer" spacing="16" alignment="TOP_CENTER">
+                <!-- Contract cards loaded dynamically -->
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</StackPane>

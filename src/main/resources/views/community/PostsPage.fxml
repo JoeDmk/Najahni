@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.PostsPageController"
+            prefWidth="900"
+            prefHeight="650"
+            stylesheets="@../najahni-master.css">
+
+    <!-- HEADER -->
+    <top>
+        <VBox spacing="12" styleClass="header">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="Posts" styleClass="header-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="+ New Post"
+                        onAction="#focusComposer"
+                        styleClass="btn-primary"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true"
+                    VBox.vgrow="ALWAYS"
+                    hbarPolicy="NEVER"
+                    vbarPolicy="AS_NEEDED"
+                    style="-fx-background-color: transparent;">
+
+            <VBox styleClass="content-area" spacing="15">
+
+                <!-- Composer Card -->
+                <VBox styleClass="card" spacing="10">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Share something…" styleClass="section-title-sm"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="charCountLabel" text="0 / 500" styleClass="muted-text"/>
+                    </HBox>
+
+                    <TextArea fx:id="contentArea"
+                              promptText="What’s on your mind?"
+                              wrapText="true"
+                              prefRowCount="3"
+                              styleClass="form-field"/>
+
+                    <!-- Image preview (hidden if none) -->
+                    <StackPane fx:id="composerImageWrap"
+                               visible="false" managed="false"
+                               style="-fx-background-color:#f1f5f9; -fx-padding:10; -fx-background-radius:12;">
+                        <ImageView fx:id="composerImagePreview"
+                                   fitWidth="360"
+                                   fitHeight="220"
+                                   preserveRatio="true"
+                                   smooth="true"/>
+                    </StackPane>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Button text="📷 Add Image"
+                                onAction="#handlePickImage"
+                                styleClass="btn-secondary"/>
+
+                        <Button fx:id="removeSelectedImageBtn"
+                                text="Remove"
+                                onAction="#handleRemoveSelectedImage"
+                                visible="false" managed="false"
+                                styleClass="btn-secondary"/>
+
+                        <Label fx:id="imageStatusLabel"
+                               text=""
+                               styleClass="muted-text"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Button fx:id="postBtn"
+                                text="Post"
+                                onAction="#handleCreatePost"
+                                styleClass="btn-primary"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Feed Controls -->
+                <HBox spacing="12" alignment="CENTER_LEFT" styleClass="filter-bar">
+                    <ComboBox fx:id="sortComboBox"
+                              prefWidth="180"
+                              promptText="Sort by"
+                              onAction="#handleSortChange"/>
+
+                    <TextField fx:id="searchField"
+                               promptText="Search posts..."
+                               prefWidth="280"
+                               onKeyReleased="#handleSearch"
+                               styleClass="form-field"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Button text="Refresh"
+                            onAction="#handleRefresh"
+                            styleClass="btn-secondary"/>
+                </HBox>
+
+                <!-- Posts Container -->
+                <VBox fx:id="postsContainer"
+                      spacing="18"
+                      styleClass="page-wrap"/>
+
+            </VBox>
+
+        </ScrollPane>
+    </center>
+
+
+</BorderPane>

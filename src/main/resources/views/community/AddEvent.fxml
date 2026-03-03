@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.EventAddController"
+            stylesheets="@../najahni-master.css">
+
+    <top>
+        <VBox spacing="0">
+            <HBox styleClass="module-nav-bar" alignment="CENTER_LEFT" spacing="12">
+                <Button text="← Retour" onAction="#handleGoBack" styleClass="module-back-btn"/>
+                <Label text="Communauté › Événements › Créer" styleClass="module-nav-title" HBox.hgrow="ALWAYS"/>
+                <Button text="🏠 Accueil" onAction="#handleGoHome" styleClass="module-home-btn"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header">
+                <Label text="Create Event" styleClass="header-title"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" styleClass="content-area">
+            <VBox spacing="15" prefWidth="450" styleClass="form-container">
+
+                <Label text="Event Details" styleClass="form-title"/>
+
+                <TextField fx:id="eventtitle" promptText="Event title" styleClass="form-field"/>
+                <DatePicker fx:id="eventdate" styleClass="form-field"/>
+                <Label fx:id="weatherPreviewLabel" styleClass="muted-text" text="Weather: (pick a date)"/>
+                <TextArea fx:id="eventdescription" promptText="Describe the event..." prefRowCount="4" styleClass="form-field"/>
+                <TextField fx:id="eventcapacity" promptText="Capacity" styleClass="form-field"/>
+
+                <Button fx:id="createevent" text="Create Event" onAction="#addEvent" styleClass="btn-success"/>
+
+                <Label fx:id="statusLabel" styleClass="form-message"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

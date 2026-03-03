@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+ fx:controller="controllers.apprentissage.FrontOfficeCoursController"
+ fitToWidth="true" fitToHeight="true"
+ hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+ style="-fx-background-color: transparent; -fx-padding: 0;">
+ <content>
+ <VBox spacing="20" style="-fx-background-color: #f5f6fa;">
+
+ <padding>
+ <Insets top="25" right="25" bottom="25" left="25"/>
+ </padding>
+
+ <!-- Page Header -->
+ <VBox spacing="5">
+ <Label text="Catalogue des Cours" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Label text="Explorez nos cours et développez vos compétences"
+ style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+
+ <!-- Search & Filter Bar -->
+ <HBox spacing="12" alignment="CENTER_LEFT"
+ style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 10;
+ -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 8, 0, 0, 2);">
+ <TextField fx:id="txtRecherche" promptText="Rechercher un cours..."
+ prefWidth="260"
+ style="-fx-background-radius: 20; -fx-padding: 8 14; -fx-border-radius: 20;
+ -fx-border-color: #dfe6e9; -fx-font-size: 13px;"/>
+ <ComboBox fx:id="cboNiveauFilter" promptText="Niveau" prefWidth="155"
+ style="-fx-background-radius: 8; -fx-font-size: 13px;"/>
+ <ComboBox fx:id="cboTypeFilter" promptText="Type" prefWidth="155"
+ style="-fx-background-radius: 8; -fx-font-size: 13px;"/>
+ <Button text="Filtrer" onAction="#filterCours" styleClass="btn-primary"/>
+ <Button text="Effacer" onAction="#clearFilter" styleClass="btn-secondary"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Label fx:id="lblResultCount" text="0 cours"
+ style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;"/>
+
+ </HBox>
+
+ <!-- Tab-style Level Filter Pills -->
+ <HBox spacing="10" alignment="CENTER_LEFT">
+ <Button fx:id="btnTous" text="Tous" onAction="#filterByLevel" styleClass="pill-active" userData="TOUS"/>
+ <Button fx:id="btnDebutant" text="Débutant" onAction="#filterByLevel" styleClass="pill-inactive" userData="DEBUTANT"/>
+ <Button fx:id="btnInter" text="Intermédiaire" onAction="#filterByLevel" styleClass="pill-inactive" userData="INTERMEDIAIRE"/>
+ <Button fx:id="btnAvance" text="Avancé" onAction="#filterByLevel" styleClass="pill-inactive" userData="AVANCE"/>
+ <Button fx:id="btnCertif" text="Certifiants" onAction="#filterByLevel" styleClass="pill-inactive" userData="CERTIFIANTS"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Button fx:id="btnExportPdf" text="Exporter PDF" onAction="#exportCompletedCoursesPdf"
+ style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 12px;
+ -fx-background-radius: 20; -fx-padding: 6 16; -fx-cursor: hand;
+ -fx-font-weight: bold;"/>
+ </HBox>
+
+ <!-- Cards Grid -->
+ <FlowPane fx:id="coursGrid"
+ hgap="18" vgap="18"
+ prefWrapLength="900"
+ style="-fx-background-color: transparent;"/>
+
+ <!-- Empty State -->
+ <VBox fx:id="emptyState" alignment="CENTER" spacing="12" minHeight="200"
+ style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 40;"
+ visible="false" managed="false">
+ <Label text="" style="-fx-font-size: 48px;"/>
+ <Label text="Aucun cours trouvé" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Label text="Essayez de modifier vos filtres de recherche."
+ style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+
+ </VBox>
+ </content>
+</ScrollPane>

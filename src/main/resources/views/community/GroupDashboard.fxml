@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="rootPane"
+            xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.GroupDashboardController"
+            prefWidth="1000"
+            prefHeight="700"
+            stylesheets="@../najahni-master.css">
+
+    <top>
+        <VBox spacing="0">
+            <HBox styleClass="module-nav-bar" alignment="CENTER_LEFT" spacing="12">
+                <Button text="← Retour" onAction="#handleGoBack" styleClass="module-back-btn"/>
+                <Label text="Communauté › Groupes › Dashboard" styleClass="module-nav-title" HBox.hgrow="ALWAYS"/>
+                <Button text="🏠 Accueil" onAction="#handleGoHome" styleClass="module-home-btn"/>
+            </HBox>
+            <VBox styleClass="header" spacing="10">
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label text="Group Dashboard" styleClass="header-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox styleClass="content-area" spacing="15">
+
+            <!-- Group info row -->
+            <HBox spacing="12" alignment="CENTER_LEFT" styleClass="page-wrap">
+                <VBox spacing="4">
+                    <Label fx:id="groupName" styleClass="section-title"/>
+                    <Label fx:id="groupDescription" styleClass="muted-text"/>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <HBox spacing="10">
+                    <Button fx:id="joinButton"
+                            text="Join Group"
+                            onAction="#joinGroup"
+                            visible="false"
+                            styleClass="btn-primary"/>
+
+                    <Button fx:id="leaveButton"
+                            text="Leave Group"
+                            onAction="#leaveGroup"
+                            visible="false"
+                            styleClass="btn-danger"/>
+                </HBox>
+            </HBox>
+
+            <!-- Main content -->
+            <HBox fx:id="mainContentBox" spacing="20" styleClass="page-wrap">
+
+                <!-- MEMBERS -->
+                <VBox spacing="12" prefWidth="300" minWidth="300" styleClass="card">
+                    <Label fx:id="memberCountLabel" text="Members" styleClass="card-title"/>
+
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                        <VBox fx:id="membersContainer" spacing="10" style="-fx-padding: 10 0 0 0;"/>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- THREADS -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="card">
+
+                    <HBox alignment="CENTER_LEFT">
+                        <Label fx:id="threadsLabel" text="Threads" styleClass="card-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Button fx:id="addThreadButton"
+                                text="+ Add Thread"
+                                onAction="#addThread"
+                                visible="false"
+                                styleClass="btn-primary"/>
+                    </HBox>
+
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                        <VBox fx:id="threadsContainer" spacing="12" style="-fx-padding: 10 0 0 0;"/>
+                    </ScrollPane>
+
+                </VBox>
+
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

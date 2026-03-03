@@ -562,27 +562,7 @@ public class ProfilController {
 
     @FXML
     private void handleBack() {
-        try {
-            FXMLLoader loader;
-            if (currentUser.getRole() == Type.ADMIN) {
-                loader = new FXMLLoader(getClass().getResource("/views/Dashboard.fxml"));
-            } else {
-                loader = new FXMLLoader(getClass().getResource("/views/Home.fxml"));
-            }
-            Parent root = loader.load();
-
-            if (currentUser.getRole() == Type.ADMIN) {
-                DashboardController ctrl = loader.getController();
-                ctrl.setCurrentUser(currentUser);
-            } else {
-                HomeController ctrl = loader.getController();
-                ctrl.setCurrentUser(currentUser);
-            }
-
-            SceneHelper.switchScene(SceneHelper.stageOf(firstnameField), root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        tools.NavigationHelper.goHome(firstnameField, currentUser);
     }
 
     private void showError(String message) {

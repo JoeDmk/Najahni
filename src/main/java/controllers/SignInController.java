@@ -97,21 +97,18 @@ public class SignInController {
         try {
             FXMLLoader loader;
             if (user.getRole() == Type.ADMIN) {
-                loader = new FXMLLoader(getClass().getResource("/views/Dashboard.fxml"));
-            } else {
-                loader = new FXMLLoader(getClass().getResource("/views/Home.fxml"));
-            }
-            Parent root = loader.load();
-
-            if (user.getRole() == Type.ADMIN) {
-                DashboardController ctrl = loader.getController();
+                loader = new FXMLLoader(getClass().getResource("/views/AdminBackOffice.fxml"));
+                Parent root = loader.load();
+                AdminBackOfficeController ctrl = loader.getController();
                 ctrl.setCurrentUser(user);
+                SceneHelper.switchScene(SceneHelper.stageOf(txtEmail), root);
             } else {
-                HomeController ctrl = loader.getController();
+                loader = new FXMLLoader(getClass().getResource("/views/FrontOffice.fxml"));
+                Parent root = loader.load();
+                FrontOfficeShellController ctrl = loader.getController();
                 ctrl.setCurrentUser(user);
+                SceneHelper.switchScene(SceneHelper.stageOf(txtEmail), root);
             }
-
-            SceneHelper.switchScene(SceneHelper.stageOf(txtEmail), root);
         } catch (Exception e) {
             System.err.println("Error redirecting: " + e.getMessage());
             e.printStackTrace();

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" 
+ fx:controller="controllers.apprentissage.FrontOfficeController"
+ stylesheets="@apprentissage.css, @../najahni-master.css"
+ styleClass="main-container">
+ 
+ <!-- ═══ SUB-NAVIGATION TABS ═══ -->
+ <top>
+ <HBox fx:id="navBar" styleClass="fo-sub-tabs" alignment="CENTER_LEFT" spacing="4">
+ <padding><Insets top="0" right="20" bottom="0" left="20"/></padding>
+ <Button fx:id="btnFOCours" text="Cours"
+ styleClass="fo-sub-tab" onAction="#showCours"/>
+ <Button fx:id="btnFOBadges" text="Badges"
+ styleClass="fo-sub-tab" onAction="#showBadges"/>
+ <Button fx:id="btnFOProgression" text="Progression"
+ styleClass="fo-sub-tab" onAction="#showProgression"/>
+ <Button fx:id="btnFOApprentissage" text="Apprentissage"
+ styleClass="fo-sub-tab" onAction="#showApprentissage"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Button fx:id="btnBackOffice" text="" visible="false" managed="false"/>
+ </HBox>
+ </top>
+ 
+ <!-- Zone de Contenu Principal -->
+ <center>
+ <StackPane fx:id="foContentArea" styleClass="content-area">
+ <!-- Le contenu sera chargé dynamiquement -->
+ </StackPane>
+ </center>
+ 
+</BorderPane>

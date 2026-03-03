@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.mentorat.MentorAvailabilityFormController" stylesheets="@../najahni-master.css">
+
+    <top>
+        <HBox styleClass="module-nav-bar" alignment="CENTER_LEFT" spacing="12">
+            <Button text="← Retour" onAction="#handleGoBack" styleClass="module-back-btn"/>
+            <Label text="Mentorat › Disponibilité › Formulaire" styleClass="module-nav-title" HBox.hgrow="ALWAYS"/>
+            <Button text="🏠 Accueil" onAction="#handleGoHome" styleClass="module-home-btn"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 30;">
+           <VBox styleClass="form-container" spacing="20">
+               <Label text="Availability Details" styleClass="header-label"/>
+               <GridPane hgap="20" vgap="15">
+                   <Label text="Mentor:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                   <ComboBox fx:id="cbMentor" prefWidth="300" promptText="Select Mentor" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                    <Label text="Date:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                   <javafx.scene.control.DatePicker fx:id="dpDate" prefWidth="300" promptText="Select Date" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                   <Label text="Start Time (HH:MM):" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                   <TextField fx:id="tfStartTime" promptText="09:00" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                   <Label text="End Time (HH:MM):" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                   <TextField fx:id="tfEndTime" promptText="17:00" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+               </GridPane>
+
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                   <Button text="Cancel" styleClass="button, button-secondary" fx:id="btnCancel"/>
+                   <Button text="Save" styleClass="button" fx:id="btnSave"/>
+               </HBox>
+           </VBox>
+        </VBox>
+    </center>
+</BorderPane>
+

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="front-scroll"
+            fx:controller="controllers.HomeContentController"
+            xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <VBox spacing="28" style="-fx-background-color: #f8fafc;">
+        <padding><Insets top="32" right="36" bottom="36" left="36"/></padding>
+
+        <!-- Enhanced Hero Banner -->
+        <VBox styleClass="fo-hero-banner-enhanced" spacing="10">
+            <Label fx:id="heroWelcome" text="Bienvenue !" styleClass="fo-hero-title"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Role :" style="-fx-text-fill: #64748b; -fx-font-size: 13px;"/>
+                <Label fx:id="roleLabel" text="" styleClass="front-badge, front-badge-blue"/>
+            </HBox>
+            <Label text="Votre tableau de bord personnel pour explorer et r&#233;ussir"
+                   styleClass="fo-hero-tagline"/>
+            <Label text="Explorez les modules de la plateforme Najahni et d&#233;veloppez vos comp&#233;tences"
+                   styleClass="fo-hero-subtitle"/>
+        </VBox>
+
+        <!-- Stats Row -->
+        <HBox spacing="18" alignment="CENTER">
+            <VBox styleClass="fo-stat-card, fo-stat-card-blue" alignment="CENTER" spacing="4"
+                  HBox.hgrow="ALWAYS">
+                <Label fx:id="followersCountLabel" text="0" styleClass="fo-stat-value, fo-stat-value-blue"/>
+                <Label text="ABONN&#201;S" styleClass="fo-stat-label"/>
+            </VBox>
+            <VBox styleClass="fo-stat-card, fo-stat-card-green" alignment="CENTER" spacing="4"
+                  HBox.hgrow="ALWAYS">
+                <Label fx:id="followingCountLabel" text="0" styleClass="fo-stat-value, fo-stat-value-green"/>
+                <Label text="ABONNEMENTS" styleClass="fo-stat-label"/>
+            </VBox>
+        </HBox>
+
+        <!-- Module Quick Access Cards -->
+        <VBox spacing="6">
+            <Label text="&#x1f680; Modules" styleClass="fo-section-header"/>
+            <Label text="Acc&#233;dez rapidement &#224; vos modules pr&#233;f&#233;r&#233;s" styleClass="fo-section-subtitle"/>
+        </VBox>
+
+        <HBox spacing="16" alignment="CENTER">
+            <VBox styleClass="home-module-card, home-module-card-community" alignment="CENTER" spacing="10"
+                  HBox.hgrow="ALWAYS">
+                <Label text="&#x1f3d8;" styleClass="home-module-icon"/>
+                <Label text="Communaut&#233;" styleClass="home-module-title"/>
+                <Label text="Forums &amp; &#201;v&#233;nements" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+            </VBox>
+            <VBox styleClass="home-module-card, home-module-card-invest" alignment="CENTER" spacing="10"
+                  HBox.hgrow="ALWAYS">
+                <Label text="&#x1f4b0;" styleClass="home-module-icon"/>
+                <Label text="Investissement" styleClass="home-module-title"/>
+                <Label text="Portefeuille &amp; Analyses" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+            </VBox>
+            <VBox styleClass="home-module-card, home-module-card-mentorat" alignment="CENTER" spacing="10"
+                  HBox.hgrow="ALWAYS">
+                <Label text="&#x1f393;" styleClass="home-module-icon"/>
+                <Label text="Mentorat" styleClass="home-module-title"/>
+                <Label text="Sessions &amp; Mentors" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+            </VBox>
+            <VBox styleClass="home-module-card, home-module-card-projets" alignment="CENTER" spacing="10"
+                  HBox.hgrow="ALWAYS">
+                <Label text="&#x1f4ca;" styleClass="home-module-icon"/>
+                <Label text="Projets" styleClass="home-module-title"/>
+                <Label text="Gestion de projets" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+            </VBox>
+            <VBox styleClass="home-module-card, home-module-card-apprentissage" alignment="CENTER" spacing="10"
+                  HBox.hgrow="ALWAYS">
+                <Label text="&#x1f4da;" styleClass="home-module-icon"/>
+                <Label text="Apprentissage" styleClass="home-module-title"/>
+                <Label text="Cours &amp; Badges" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Suggestions Section -->
+        <VBox spacing="14" style="-fx-padding: 10 0 0 0;">
+            <VBox spacing="4">
+                <Label text="&#x1f465; Suggestions pour vous" styleClass="fo-section-header"/>
+                <Label text="Des personnes que vous pourriez conna&#238;tre" styleClass="fo-section-subtitle"/>
+            </VBox>
+            <VBox fx:id="suggestionsBox" spacing="10">
+                <Label text="Chargement..." style="-fx-text-fill: #64748b;"/>
+            </VBox>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

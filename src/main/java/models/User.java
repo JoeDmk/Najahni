@@ -27,6 +27,7 @@ public class User {
     private boolean faceRegistered;
     private String preferredTheme;
     private String preferredLanguage;
+    private String preferredCurrency;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -163,6 +164,9 @@ public class User {
 
     public String getPreferredLanguage() { return preferredLanguage != null ? preferredLanguage : "fr"; }
     public void setPreferredLanguage(String preferredLanguage) { this.preferredLanguage = preferredLanguage; }
+
+    public String getPreferredCurrency() { return preferredCurrency != null ? preferredCurrency : "EUR"; }
+    public void setPreferredCurrency(String preferredCurrency) { this.preferredCurrency = preferredCurrency; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

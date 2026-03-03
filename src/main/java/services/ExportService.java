@@ -6,6 +6,7 @@ import tools.MyConnection;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -127,6 +128,74 @@ public class ExportService {
 
         document.close();
         return file;
+    }
+
+    /**
+     * Export users to PDF and return as byte array (for in-app preview).
+     */
+    public byte[] exportToPDFBytes(List<User> users) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        com.itextpdf.kernel.pdf.PdfWriter writer = new com.itextpdf.kernel.pdf.PdfWriter(baos);
+        com.itextpdf.kernel.pdf.PdfDocument pdfDoc = new com.itextpdf.kernel.pdf.PdfDocument(writer);
+        com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdfDoc,
+                com.itextpdf.kernel.geom.PageSize.A4.rotate());
+
+        // Title
+        document.add(new com.itextpdf.layout.element.Paragraph("Najahni - Liste des Utilisateurs")
+                .setFontSize(20)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5));
+
+        // Date
+        document.add(new com.itextpdf.layout.element.Paragraph(
+                "Exporté le " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")))
+                .setFontSize(10)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(20));
+
+        // Table
+        float[] columnWidths = {40, 80, 80, 150, 90, 80, 60, 60};
+        com.itextpdf.layout.element.Table table = new com.itextpdf.layout.element.Table(columnWidths);
+        table.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
+
+        // Header
+        String[] headers = {"ID", "Prénom", "Nom", "Email", "Téléphone", "Rôle", "Statut", "Vérifié"};
+        for (String header : headers) {
+            com.itextpdf.layout.element.Cell cell = new com.itextpdf.layout.element.Cell()
+                    .add(new com.itextpdf.layout.element.Paragraph(header).setBold().setFontSize(9))
+                    .setBackgroundColor(new com.itextpdf.kernel.colors.DeviceRgb(108, 99, 255))
+                    .setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE)
+                    .setPadding(6);
+            table.addHeaderCell(cell);
+        }
+
+        // Data
+        boolean alternate = false;
+        for (User user : users) {
+            com.itextpdf.kernel.colors.Color bgColor = alternate
+                    ? new com.itextpdf.kernel.colors.DeviceRgb(245, 245, 250)
+                    : com.itextpdf.kernel.colors.ColorConstants.WHITE;
+            addCell(table, String.valueOf(user.getId()), bgColor);
+            addCell(table, user.getFirstname(), bgColor);
+            addCell(table, user.getLastname(), bgColor);
+            addCell(table, user.getEmail(), bgColor);
+            addCell(table, user.getPhone() != null ? user.getPhone() : "-", bgColor);
+            addCell(table, user.getRole().name(), bgColor);
+            addCell(table, user.getIsActive() ? "Actif" : "Inactif", bgColor);
+            addCell(table, user.isVerified() ? "Oui" : "Non", bgColor);
+            alternate = !alternate;
+        }
+
+        document.add(table);
+
+        document.add(new com.itextpdf.layout.element.Paragraph("Total: " + users.size() + " utilisateurs")
+                .setFontSize(10)
+                .setMarginTop(15)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.RIGHT));
+
+        document.close();
+        return baos.toByteArray();
     }
 
     // ==================== Helper Methods ====================

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" 
+ fx:controller="controllers.apprentissage.ProgressionController"
+ fitToWidth="true" fitToHeight="true"
+ hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+ style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="15" style="-fx-background-color: transparent;">
+ 
+ <padding>
+ <Insets top="10" right="15" bottom="10" left="10"/>
+ </padding>
+ 
+ <!-- En-tête de Page -->
+ <HBox alignment="CENTER_LEFT" spacing="20">
+ <Label text="Gestion des Progressions" styleClass="section-title"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Button text="+ Nouvelle Progression" onAction="#showAddForm" styleClass="btn-primary"/>
+ <Button text="Actualiser" onAction="#refreshTable" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <Separator/>
+ 
+ <!-- Cartes de Résumé -->
+ <HBox spacing="15">
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblTotalProgressions" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+ <Label text="Total Progressions" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblEnCours" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+ <Label text="En Cours" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblCompletes" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+ <Label text="Complétés" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblTotalXP" text="0 XP" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #9b59b6;"/>
+ <Label text="XP Total" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ </HBox>
+ 
+ <!-- Contenu Principal - Vue Divisée -->
+ <HBox spacing="20" VBox.vgrow="ALWAYS" minHeight="450">
+ 
+ <!-- Tableau des Progressions -->
+ <VBox HBox.hgrow="ALWAYS" spacing="10">
+ <Label text="Liste des Progressions" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+ 
+ <!-- Barre de Recherche/Filtre -->
+ <HBox spacing="10" alignment="CENTER_LEFT">
+ <TextField fx:id="txtRecherche" promptText="Rechercher par cours ou utilisateur..." prefWidth="250"/>
+ <ComboBox fx:id="cboEtatFilter" promptText="État" prefWidth="150"/>
+ <Button text="Filtrer" onAction="#filterProgressions" styleClass="btn-primary"/>
+ <Button text="Effacer" onAction="#clearFilter" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <TableView fx:id="progressionTable" VBox.vgrow="ALWAYS" minHeight="380">
+ <columns>
+ <TableColumn fx:id="colId" text="ID" prefWidth="50" minWidth="40"/>
+ <TableColumn fx:id="colUtilisateur" text="Utilisateur" prefWidth="150" minWidth="120"/>
+ <TableColumn fx:id="colCours" text="Cours" prefWidth="200" minWidth="160"/>
+ <TableColumn fx:id="colPourcentage" text="Progression" prefWidth="160" minWidth="130"/>
+ <TableColumn fx:id="colXP" text="XP" prefWidth="80" minWidth="60"/>
+ <TableColumn fx:id="colNiveau" text="Niveau" prefWidth="70" minWidth="60"/>
+ <TableColumn fx:id="colEtat" text="État" prefWidth="120" minWidth="100"/>
+ <TableColumn fx:id="colActions" text="Actions" prefWidth="130" minWidth="120"/>
+ </columns>
+ <placeholder>
+ <Label text="Aucune progression trouvée. Créez une première progression !"/>
+ </placeholder>
+ </TableView>
+ </VBox>
+ 
+ <!-- Formulaire Progression -->
+ <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-padding: 0; -fx-background-color: transparent;">
+ <VBox fx:id="formContainer" styleClass="form-container" spacing="12" minWidth="320" maxWidth="320">
+ <Label fx:id="formTitle" text="+ Nouvelle Progression" styleClass="form-title"/>
+ 
+ <Separator/>
+ 
+ <!-- Champ ID Masqué -->
+ <TextField fx:id="txtId" visible="false" managed="false"/>
+ 
+ <!-- Utilisateur ID -->
+ <VBox spacing="5">
+ <Label text="ID Utilisateur *" styleClass="form-label"/>
+ <TextField fx:id="txtUserId" promptText="Ex: 1" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Cours -->
+ <VBox spacing="5">
+ <Label text="Cours *" styleClass="form-label"/>
+ <ComboBox fx:id="cboCours" promptText="Sélectionner un cours" maxWidth="Infinity" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Pourcentage -->
+ <VBox spacing="5">
+ <Label text="Pourcentage (%)" styleClass="form-label"/>
+ <TextField fx:id="txtPourcentage" promptText="0.0" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Points XP -->
+ <VBox spacing="5">
+ <Label text="Points XP" styleClass="form-label"/>
+ <TextField fx:id="txtPointsXP" promptText="0" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Niveau -->
+ <VBox spacing="5">
+ <Label text="Niveau" styleClass="form-label"/>
+ <TextField fx:id="txtNiveau" promptText="1" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- État -->
+ <VBox spacing="5">
+ <Label text="État *" styleClass="form-label"/>
+ <ComboBox fx:id="cboEtat" promptText="État" maxWidth="Infinity" styleClass="form-field"/>
+ </VBox>
+ 
+ <Region VBox.vgrow="ALWAYS"/>
+ 
+ <!-- Boutons du Formulaire -->
+ <HBox spacing="10" alignment="CENTER">
+ <Button fx:id="btnSave" text="Enregistrer" onAction="#saveProgression" styleClass="btn-success"/>
+ <Button fx:id="btnCancel" text="X Annuler" onAction="#cancelForm" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <Label fx:id="lblFormMessage" text="" styleClass="form-message"/>
+ </VBox>
+ </ScrollPane>
+ 
+ </HBox>
+ 
+</VBox>
+</content>
+</ScrollPane>

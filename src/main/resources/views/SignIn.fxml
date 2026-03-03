@@ -10,7 +10,7 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="controllers.SignInController"
             styleClass="login-background"
-            stylesheets="@najahni.css"
+            stylesheets="@najahni-master.css"
             prefWidth="900" prefHeight="600">
     <left>
         <VBox styleClass="login-branding" spacing="20" alignment="CENTER" minWidth="400" maxWidth="400">
@@ -101,7 +101,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.SignInController"
-            stylesheets="@modern.css"
+            stylesheets="@najahni-master.css"
             style="-fx-background-color: #F0F2F5;">
 
     <!-- Left Side - Premium Brand Panel -->

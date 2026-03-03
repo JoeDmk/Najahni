@@ -1,0 +1,241 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< tn.najahni:najahni >-------------------------
+[INFO] Building najahni 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ najahni ---
+[INFO] Deleting C:\Users\ilyes\Downloads\najahni\PIDEV-3A-JAVA-Gestion-Users\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ najahni ---
+[INFO] Copying 98 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ najahni ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 150 source files with javac [debug target 17] to target\classes
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING : 
+[INFO] -------------------------------------------------------------
+[WARNING] system modules path not set in conjunction with -source 17
+[INFO] 1 warning
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[19,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[19,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[20,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[20,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[21,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[22,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[19,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[20,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[21,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[22,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[23,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[24,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[25,1] class, interface, enum, or record expected
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.933 s
+[INFO] Finished at: 2026-02-28T03:20:47+01:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project najahni: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/ChatbotController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityFormController.java:[19,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[19,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorAvailabilityListController.java:[20,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[20,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[21,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestFormController.java:[22,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[1,1] illegal character: '\ufeff'
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[1,10] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[3,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[4,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[5,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[6,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[7,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[8,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[9,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[10,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[11,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[12,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[13,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[14,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[15,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[16,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[17,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[18,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[19,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[20,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[21,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[22,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[23,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[24,1] class, interface, enum, or record expected
+[ERROR] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/mentorat/MentorshipRequestListController.java:[25,1] class, interface, enum, or record expected
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

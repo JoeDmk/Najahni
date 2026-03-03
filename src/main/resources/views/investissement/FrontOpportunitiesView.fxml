@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.investissement.FrontOpportunitiesController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="front-scroll">
+<content>
+<VBox spacing="20" styleClass="front-page">
+    <padding>
+        <Insets top="15" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- ═══ HERO SECTION ═══ -->
+    <VBox styleClass="front-hero" alignment="CENTER" spacing="8">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+        <Label text="💰 Opportunités d'Investissement" styleClass="front-hero-title"/>
+        <Label fx:id="lblHeroSubtitle"
+               text="Découvrez les projets qui recherchent un financement et investissez dès maintenant."
+               styleClass="front-hero-subtitle" wrapText="true"/>
+    </VBox>
+
+    <!-- ═══ CREATE OPPORTUNITY FORM (Entrepreneur only, hidden by default) ═══ -->
+    <TitledPane fx:id="newOppPane" text="➕  Créer une Opportunité d'Investissement" expanded="false"
+                visible="false" managed="false" styleClass="front-form-pane">
+        <VBox spacing="18" style="-fx-padding: 24 28 28 28;">
+
+            <!-- Form header description -->
+            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="opportunity-form-section">
+                <Label text="💡" styleClass="risk-indicator-emoji"/>
+                <VBox spacing="2">
+                    <Label text="Publiez une opportunité pour attirer des investisseurs"
+                           styleClass="form-label"/>
+                    <Label text="Renseignez les détails de votre demande de financement ci-dessous."
+                           styleClass="empty-state-subtext"/>
+                </VBox>
+            </HBox>
+
+            <!-- Row 1: Project + Amount -->
+            <HBox spacing="18" alignment="CENTER_LEFT">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="🏢 Projet" styleClass="form-label"/>
+                    <ComboBox fx:id="cboProject" promptText="Sélectionnez un projet..."
+                              maxWidth="Infinity" prefHeight="40" styleClass="front-combo"/>
+                </VBox>
+                <VBox spacing="6" prefWidth="220">
+                    <Label text="💰 Montant cible (€)" styleClass="form-label"/>
+                    <TextField fx:id="txtTargetAmount" promptText="Ex: 50 000" prefHeight="40"
+                               styleClass="front-search-field"/>
+                </VBox>
+            </HBox>
+
+            <!-- Row 2: Description -->
+            <VBox spacing="6">
+                <Label text="📝 Description" styleClass="form-label"/>
+                <TextArea fx:id="txtOppDescription" promptText="Décrivez l'objectif de financement, l'utilisation des fonds, les étapes clés..."
+                          prefRowCount="4" wrapText="true" styleClass="form-field"/>
+            </VBox>
+
+            <!-- Row 3: Deadline -->
+            <HBox spacing="18" alignment="CENTER_LEFT">
+                <VBox spacing="6">
+                    <Label text="📅 Date limite" styleClass="form-label"/>
+                    <DatePicker fx:id="dpDeadline" prefHeight="40" prefWidth="220"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Error message -->
+            <Label fx:id="lblOppFormMsg" text="" styleClass="login-status"/>
+
+            <!-- Action buttons -->
+            <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 6 0 0 0;">
+                <Button text="✖  Annuler" onAction="#clearOppForm" styleClass="front-btn-secondary"/>
+                <Button text="✅  Créer l'Opportunité" onAction="#submitOpportunity" styleClass="front-btn-invest"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- ═══ STATS BAR ═══ -->
+    <HBox spacing="15" alignment="CENTER">
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblTotalOpps" text="0" styleClass="front-stat-value"/>
+            <Label text="Opportunités" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblOpenOpps" text="0" styleClass="front-stat-value-green"/>
+            <Label text="Ouvertes" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblTotalTarget" text="0 €" styleClass="front-stat-value-blue"/>
+            <Label text="Montant Total" styleClass="front-stat-label"/>
+        </VBox>
+        <VBox styleClass="front-stat" alignment="CENTER" spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblFundedOpps" text="0" styleClass="front-stat-value-purple"/>
+            <Label text="Financées" styleClass="front-stat-label"/>
+        </VBox>
+    </HBox>
+
+    <!-- ═══ FILTER BAR ═══ -->
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="front-filter-bar">
+        <padding>
+            <Insets top="10" right="15" bottom="10" left="15"/>
+        </padding>
+        <Label text="🔍" style="-fx-font-size: 16px;"/>
+        <TextField fx:id="txtSearch" promptText="Rechercher par projet ou description..." 
+                   HBox.hgrow="ALWAYS" styleClass="front-search-field"/>
+        <ComboBox fx:id="cboStatusFilter" promptText="Statut" prefWidth="140" styleClass="front-combo"/>
+        <Button text="Filtrer" onAction="#applyFilter" styleClass="front-btn-primary"/>
+        <Button text="Effacer" onAction="#clearFilter" styleClass="front-btn-secondary"/>
+    </HBox>
+
+    <!-- ═══ OPPORTUNITIES GRID (Cards) ═══ -->
+    <FlowPane fx:id="cardsContainer" hgap="18" vgap="18" alignment="CENTER" 
+              VBox.vgrow="ALWAYS" prefWrapLength="900"/>
+
+    <!-- ═══ EMPTY STATE ═══ -->
+    <VBox fx:id="emptyState" alignment="CENTER" spacing="10" visible="false" managed="false"
+          style="-fx-padding: 50;">
+        <Label text="📭" styleClass="empty-state-icon"/>
+        <Label text="Aucune opportunité disponible" styleClass="empty-state-text"/>
+        <Label text="Revenez plus tard ou modifiez vos filtres." styleClass="empty-state-subtext"/>
+    </VBox>
+
+</VBox>
+</content>
+</ScrollPane>

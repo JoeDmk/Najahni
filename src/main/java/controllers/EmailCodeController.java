@@ -321,28 +321,7 @@ public class EmailCodeController {
     // ==================== Navigation ====================
 
     private void redirectToHome() {
-        try {
-            FXMLLoader loader;
-            if (user.getRole() == Type.ADMIN) {
-                loader = new FXMLLoader(getClass().getResource("/views/Dashboard.fxml"));
-            } else {
-                loader = new FXMLLoader(getClass().getResource("/views/Home.fxml"));
-            }
-            Parent root = loader.load();
-
-            if (user.getRole() == Type.ADMIN) {
-                DashboardController ctrl = loader.getController();
-                ctrl.setCurrentUser(user);
-            } else {
-                HomeController ctrl = loader.getController();
-                ctrl.setCurrentUser(user);
-            }
-
-            SceneHelper.switchScene(SceneHelper.stageOf(codeField), root);
-        } catch (Exception e) {
-            System.err.println("Error redirecting to home: " + e.getMessage());
-            e.printStackTrace();
-        }
+        tools.NavigationHelper.goHome(codeField, user);
     }
 
     // ==================== UI Helpers ====================

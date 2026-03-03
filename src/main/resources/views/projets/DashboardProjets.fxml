@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.projets.DashboardController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="25" style="-fx-background-color: transparent;">
+    <padding>
+        <Insets top="20" right="25" bottom="20" left="25"/>
+    </padding>
+
+    <!-- ========== PAGE TITLE ========== -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="📁 Gestion des Projets" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Nouveau Projet"
+                onAction="#ouvrirAjout"
+                styleClass="btn-primary"
+                style="-fx-font-size: 14px; -fx-padding: 10 24;"
+                prefHeight="40"/>
+        <Button text="🔄 Rafraîchir"
+                onAction="#rafraichir"
+                styleClass="btn-secondary"
+                style="-fx-font-size: 14px; -fx-padding: 10 20;"
+                prefHeight="40"/>
+    </HBox>
+
+    <Separator style="-fx-padding: 0 0 5 0;"/>
+
+    <!-- ========== SEARCH & FILTER BAR ========== -->
+    <VBox styleClass="card" spacing="15">
+        <padding>
+            <Insets top="18" right="22" bottom="18" left="22"/>
+        </padding>
+
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Label text="🔍" style="-fx-font-size: 18px;"/>
+            <TextField fx:id="champRecherche"
+                       promptText="Rechercher par titre, description, secteur, statut..."
+                       styleClass="form-field"
+                       HBox.hgrow="ALWAYS"
+                       style="-fx-font-size: 13px;"/>
+
+            <Separator orientation="VERTICAL" style="-fx-padding: 0 5;"/>
+
+            <Label text="Trier par" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+            <ComboBox fx:id="comboTri"
+                      prefWidth="220"
+                      style="-fx-font-size: 13px;"/>
+        </HBox>
+    </VBox>
+
+    <!-- ========== DATA TABLE ========== -->
+    <VBox styleClass="card" spacing="0" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="0" right="0" bottom="0" left="0"/>
+        </padding>
+
+        <TableView fx:id="projetsTable" VBox.vgrow="ALWAYS"
+                   prefHeight="500" minHeight="350"
+                   style="-fx-background-radius: 12; -fx-border-radius: 12;">
+            <columns>
+                <TableColumn fx:id="colUserId" text="ID" prefWidth="60" minWidth="50"/>
+                <TableColumn fx:id="colTitre" text="Titre" prefWidth="160" minWidth="130"/>
+                <TableColumn fx:id="colDescription" text="Description" prefWidth="200" minWidth="160"/>
+                <TableColumn fx:id="colSecteur" text="Secteur" prefWidth="120" minWidth="100"/>
+                <TableColumn fx:id="colEtape" text="Étape" prefWidth="110" minWidth="90"/>
+                <TableColumn fx:id="colStatut" text="Statut" prefWidth="110" minWidth="90"/>
+                <TableColumn fx:id="colDate" text="Date" prefWidth="110" minWidth="90"/>
+                <TableColumn fx:id="colCouts" text="Coûts" prefWidth="100" minWidth="80"/>
+                <TableColumn fx:id="colRevenus" text="Revenus" prefWidth="110" minWidth="80"/>
+                <TableColumn fx:id="actions" text="Actions" prefWidth="280" minWidth="220" sortable="false"/>
+            </columns>
+            <placeholder>
+                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 40;">
+                    <Label text="📂" style="-fx-font-size: 48px;"/>
+                    <Label text="Aucun projet pour le moment"
+                           style="-fx-font-size: 16px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                    <Label text="Cliquez sur « Nouveau Projet » pour commencer"
+                           style="-fx-font-size: 13px; -fx-text-fill: #bdc3c7;"/>
+                </VBox>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+</VBox>
+</content>
+</ScrollPane>

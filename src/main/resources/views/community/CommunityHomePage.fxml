@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="rootPane"
+            xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.CommunityHomeController"
+            prefWidth="900" prefHeight="650"
+            stylesheets="@../najahni-master.css"
+            styleClass="home-root">
+
+    <!-- Sub-tabs: Posts | Groupes | Événements -->
+    <top>
+        <HBox styleClass="fo-sub-tabs" alignment="CENTER_LEFT">
+            <Button fx:id="tabPosts"  text="📝  Posts"        onAction="#goToPosts"  styleClass="fo-sub-tab"/>
+            <Button fx:id="tabGroups" text="👥  Groupes"      onAction="#goToGroups" styleClass="fo-sub-tab"/>
+            <Button fx:id="tabEvents" text="📅  Événements"   onAction="#goToEvents" styleClass="fo-sub-tab"/>
+        </HBox>
+    </top>
+
+    <!-- Content area — sub-pages loaded here -->
+    <center>
+        <StackPane fx:id="communityContent"/>
+    </center>
+
+</BorderPane>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.GroupAddController"
+            prefWidth="900" prefHeight="600"
+            stylesheets="@../najahni-master.css">
+
+    <top>
+        <VBox spacing="0">
+            <HBox styleClass="module-nav-bar" alignment="CENTER_LEFT" spacing="12">
+                <Button text="← Retour" onAction="#handleGoBack" styleClass="module-back-btn"/>
+                <Label text="Communauté › Groupes › Créer" styleClass="module-nav-title" HBox.hgrow="ALWAYS"/>
+                <Button text="🏠 Accueil" onAction="#handleGoHome" styleClass="module-home-btn"/>
+            </HBox>
+            <HBox spacing="20" styleClass="header">
+                <Label text="Create Group" styleClass="header-title"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" styleClass="content-area">
+            <VBox spacing="18" alignment="CENTER_LEFT" prefWidth="450" styleClass="form-container">
+
+                <Label text="Group Details" styleClass="form-title"/>
+
+                <TextField fx:id="groupname" promptText="Group Name" styleClass="form-field"/>
+                <TextField fx:id="groupdescription" promptText="Group Description" styleClass="form-field"/>
+
+                <CheckBox fx:id="privateCheckBox" text="Private Group"/>
+
+                <Label fx:id="statusLabel" styleClass="form-message form-message-error"/>
+
+                <Button fx:id="creategroup" text="Create Group" onAction="#addgroup" styleClass="btn-primary"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

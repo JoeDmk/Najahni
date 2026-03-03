@@ -188,12 +188,89 @@ public class HomeController {
     }
 
     @FXML
+    private void handleCommunity() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/community/CommunityHomePage.fxml"));
+            Parent root = loader.load();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleInvestissement() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/investissement/FrontOfficeView.fxml"));
+            Parent root = loader.load();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleMentorat() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/mentorat/MentorAvailabilityList.fxml"));
+            Parent root = loader.load();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleProjets() {
+        try {
+            models.User user = services.SessionService.getInstance().getCurrentUser();
+            String fxml = (user != null && user.getRole() == util.Type.ADMIN)
+                    ? "/views/projets/DashboardProjets.fxml"
+                    : "/views/projets/ClientDashboard.fxml";
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+            Parent root = loader.load();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleApprentissage() {
+        try {
+            models.User user = services.SessionService.getInstance().getCurrentUser();
+            String fxml = (user != null && user.getRole() == util.Type.ADMIN)
+                    ? "/views/apprentissage/ApprentissageView.fxml"
+                    : "/views/apprentissage/FrontOfficeView.fxml";
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+            Parent root = loader.load();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleLogout() {
         SessionManager.clearSession();
         SessionService.getInstance().logout();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/SignIn.fxml"));
             Parent root = loader.load();
+            SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** Clicking the logo reloads the home page. */
+    @FXML
+    private void handleHomeRefresh() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Home.fxml"));
+            Parent root = loader.load();
+            HomeController ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
             SceneHelper.switchScene(SceneHelper.stageOf(welcomeLabel), root);
         } catch (Exception e) {
             e.printStackTrace();

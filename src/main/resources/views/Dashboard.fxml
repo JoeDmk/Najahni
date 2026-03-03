@@ -8,7 +8,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="controllers.DashboardController"
-            stylesheets="@najahni.css"
+            stylesheets="@najahni-master.css"
             prefWidth="1100" prefHeight="700">
     <top>
         <HBox styleClass="dashboard-topbar" alignment="CENTER_LEFT" spacing="15">
@@ -98,39 +98,8 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.DashboardController"
-            stylesheets="@modern.css"
+            stylesheets="@najahni-master.css"
             style="-fx-background-color: #F0F2F5;">
-
-    <!-- TOP NAV -->
-    <top>
-        <HBox styleClass="top-nav" alignment="CENTER_LEFT" spacing="16">
-            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
-            <ImageView fitWidth="34" fitHeight="34" preserveRatio="true">
-                <image><Image url="@logo_najahni.png"/></image>
-            </ImageView>
-            <Label text="NAJAHNI" styleClass="nav-brand"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="welcomeLabel" text="Bienvenue, Admin" styleClass="nav-welcome"/>
-
-            <!-- New Feature Buttons -->
-            <Button text="🌙" onAction="#handleThemeToggle" styleClass="btn-nav" style="-fx-font-size: 15px;">
-                <tooltip><Tooltip text="Thème sombre/clair"/></tooltip>
-            </Button>
-            <StackPane>
-                <Button text="🔔" onAction="#handleNotifications" styleClass="btn-nav" style="-fx-font-size: 15px;">
-                    <tooltip><Tooltip text="Notifications"/></tooltip>
-                </Button>
-                <Label fx:id="notificationBadge" text="0" visible="false"
-                       style="-fx-background-color: #E17055; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-background-radius: 50; -fx-padding: 1 5; -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: center;"
-                       StackPane.alignment="TOP_RIGHT" mouseTransparent="true"/>
-            </StackPane>
-
-            <Button fx:id="btnToggleScreen" text="⛶" onAction="#handleToggleScreen" styleClass="btn-nav" style="-fx-font-size: 16px;"/>
-            <Button text="Mon Profil" onAction="#handleMyProfile" styleClass="btn-nav"/>
-            <Button text="Statistiques" onAction="#handleStats" styleClass="btn-nav-accent"/>
-            <Button text="Déconnexion" onAction="#handleLogout" styleClass="btn-nav-danger"/>
-        </HBox>
-    </top>
 
     <center>
         <VBox spacing="18">

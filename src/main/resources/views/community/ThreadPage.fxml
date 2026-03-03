@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.ThreadPageController"
+            prefWidth="900"
+            prefHeight="650"
+            stylesheets="@../najahni-master.css">
+
+    <top>
+        <VBox spacing="0">
+            <HBox styleClass="module-nav-bar" alignment="CENTER_LEFT" spacing="12">
+                <Button text="← Retour" onAction="#handleGoBack" styleClass="module-back-btn"/>
+                <Label text="Communauté › Groupe › Thread" styleClass="module-nav-title" HBox.hgrow="ALWAYS"/>
+                <Button text="🏠 Accueil" onAction="#handleGoHome" styleClass="module-home-btn"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header">
+                <Label text="Thread" styleClass="header-title"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox styleClass="content-area">
+
+            <ScrollPane fitToWidth="true"
+                        VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent;">
+                <VBox spacing="18" styleClass="page-wrap">
+
+                    <!-- THREAD CARD -->
+                    <VBox spacing="12" styleClass="card">
+                        <Label fx:id="threadTitle" styleClass="card-title"/>
+
+                        <Label fx:id="threadContent"
+                               wrapText="true"/>
+
+                        <!-- AI SUMMARY -->
+                        <VBox spacing="8" styleClass="ai-box">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="AI Summary" styleClass="section-title-sm"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="Generate"
+                                        onAction="#generateSummary"
+                                        styleClass="btn-primary"/>
+                            </HBox>
+
+                            <Label fx:id="summaryLabel"
+                                   text="(Click Generate to summarize this discussion)"
+                                   wrapText="true"
+                                   styleClass="muted-text"/>
+                        </VBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Button fx:id="editButton"
+                                    text="Edit"
+                                    onAction="#editThread"
+                                    styleClass="btn-primary"/>
+
+                            <Button fx:id="deleteButton"
+                                    text="Delete"
+                                    onAction="#deleteThread"
+                                    styleClass="btn-danger"/>
+
+                            <Region HBox.hgrow="ALWAYS"/>
+
+                            <Label fx:id="commentCountLabel" styleClass="muted-text"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- COMMENTS LIST -->
+                    <VBox fx:id="commentsContainer" spacing="12"/>
+
+                    <!-- ADD COMMENT -->
+                    <VBox spacing="10" styleClass="card">
+                        <Label text="Add a comment" styleClass="section-title-sm"/>
+
+                        <TextArea fx:id="commentField"
+                                  promptText="Write a comment..."
+                                  prefRowCount="3"
+                                  wrapText="true"
+                                  styleClass="form-field"/>
+
+                        <!-- ✅ OPTIONAL status label for reply generation -->
+                        <Label fx:id="replyStatusLabel"
+                               text=""
+                               wrapText="true"
+                               styleClass="muted-text"/>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="10">
+                            <!-- ✅ NEW BUTTON -->
+                            <Button text="✨ Suggest reply"
+                                    onAction="#onSuggestReply"
+                                    styleClass="btn-secondary"/>
+
+                            <Button fx:id="addCommentBtn"
+                                    text="Add Comment"
+                                    onAction="#addComment"
+                                    styleClass="btn-primary"/>
+                        </HBox>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>

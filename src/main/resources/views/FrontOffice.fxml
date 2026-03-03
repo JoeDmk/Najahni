@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:controller="controllers.FrontOfficeShellController"
+            stylesheets="@najahni-master.css"
+            styleClass="fo-shell-root"
+            xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- ═══ SLIM TOP BAR ═══ -->
+    <top>
+        <HBox styleClass="fo-shell-topbar" alignment="CENTER_LEFT" spacing="10">
+            <padding><Insets top="0" right="24" bottom="0" left="24"/></padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="8" onMouseClicked="#handleLogoClick"
+                  styleClass="fo-logo-container">
+                <ImageView fitWidth="28" fitHeight="28" preserveRatio="true">
+                    <image><Image url="@logo_najahni.png"/></image>
+                </ImageView>
+                <Label text="NAJAHNI" styleClass="fo-shell-brand" mouseTransparent="true"/>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Utility icons -->
+            <Button fx:id="btnTheme" text="&#x1f319;" onAction="#handleThemeToggle"
+                    styleClass="fo-shell-icon-btn" style="-fx-font-size: 14px;">
+                <tooltip><Tooltip text="Theme sombre/clair"/></tooltip>
+            </Button>
+            <StackPane>
+                <Button text="&#x1f514;" onAction="#handleNotifications"
+                        styleClass="fo-shell-icon-btn" style="-fx-font-size: 14px;">
+                    <tooltip><Tooltip text="Notifications"/></tooltip>
+                </Button>
+                <Label fx:id="notificationBadge" text="0" visible="false"
+                       styleClass="notification-badge"
+                       StackPane.alignment="TOP_RIGHT" mouseTransparent="true"/>
+            </StackPane>
+            <Button fx:id="btnToggleScreen" text="&#x26F6;" onAction="#handleToggleScreen"
+                    styleClass="fo-shell-icon-btn" style="-fx-font-size: 14px;"/>
+
+            <Separator orientation="VERTICAL" style="-fx-max-height: 20;"/>
+
+            <Label fx:id="welcomeLabel" text="Bienvenue"
+                   style="-fx-text-fill: #cbd5e1; -fx-font-size: 13px;"/>
+
+            <Button text="&#x1f6aa; Déconnexion" onAction="#handleLogout"
+                    styleClass="fo-shell-logout-btn"/>
+        </HBox>
+    </top>
+
+    <!-- ═══ LEFT SIDEBAR ═══ -->
+    <left>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    styleClass="fo-shell-sidebar-scroll" minWidth="220" prefWidth="220">
+            <VBox styleClass="fo-shell-sidebar" spacing="4">
+                <padding><Insets top="16" right="10" bottom="20" left="10"/></padding>
+
+                <!-- Home / Dashboard -->
+                <Button fx:id="btnHome" text="&#x1f3e0;  Accueil"
+                        onAction="#handleHome"
+                        styleClass="fo-sidebar-btn, fo-sidebar-btn-active" maxWidth="Infinity"/>
+
+                <Separator styleClass="fo-sidebar-separator"/>
+                <Label text="MODULES" styleClass="fo-sidebar-section"/>
+
+                <!-- Communauté -->
+                <Button fx:id="btnCommunity" text="&#x1f3d8;  Communauté"
+                        onAction="#handleCommunity"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <!-- Investissement -->
+                <Button fx:id="btnInvestissement" text="&#x1f4b0;  Investissement"
+                        onAction="#handleInvestissement"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <!-- Mentorat -->
+                <Button fx:id="btnMentorat" text="&#x1f393;  Mentorat"
+                        onAction="#handleMentorat"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <!-- Projets -->
+                <Button fx:id="btnProjets" text="&#x1f4ca;  Projets"
+                        onAction="#handleProjets"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <!-- Apprentissage -->
+                <Button fx:id="btnApprentissage" text="&#x1f4da;  Apprentissage"
+                        onAction="#handleApprentissage"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <Separator styleClass="fo-sidebar-separator"/>
+                <Label text="MON COMPTE" styleClass="fo-sidebar-section"/>
+
+                <Button fx:id="btnProfile" text="&#x1f464;  Mon Profil"
+                        onAction="#handleProfile"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <Button fx:id="btnNetwork" text="&#x1f465;  Réseau"
+                        onAction="#handleNetwork"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <Button fx:id="btnPassword" text="&#x1f512;  Mot de passe"
+                        onAction="#handleChangePassword"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <Button fx:id="btnHistory" text="&#x1f4cb;  Historique"
+                        onAction="#handleLoginHistory"
+                        styleClass="fo-sidebar-btn" maxWidth="Infinity"/>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Label text="NAJAHNI v2.0"
+                       style="-fx-text-fill: #64748b; -fx-font-size: 10px; -fx-padding: 10 0 0 8;"/>
+            </VBox>
+        </ScrollPane>
+    </left>
+
+    <!-- ═══ CENTER CONTENT AREA ═══ -->
+    <center>
+        <VBox>
+            <!-- Unified module header bar -->
+            <HBox fx:id="navBar" styleClass="fo-module-header" alignment="CENTER_LEFT" spacing="0"
+                  managed="false" visible="false">
+                <padding><Insets top="0" right="28" bottom="0" left="28"/></padding>
+                <!-- Back button -->
+                <Button fx:id="btnBack" text="&#x2190;" onAction="#handleBack"
+                        styleClass="fo-header-back-btn"/>
+                <!-- Module icon + title block -->
+                <VBox alignment="CENTER_LEFT" spacing="1">
+                    <padding><Insets left="16"/></padding>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label fx:id="moduleIcon" text="" styleClass="fo-module-icon"/>
+                        <Label fx:id="moduleTitle" text="" styleClass="fo-module-title"/>
+                    </HBox>
+                    <Label fx:id="breadcrumbLabel" text="Accueil" styleClass="fo-module-breadcrumb"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <!-- Module description -->
+                <Label fx:id="moduleDescription" text="" styleClass="fo-module-desc"/>
+            </HBox>
+            <!-- Main content area -->
+            <StackPane fx:id="contentArea" styleClass="fo-shell-content" VBox.vgrow="ALWAYS">
+                <!-- Default: Home content loaded here -->
+            </StackPane>
+        </VBox>
+    </center>
+
+</BorderPane>

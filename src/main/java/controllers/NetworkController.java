@@ -81,15 +81,7 @@ public class NetworkController {
 
     @FXML
     private void handleBack() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Home.fxml"));
-            Parent root = loader.load();
-            HomeController ctrl = loader.getController();
-            ctrl.setCurrentUser(currentUser);
-            SceneHelper.switchScene(SceneHelper.stageOf(searchField), root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        tools.NavigationHelper.goHome(searchField, currentUser);
     }
 
     /** Cell for users with follow/unfollow button */

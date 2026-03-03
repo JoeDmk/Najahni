@@ -295,6 +295,19 @@ public class DashboardController {
     }
 
     @FXML
+    private void handleBackToHub() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AdminBackOffice.fxml"));
+            Parent root = loader.load();
+            AdminBackOfficeController ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            SceneHelper.switchScene(SceneHelper.stageOf(usersTable), root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleMyProfile() {
         try {
             if (currentUser == null) {
@@ -355,18 +368,17 @@ public class DashboardController {
 
     @FXML
     private void handleExportPDF() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Exporter en PDF");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-        fileChooser.setInitialFileName("najahni_users.pdf");
-        File file = fileChooser.showSaveDialog(SceneHelper.stageOf(usersTable));
-        if (file != null) {
-            try {
-                ExportService.getInstance().exportToPDF(new java.util.ArrayList<>(usersList), file);
-                showAlert(Alert.AlertType.INFORMATION, "Export PDF réussi !\nFichier: " + file.getName());
-            } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur lors de l'export PDF: " + e.getMessage());
+        try {
+            byte[] pdfBytes = ExportService.getInstance().exportToPDFBytes(new java.util.ArrayList<>(usersList));
+            javafx.scene.Scene scene = usersTable.getScene();
+            if (scene != null) {
+                util.PDFPreviewPopup.showInScene(pdfBytes, "Liste des Utilisateurs",
+                        "najahni_users.pdf", scene);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Impossible d'afficher l'aperçu PDF.");
             }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur lors de l'export PDF: " + e.getMessage());
         }
     }
 

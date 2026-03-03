@@ -1,0 +1,149 @@
+package models.investissement;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import services.investissement.CurrencyService;
+
+/**
+ * Modèle représentant une Offre d'Investissement.
+ * 
+ * Une offre est proposée par un INVESTOR en réponse à une
+ * opportunité d'investissement ouverte. Elle contient un montant
+ * proposé (proposed_amount) et un statut de traitement.
+ * 
+ * Relation : investment_offer (N) ←→ (1) investment_opportunity
+ * Relation : investment_offer (N) ←→ (1) user (investor)
+ */
+public class InvestmentOffer {
+
+    private int id;
+    private BigDecimal proposedAmount;
+    private OfferStatus status;
+    private int investorId;
+    private int opportunityId;
+
+    // Payment tracking
+    private boolean paid;
+    private String paymentIntentId;
+
+    // Champs transients pour l'affichage (issus de JOIN SQL)
+    private String investorName;
+    private String opportunityDescription;
+    private String projectTitle;
+    private String projectSector;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime paidAt;
+
+    // ─── Constructeurs ───────────────────────────────────────
+
+    /** Constructeur par défaut. Statut initial = PENDING. */
+    public InvestmentOffer() {
+        this.status = OfferStatus.PENDING;
+    }
+
+    /** Constructeur sans id (pour création). */
+    public InvestmentOffer(BigDecimal proposedAmount, OfferStatus status,
+                           int investorId, int opportunityId) {
+        this.proposedAmount = proposedAmount;
+        this.status = status;
+        this.investorId = investorId;
+        this.opportunityId = opportunityId;
+    }
+
+    /** Constructeur complet (pour lecture depuis la BDD). */
+    public InvestmentOffer(int id, BigDecimal proposedAmount, OfferStatus status,
+                           int investorId, int opportunityId) {
+        this.id = id;
+        this.proposedAmount = proposedAmount;
+        this.status = status;
+        this.investorId = investorId;
+        this.opportunityId = opportunityId;
+    }
+
+    // ─── Getters & Setters ───────────────────────────────────
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public BigDecimal getProposedAmount() { return proposedAmount; }
+    public void setProposedAmount(BigDecimal proposedAmount) { this.proposedAmount = proposedAmount; }
+
+    public OfferStatus getStatus() { return status; }
+    public void setStatus(OfferStatus status) { this.status = status; }
+
+    public int getInvestorId() { return investorId; }
+    public void setInvestorId(int investorId) { this.investorId = investorId; }
+
+    public int getOpportunityId() { return opportunityId; }
+    public void setOpportunityId(int opportunityId) { this.opportunityId = opportunityId; }
+
+    public String getInvestorName() { return investorName; }
+    public void setInvestorName(String investorName) { this.investorName = investorName; }
+
+    public String getOpportunityDescription() { return opportunityDescription; }
+    public void setOpportunityDescription(String opportunityDescription) { this.opportunityDescription = opportunityDescription; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public boolean isPaid() { return paid; }
+    public void setPaid(boolean paid) { this.paid = paid; }
+
+    public String getPaymentIntentId() { return paymentIntentId; }
+    public void setPaymentIntentId(String paymentIntentId) { this.paymentIntentId = paymentIntentId; }
+
+    public String getProjectTitle() { return projectTitle; }
+    public void setProjectTitle(String projectTitle) { this.projectTitle = projectTitle; }
+
+    public String getProjectSector() { return projectSector; }
+    public void setProjectSector(String projectSector) { this.projectSector = projectSector; }
+
+    public LocalDateTime getPaidAt() { return paidAt; }
+    public void setPaidAt(LocalDateTime paidAt) { this.paidAt = paidAt; }
+
+    // ─── Méthodes utilitaires ────────────────────────────────
+
+    /** Retourne le montant formaté avec symbole monétaire (EUR par défaut). */
+    public String getFormattedAmount() {
+        if (proposedAmount == null) return "0,00 €";
+        return String.format("%,.2f €", proposedAmount);
+    }
+
+    /**
+     * Retourne le montant converti et formaté dans la devise spécifiée.
+     * Le montant en base (EUR) est converti via le CurrencyService.
+     *
+     * @param currency Devise cible (EUR, USD, TND, GBP, MAD)
+     * @param cs       Instance de CurrencyService pour la conversion
+     * @return Montant formaté avec symbole devise
+     */
+    public String getFormattedAmount(String currency, CurrencyService cs) {
+        if (proposedAmount == null) return CurrencyService.format(0, currency);
+        if (currency == null || currency.equals("EUR")) return getFormattedAmount();
+        double converted = cs.convert(proposedAmount.doubleValue(), "EUR", currency);
+        return CurrencyService.format(converted, currency);
+    }
+
+    @Override
+    public String toString() {
+        return getFormattedAmount() + " - " + status;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        InvestmentOffer that = (InvestmentOffer) obj;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+}

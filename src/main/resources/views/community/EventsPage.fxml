@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.EventsPageController"
+            prefWidth="900"
+            prefHeight="650"
+            stylesheets="@../najahni-master.css">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header">
+            <Label text="Events" styleClass="header-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="+ Create Event"
+                    onAction="#goToAddEvent"
+                    styleClass="btn-primary"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="content-area">
+
+        <VBox fx:id="eventsContainer"
+                  spacing="20"
+                  style="-fx-padding: 30;"/>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

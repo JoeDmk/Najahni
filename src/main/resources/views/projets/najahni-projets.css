@@ -1,0 +1,502 @@
+/* ============================================================
+   NAJAHNI - Global Stylesheet
+   Platform d'Entrepreneuriat et d'Investissement
+   ============================================================ */
+
+/* ---- Common ---- */
+.root {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ============================================================
+   LOGIN VIEW  (SignIn.fxml)
+   ============================================================ */
+
+.login-background {
+    -fx-background-color: #f5f6fa;
+}
+
+.login-branding {
+    -fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 12, 0, 3, 0);
+}
+
+.login-brand-title {
+    -fx-text-fill: white;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 6px;
+}
+
+.login-brand-subtitle {
+    -fx-text-fill: rgba(255,255,255,0.8);
+    -fx-font-size: 15px;
+}
+
+.login-form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);
+}
+
+.login-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.login-field {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 8;
+    -fx-padding: 10 14;
+    -fx-font-size: 14px;
+}
+.login-field:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.15), 8, 0, 0, 0);
+}
+
+.form-label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.btn-login {
+    -fx-background-color: linear-gradient(to right, #3498db, #2980b9);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.btn-login:hover {
+    -fx-background-color: linear-gradient(to right, #2980b9, #2471a3);
+    -fx-effect: dropshadow(gaussian, rgba(41,128,185,0.35), 10, 0, 0, 3);
+}
+.btn-login:pressed {
+    -fx-background-color: #2471a3;
+}
+
+.btn-demo {
+    -fx-background-color: transparent;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+.btn-demo:hover {
+    -fx-border-color: #95a5a6;
+    -fx-background-color: #f0f0f0;
+}
+
+.link-forgot {
+    -fx-text-fill: #3498db;
+    -fx-font-size: 12px;
+}
+.link-forgot:hover {
+    -fx-text-fill: #2980b9;
+}
+
+.link-signup {
+    -fx-text-fill: #3498db;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.link-signup:hover {
+    -fx-text-fill: #2980b9;
+}
+
+/* ============================================================
+   SIGNUP VIEW  (SignUp.fxml)
+   ============================================================ */
+
+.auth-container {
+    -fx-background-color: #f5f6fa;
+}
+
+.auth-branding-panel {
+    -fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e);
+    -fx-min-width: 380;
+    -fx-max-width: 420;
+}
+
+.auth-brand-title {
+    -fx-text-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}
+
+.auth-brand-subtitle {
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-font-size: 16px;
+}
+
+.auth-separator {
+    -fx-background-color: rgba(255,255,255,0.25);
+    -fx-pref-height: 1;
+}
+
+.auth-brand-description {
+    -fx-text-fill: rgba(255,255,255,0.7);
+    -fx-font-size: 13px;
+}
+
+.auth-check {
+    -fx-text-fill: #27ae60;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.auth-feature {
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-font-size: 13px;
+}
+
+.auth-form-scroll {
+    -fx-background-color: transparent;
+    -fx-background: #f5f6fa;
+}
+.auth-form-scroll .viewport {
+    -fx-background-color: transparent;
+}
+.auth-form-scroll .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.auth-form-panel {
+    -fx-background-color: #f5f6fa;
+}
+
+.auth-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.auth-subtitle {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 13px;
+}
+
+.auth-error {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 12px;
+    -fx-padding: 8 14;
+    -fx-background-color: #fdecea;
+    -fx-background-radius: 6;
+    -fx-border-color: #f5c6cb;
+    -fx-border-radius: 6;
+}
+
+.auth-label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.auth-input {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 8;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+}
+.auth-input:focused {
+    -fx-border-color: #3498db;
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.15), 8, 0, 0, 0);
+}
+
+.auth-combo {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 8;
+    -fx-font-size: 13px;
+}
+.auth-combo:focused {
+    -fx-border-color: #3498db;
+}
+
+.btn-auth-primary {
+    -fx-background-color: linear-gradient(to right, #3498db, #2980b9);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.btn-auth-primary:hover {
+    -fx-background-color: linear-gradient(to right, #2980b9, #2471a3);
+    -fx-effect: dropshadow(gaussian, rgba(41,128,185,0.35), 10, 0, 0, 3);
+}
+.btn-auth-primary:pressed {
+    -fx-background-color: #2471a3;
+}
+
+.auth-switch-text {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 13px;
+}
+
+.auth-switch-link {
+    -fx-text-fill: #3498db;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.auth-switch-link:hover {
+    -fx-text-fill: #2980b9;
+}
+
+/* ============================================================
+   DASHBOARD VIEW  (Dashboard.fxml)
+   ============================================================ */
+
+.dashboard-topbar {
+    -fx-background-color: linear-gradient(to right, #2c3e50, #34495e);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+.btn-topbar {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+    -fx-padding: 6 14;
+}
+.btn-topbar:hover {
+    -fx-background-color: rgba(255,255,255,0.22);
+}
+
+.btn-topbar-accent {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 14;
+}
+.btn-topbar-accent:hover {
+    -fx-background-color: #e67e22;
+}
+
+.btn-topbar-danger {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+    -fx-padding: 6 14;
+}
+.btn-topbar-danger:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Stat Cards */
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 18 25;
+    -fx-border-radius: 10;
+    -fx-border-width: 0 0 3 0;
+    -fx-min-width: 140;
+    -fx-pref-width: 160;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
+}
+
+.stat-label {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 12px;
+}
+
+.stat-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/* Search & Filter */
+.search-field {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 8;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+}
+.search-field:focused {
+    -fx-border-color: #3498db;
+}
+
+.filter-combo {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 8;
+    -fx-font-size: 13px;
+}
+
+/* Users Table */
+.users-table {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #ecf0f1;
+    -fx-border-radius: 8;
+}
+.users-table .column-header-background {
+    -fx-background-color: #f8f9fa;
+}
+.users-table .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 12px;
+}
+.users-table .table-row-cell {
+    -fx-border-color: transparent transparent #f0f0f0 transparent;
+}
+.users-table .table-row-cell:selected {
+    -fx-background-color: #ebf5fb;
+}
+
+/* Action Panel */
+.action-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #ecf0f1;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);
+}
+
+/* Dashboard Buttons */
+.btn-primary {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+}
+.btn-primary:hover {
+    -fx-background-color: #2980b9;
+}
+
+.btn-secondary {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #2c3e50;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-padding: 8 12;
+}
+.btn-secondary:hover {
+    -fx-background-color: #d5dbdb;
+}
+
+.btn-action {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+.btn-action:hover {
+    -fx-background-color: #2980b9;
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 6, 0, 0, 2);
+}
+
+.btn-action-warn {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+.btn-action-warn:hover {
+    -fx-background-color: #e67e22;
+    -fx-effect: dropshadow(gaussian, rgba(243,156,18,0.3), 6, 0, 0, 2);
+}
+
+.btn-action-danger {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+.btn-action-danger:hover {
+    -fx-background-color: #c0392b;
+    -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.3), 6, 0, 0, 2);
+}
+
+/* ============================================================
+   SHARED / UTILITY STYLES
+   ============================================================ */
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Form styles used across pages (AjouterUser, Profil, etc.) */
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
+}
+
+.form-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.form-field {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 8;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+}
+.form-field:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: white;
+}
+
+.form-message {
+    -fx-font-size: 12px;
+    -fx-padding: 8 14;
+    -fx-background-radius: 6;
+}
+
+.btn-success {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.btn-success:hover {
+    -fx-background-color: #229954;
+}
+
+.btn-link {
+    -fx-text-fill: #3498db;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.btn-link:hover {
+    -fx-text-fill: #2980b9;
+    -fx-underline: true;
+}

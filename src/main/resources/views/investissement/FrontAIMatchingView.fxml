@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="rootStack"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="controllers.investissement.FrontAIMatchingController"
+           stylesheets="@/views/investissement/investissement.css">
+
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+                style="-fx-background-color: transparent; -fx-background: #f8f9fa;">
+        <VBox spacing="0" alignment="TOP_CENTER" style="-fx-background-color: #f8f9fa;">
+
+            <!-- ── Hero section ── -->
+            <VBox alignment="CENTER" spacing="8"
+                  style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-padding: 30 20 30 20;">
+                <Label text="🤝 AI Matching Investisseur — Projet"
+                       style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold;"/>
+                <Label text="Analyse intelligente de compatibilité entre votre profil et les projets disponibles"
+                       style="-fx-text-fill: rgba(255,255,255,0.85); -fx-font-size: 12;"/>
+                <HBox alignment="CENTER" spacing="10">
+                    <padding><Insets top="8"/></padding>
+                    <Button text="🔄 Relancer l'analyse" styleClass="matching-btn-refresh" onAction="#refreshMatching"
+                            style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold;
+                                   -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;
+                                   -fx-border-color: rgba(255,255,255,0.4); -fx-border-radius: 20; -fx-border-width: 1;"/>
+                    <Label fx:id="lblStatus" text=""
+                           style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 11;"/>
+                </HBox>
+            </VBox>
+
+            <!-- ── AI Info banner ── -->
+            <HBox alignment="CENTER" spacing="8"
+                  style="-fx-background-color: #eef2ff; -fx-padding: 10 20;">
+                <Label text="🧠"
+                       style="-fx-font-size: 16;"/>
+                <Label text="Propulsé par Llama 3.2 — L'IA analyse votre profil, vos préférences et les projets pour identifier les meilleures correspondances"
+                       style="-fx-text-fill: #667eea; -fx-font-size: 11; -fx-wrap-text: true;"/>
+            </HBox>
+
+            <!-- ── Loading state ── -->
+            <VBox fx:id="loadingBox" alignment="CENTER" spacing="16"
+                  style="-fx-padding: 60 20;" visible="true" managed="true">
+                <ProgressIndicator prefWidth="50" prefHeight="50"
+                                   style="-fx-progress-color: #667eea;"/>
+                <Label text="🤖 L'IA analyse la compatibilité..."
+                       style="-fx-font-size: 14; -fx-text-fill: #667eea; -fx-font-weight: bold;"/>
+                <Label text="Cela peut prendre quelques secondes"
+                       style="-fx-font-size: 11; -fx-text-fill: #95a5a6;"/>
+            </VBox>
+
+            <!-- ── Results container ── -->
+            <VBox fx:id="resultsBox" spacing="16" alignment="TOP_CENTER"
+                  style="-fx-padding: 20;">
+            </VBox>
+
+            <!-- spacer -->
+            <Region prefHeight="40"/>
+        </VBox>
+    </ScrollPane>
+
+    <!-- matchingContainer for potential overlay usage -->
+    <VBox fx:id="matchingContainer" visible="false" managed="false"/>
+</StackPane>

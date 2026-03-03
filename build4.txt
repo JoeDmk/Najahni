@@ -1,0 +1,27 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< tn.najahni:najahni >-------------------------
+[INFO] Building najahni 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ najahni ---
+[INFO] Deleting C:\Users\ilyes\Downloads\najahni\PIDEV-3A-JAVA-Gestion-Users\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ najahni ---
+[INFO] Copying 90 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ najahni ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 131 source files with javac [debug target 17] to target\classes
+[WARNING] system modules path not set in conjunction with -source 17
+[INFO] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/services/GoogleOAuthService.java: Some input files use or override a deprecated API.
+[INFO] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/services/GoogleOAuthService.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/DashboardController.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/Users/ilyes/Downloads/najahni/PIDEV-3A-JAVA-Gestion-Users/src/main/java/controllers/DashboardController.java: Recompile with -Xlint:unchecked for details.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.264 s
+[INFO] Finished at: 2026-02-28T02:40:19+01:00
+[INFO] ------------------------------------------------------------------------

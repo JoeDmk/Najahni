@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+ fx:controller="controllers.apprentissage.FrontOfficeBadgesController"
+ fitToWidth="true" fitToHeight="true"
+ hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+ style="-fx-background-color: transparent; -fx-padding: 0;">
+ <content>
+ <VBox spacing="20" style="-fx-background-color: #f5f6fa;">
+ <padding>
+ <Insets top="25" right="25" bottom="25" left="25"/>
+ </padding>
+
+ <!-- Page Header -->
+ <VBox spacing="5">
+ <Label text="Mes Badges"
+ style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Label text="Débloquez des badges en progressant et en accumulant de l'XP"
+ style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+
+ <!-- XP Progress Bar Card -->
+ <HBox spacing="12" alignment="CENTER_LEFT"
+ style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 10;
+ -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 8, 0, 0, 2);">
+ <Label text="" style="-fx-font-size: 20px;"/>
+ <VBox spacing="4" HBox.hgrow="ALWAYS">
+ <HBox alignment="CENTER_LEFT">
+ <Label text="XP Total" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Label fx:id="lblXPValue" text="0 XP"
+ style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+ </HBox>
+ <ProgressBar fx:id="progressXP" progress="0" maxWidth="Infinity"
+ style="-fx-accent: #f39c12; -fx-pref-height: 8;"/>
+ <Label fx:id="lblNextBadge" text="Prochain badge : —"
+ style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+ </HBox>
+
+ <!-- Stats Row (same stat-card styleClass as courses) -->
+ <HBox spacing="15">
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblUnlockedCount" text="0"
+ style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+ <Label text="Débloqués" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblLockedCount" text="0"
+ style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+ <Label text="À débloquer" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblBonusXP" text="0 XP"
+ style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+ <Label text="XP Bonus gagné" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ </HBox>
+
+ <!-- Filter bar (matches courses search bar) -->
+ <HBox spacing="12" alignment="CENTER_LEFT"
+ style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 10;
+ -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 8, 0, 0, 2);">
+ <Button fx:id="pillTous" text="Tous" onAction="#filterBadges"
+ userData="TOUS" styleClass="pill-active"/>
+ <Button fx:id="pillDebloque" text="Débloqués" onAction="#filterBadges"
+ userData="DEBLOQUE" styleClass="pill-inactive"/>
+ <Button fx:id="pillVerrouille" text="Verrouillés" onAction="#filterBadges"
+ userData="VERROUILLE" styleClass="pill-inactive"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <ComboBox fx:id="cboRarete" promptText="Rareté" prefWidth="145"
+ style="-fx-background-radius: 8; -fx-font-size: 13px;"/>
+ <ComboBox fx:id="cboCategorie" promptText="Catégorie" prefWidth="155"
+ style="-fx-background-radius: 8; -fx-font-size: 13px;"/>
+ <Label fx:id="lblResultCount" text="0 badges"
+ style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;"/>
+ </HBox>
+
+ <!-- Badge Grid -->
+ <FlowPane fx:id="badgeGrid" hgap="18" vgap="18" prefWrapLength="900"
+ style="-fx-background-color: transparent;"/>
+
+ <!-- Empty State -->
+ <VBox fx:id="emptyState" alignment="CENTER" spacing="12" minHeight="200"
+ style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 40;"
+ visible="false" managed="false">
+ <Label text="" style="-fx-font-size: 48px;"/>
+ <Label text="Aucun badge trouvé"
+ style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Label text="Essayez de modifier vos filtres."
+ style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+
+ </VBox>
+ </content>
+</ScrollPane>

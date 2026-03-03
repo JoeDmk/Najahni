@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@../najahni-master.css" xmlns="http://javafx.com/javafx/17.0.14" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.mentorat.MentorshipRequestListController">
+
+    <top>
+        <HBox styleClass="module-nav-bar" alignment="CENTER_LEFT" spacing="12">
+            <Button text="← Retour" onAction="#handleGoBack" styleClass="module-back-btn"/>
+            <Label text="Mentorat › Demandes" styleClass="module-nav-title" HBox.hgrow="ALWAYS"/>
+            <Button text="🏠 Accueil" onAction="#handleGoHome" styleClass="module-home-btn"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" style="-fx-padding: 30;">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label styleClass="header-label" text="Mentorship Requests" />
+                <HBox alignment="CENTER_RIGHT" spacing="10" HBox.hgrow="ALWAYS">
+                    <TextField fx:id="searchField" promptText="Search request..." />
+                    <Button fx:id="btnSort" styleClass="button-secondary" text="Status: All" />
+                    <Button fx:id="btnAdd" styleClass="button" text="+ New Request" />
+                </HBox>
+            </HBox>
+
+            <ScrollPane fx:id="scrollPane" fitToWidth="true" styleClass="cards-scroll-pane" VBox.vgrow="ALWAYS">
+                <FlowPane fx:id="cardsContainer" hgap="20" vgap="20" style="-fx-padding: 10;" />
+            </ScrollPane>
+
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button fx:id="btnDelete" styleClass="button-secondary" text="Delete" />
+                <Button fx:id="btnEdit" styleClass="button-secondary" text="Edit" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
+

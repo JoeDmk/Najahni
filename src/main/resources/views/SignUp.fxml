@@ -9,7 +9,7 @@
 <HBox xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="controllers.SignUpController"
       styleClass="auth-container"
-      stylesheets="@najahni.css">
+      stylesheets="@najahni-master.css">
     <VBox styleClass="auth-branding-panel" alignment="CENTER" spacing="25" HBox.hgrow="ALWAYS">
         <padding><Insets top="40" right="50" bottom="40" left="50"/></padding>
         <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
@@ -96,7 +96,7 @@
 
 <HBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.SignUpController"
-      stylesheets="@modern.css"
+      stylesheets="@najahni-master.css"
       style="-fx-background-color: #F0F2F5;">
 
     <!-- Left Panel - Brand -->

@@ -1,0 +1,363 @@
+@startuml Diagramme de Séquence - Gestion des Utilisateurs (Najahni)
+
+title Diagramme de Séquence — Gestion des Utilisateurs\n(Projet Najahni - PIDEV 3A)\nArchitecture 3 couches
+
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 200
+skinparam responseMessageBelowArrow true
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam ParticipantPadding 8
+
+actor Utilisateur as U
+actor Admin as A
+
+box "Couche IHM" #E8F0FE
+    participant "SignUpController" as SUC
+    participant "SignInController" as SIC
+    participant "FaceLoginController" as FLC
+    participant "DashboardController" as DC
+    participant "ProfilController" as PC
+end box
+
+box "Couche Métier" #FFF3E0
+    participant "UserService" as US
+    participant "ValidationService" as VS
+    participant "SessionService" as SS
+    participant "EmailService" as ES
+    participant "FaceRecognitionService" as FRS
+    participant "LoginHistoryService" as LHS
+    participant "SuspiciousLoginService" as SLS
+    participant "ThemeService" as TS
+    participant "NotificationService" as NS
+    participant "ExportService" as EXS
+    participant "PasswordResetService" as PRS
+end box
+
+box "Couche Entité" #E8F5E9
+    participant "User" as ENT
+    participant "Base de données" as DB
+end box
+
+== 1. INSCRIPTION ==
+
+U -> SUC : Remplir formulaire\n(nom, email, tél, mdp, rôle)
+activate SUC
+SUC -> VS : validateFields(...)
+activate VS
+VS --> SUC : OK
+deactivate VS
+SUC -> ENT : new User(...)
+SUC -> US : addUser(user)
+activate US
+US -> US : hashPassword [BCrypt]
+US -> DB : INSERT INTO user
+DB --> US : OK
+US --> SUC
+deactivate US
+SUC -> ES : sendVerificationEmail(email, code)
+activate ES
+ES --> SUC : Email envoyé
+deactivate ES
+SUC --> U : Page vérification email
+deactivate SUC
+
+U -> SIC : Saisir code reçu
+activate SIC
+SIC -> US : verifyEmail(userId)
+activate US
+US -> DB : UPDATE user SET is_verified = true
+US --> SIC
+deactivate US
+SIC --> U : Compte vérifié ✓
+deactivate SIC
+
+== 2. CONNEXION — Mot de passe ==
+
+U -> SIC : Saisir email + mot de passe
+activate SIC
+SIC -> SIC : Vérifier CAPTCHA
+SIC -> SS : isAccountLocked(email)
+SS --> SIC : false
+SIC -> US : getUserbyEmail(email)
+activate US
+US -> DB : SELECT * FROM user
+US -> ENT : Instancier User
+US --> SIC : user
+deactivate US
+SIC -> US : verifyPassword(password, hash)
+US --> SIC : true
+SIC -> SS : setCurrentUser(user)
+SIC -> LHS : recordLogin(userId, "PASSWORD")
+LHS -> DB : INSERT INTO login_history
+SIC -> SLS : analyzeLogin(user)
+SLS --> SIC : riskScore
+SIC -> TS : loadPreference(theme)
+
+alt role == ADMIN
+    SIC --> A : → Dashboard
+else role != ADMIN
+    SIC --> U : → Home
+end
+deactivate SIC
+
+== 3. CONNEXION — Google OAuth ==
+
+U -> SIC : Clic "Google"
+activate SIC
+SIC -> SIC : WebView → Access Token\n→ Profil Google
+SIC -> US : findOrCreateGoogleUser(...)
+activate US
+US -> DB : SELECT / INSERT user
+US -> ENT : Instancier User
+US --> SIC : user
+deactivate US
+SIC -> SS : setCurrentUser(user)
+SIC -> LHS : recordLogin(userId, "GOOGLE")
+SIC --> U : → Home / Dashboard
+deactivate SIC
+
+== 4. CONNEXION — Face ID ==
+
+U -> SIC : Clic "Face ID"
+activate SIC
+SIC -> FLC : Ouvrir FaceLogin
+deactivate SIC
+activate FLC
+FLC -> FRS : loadGlobalModel()
+activate FRS
+FRS -> FRS : Charger faces + LBPH train
+FRS --> FLC : Modèle chargé
+deactivate FRS
+
+loop Boucle webcam
+    FLC -> FRS : detectFaces(frame)
+    FRS --> FLC : faces détectées
+
+    alt Face détectée
+        FLC -> FRS : recognizeFace(faceROI)
+        FRS --> FLC : userId + confidence
+
+        alt Match (conf < 80, 5× consécutifs)
+            FLC -> US : getUserbyID(userId)
+            US -> DB : SELECT user
+            US -> ENT : Instancier User
+            US --> FLC : user
+            FLC -> LHS : recordLogin("FACE_ID")
+            FLC -> SS : setCurrentUser(user)
+            FLC --> U : Connexion réussie ✓
+        end
+    end
+end
+deactivate FLC
+
+== 5. ENREGISTREMENT Face ID ==
+
+U -> PC : Clic "Enregistrer Face ID"
+activate PC
+PC -> FRS : deleteFaceData(userId)
+
+loop 20 échantillons
+    PC -> FRS : captureFace(camera)
+    FRS -> FRS : saveFaceSample(face_{i}.png)
+end
+
+PC -> FRS : trainUserModel(userId)
+activate FRS
+FRS -> FRS : LBPH train → save(model.yml)
+FRS --> PC : Modèle entraîné ✓
+deactivate FRS
+PC -> US : setFaceRegistered(userId, true)
+US -> DB : UPDATE user SET face_registered = true
+PC --> U : "Face ID enregistré ✓"
+deactivate PC
+
+== 6. CRUD ADMIN ==
+
+A -> DC : Afficher Dashboard
+activate DC
+DC -> US : getUsers() + countTotal()
+activate US
+US -> DB : SELECT * / COUNT(*)
+US -> ENT : List<User>
+US --> DC : données
+deactivate US
+DC --> A : Tableau + statistiques
+deactivate DC
+
+=== Ajouter ===
+A -> DC : Formulaire → Valider
+activate DC
+DC -> US : addUser(user)
+US -> DB : INSERT INTO user
+DC --> A : Ajouté ✓
+deactivate DC
+
+=== Modifier ===
+A -> DC : Sélectionner → Modifier → Sauvegarder
+activate DC
+DC -> US : updateUser(user)
+US -> DB : UPDATE user SET ...
+DC --> A : Modifié ✓
+deactivate DC
+
+=== Supprimer ===
+A -> DC : Sélectionner → Supprimer → Confirmer
+activate DC
+DC -> US : deleteUser(userId)
+US -> DB : DELETE FROM user
+DC --> A : Supprimé ✓
+deactivate DC
+
+=== Bannir / Débannir ===
+A -> DC : Ban / Unban
+activate DC
+DC -> US : banUser / unbanUser(userId)
+US -> DB : UPDATE user SET is_banned
+DC --> A : Mis à jour ✓
+deactivate DC
+
+== 7. RECHERCHE & FILTRAGE ==
+
+A -> DC : Recherche / Filtre rôle
+activate DC
+DC -> US : searchUsers(keyword)\nou getUsersByRole(role)
+activate US
+US -> DB : SELECT * FROM user WHERE ...
+US -> ENT : List<User>
+US --> DC : résultats
+deactivate US
+DC --> A : Tableau filtré
+deactivate DC
+
+== 8. MOT DE PASSE OUBLIÉ ==
+
+U -> SIC : Clic "Mot de passe oublié"
+activate SIC
+SIC -> US : getUserbyEmail(email)
+US -> DB : SELECT user
+US --> SIC : user
+SIC -> PRS : generateAndStoreCode(email)
+PRS --> SIC : code
+SIC -> ES : sendVerificationEmail(email, code)
+ES --> SIC : Email envoyé
+SIC --> U : Page saisie du code
+deactivate SIC
+
+U -> SIC : Code vérifié → nouveau mdp
+activate SIC
+SIC -> US : updatePassword(userId, newHash)
+activate US
+US -> DB : UPDATE user SET password
+US --> SIC
+deactivate US
+SIC --> U : Mot de passe modifié ✓
+deactivate SIC
+
+== 9. PROFIL ==
+
+U -> PC : Ouvrir Profil
+activate PC
+PC -> US : getUserbyID(userId)
+US -> DB : SELECT user
+US -> ENT : Instancier User
+US --> PC : user
+PC --> U : Afficher profil
+deactivate PC
+
+U -> PC : Modifier → Sauvegarder
+activate PC
+PC -> VS : Valider champs
+VS --> PC : OK
+PC -> US : updateUser(user)
+US -> DB : UPDATE user SET ...
+PC --> U : "Profil mis à jour ✓"
+deactivate PC
+
+== 10. EXPORT CSV / PDF ==
+
+A -> DC : Export CSV ou PDF
+activate DC
+DC -> US : getUsers()
+US -> DB : SELECT * FROM user
+US -> ENT : List<User>
+US --> DC : utilisateurs
+
+alt CSV
+    DC -> EXS : exportToCSV(users)
+else PDF
+    DC -> EXS : exportToPDF(users)
+end
+EXS --> DC : Export terminé ✓
+DC --> A : "Export réussi !"
+deactivate DC
+
+== 11. EMAIL BROADCAST ==
+
+A -> DC : Saisir sujet + message
+activate DC
+DC -> US : getAllEmails()
+US -> DB : SELECT email FROM user
+US --> DC : emails
+DC -> ES : sendBroadcastToAll(emails, sujet, msg)
+ES --> DC : Envoyé
+DC --> A : "Emails envoyés !"
+deactivate DC
+
+== 12. NOTIFICATIONS ==
+
+A -> DC : Clic 🔔
+activate DC
+DC -> NS : getNotifications(userId)
+NS -> DB : SELECT * FROM notifications
+NS --> DC : notifications
+DC --> A : Afficher notifications
+A -> DC : "Tout marquer lu"
+DC -> NS : markAllAsRead(userId)
+NS -> DB : UPDATE SET is_read = true
+deactivate DC
+
+== 13. THÈME SOMBRE / CLAIR ==
+
+U -> DC : Clic 🌙
+activate DC
+DC -> TS : toggleTheme(scene)
+DC -> US : saveThemePreference(userId, theme)
+US -> DB : UPDATE user SET preferred_theme
+DC --> U : Thème appliqué ✓
+deactivate DC
+
+== 14. STATISTIQUES ==
+
+A -> DC : Clic "Statistiques"
+activate DC
+DC -> US : countTotal / countActive\n/ countBanned / countByRole
+activate US
+US -> DB : SELECT COUNT(*) FROM user
+US --> DC : compteurs
+deactivate US
+DC --> A : Cartes + PieChart + BarChart
+deactivate DC
+
+== 15. HISTORIQUE DE CONNEXION ==
+
+A -> DC : Clic "Historique"
+activate DC
+DC -> LHS : getAllLoginHistory(100)
+activate LHS
+LHS -> DB : SELECT * FROM login_history\nORDER BY time DESC LIMIT 100
+LHS --> DC : List<LoginHistory>
+deactivate LHS
+DC --> A : Tableau historique
+deactivate DC
+
+== 16. DÉCONNEXION ==
+
+U -> DC : Clic "Déconnexion"
+activate DC
+DC -> SS : logout()
+SS -> SS : clearSession()
+DC --> U : → Page de connexion
+deactivate DC
+
+@enduml

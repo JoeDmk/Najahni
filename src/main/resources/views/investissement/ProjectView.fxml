@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controllers.investissement.ProjectController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="15" style="-fx-background-color: transparent;">
+    
+    <padding>
+        <Insets top="10" right="15" bottom="10" left="10"/>
+    </padding>
+    
+    <!-- En-tête de Page -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Gestion des Projets" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Nouveau Projet" onAction="#showAddForm" styleClass="btn-primary"/>
+        <Button text="🔄 Actualiser" onAction="#refreshTable" styleClass="btn-secondary"/>
+    </HBox>
+    
+    <Separator/>
+    
+    <!-- Contenu Principal - Vue Divisée -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS" minHeight="550">
+        
+        <!-- Tableau des Projets -->
+        <VBox HBox.hgrow="ALWAYS" spacing="10">
+            <Label text="Liste des Projets" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            
+            <!-- Barre de Recherche/Filtre -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="txtSearch" promptText="Rechercher par titre..." prefWidth="200"/>
+                <ComboBox fx:id="cboStatusFilter" promptText="Filtrer par statut" prefWidth="150"/>
+                <ComboBox fx:id="cboSectorFilter" promptText="Filtrer par secteur" prefWidth="150"/>
+                <Button text="Rechercher" onAction="#searchProjects" styleClass="btn-primary"/>
+                <Button text="Effacer" onAction="#clearSearch" styleClass="btn-secondary"/>
+            </HBox>
+            
+            <TableView fx:id="projectsTable" VBox.vgrow="ALWAYS" minHeight="450">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="60" minWidth="50"/>
+                    <TableColumn fx:id="colTitle" text="Titre" prefWidth="200" minWidth="180"/>
+                    <TableColumn fx:id="colSector" text="Secteur" prefWidth="140" minWidth="120"/>
+                    <TableColumn fx:id="colStatus" text="Statut" prefWidth="110" minWidth="100"/>
+                    <TableColumn fx:id="colEntrepreneur" text="Entrepreneur" prefWidth="180" minWidth="150"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="120" minWidth="100"/>
+                </columns>
+                <placeholder>
+                    <Label text="Aucun projet trouvé"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+        
+        <!-- Formulaire Projet -->
+        <VBox fx:id="formContainer" styleClass="form-container" spacing="15" minWidth="380" maxWidth="380">
+            <Label fx:id="formTitle" text="Ajouter un Projet" styleClass="form-title"/>
+            
+            <Separator/>
+            
+            <!-- Champ ID Masqué -->
+            <TextField fx:id="txtId" visible="false" managed="false"/>
+            
+            <!-- Champ Titre -->
+            <VBox spacing="5">
+                <Label text="Titre du Projet *" styleClass="form-label"/>
+                <TextField fx:id="txtTitle" promptText="Entrez le titre du projet" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Champ Secteur -->
+            <VBox spacing="5">
+                <Label text="Secteur *" styleClass="form-label"/>
+                <ComboBox fx:id="cboSector" promptText="Sélectionnez ou entrez un secteur" editable="true" maxWidth="Infinity" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Sélection du Statut -->
+            <VBox spacing="5">
+                <Label text="Statut *" styleClass="form-label"/>
+                <ComboBox fx:id="cboStatus" promptText="Sélectionnez un statut" maxWidth="Infinity" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Sélection de l'Entrepreneur -->
+            <VBox spacing="5">
+                <Label text="Entrepreneur *" styleClass="form-label"/>
+                <ComboBox fx:id="cboEntrepreneur" promptText="Sélectionnez un entrepreneur" maxWidth="Infinity" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Champ Description -->
+            <VBox spacing="5" VBox.vgrow="ALWAYS">
+                <Label text="Description" styleClass="form-label"/>
+                <TextArea fx:id="txtDescription" promptText="Entrez la description du projet..." 
+                          prefRowCount="4" wrapText="true" VBox.vgrow="ALWAYS" styleClass="form-field"/>
+            </VBox>
+            
+            <!-- Boutons du Formulaire -->
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="btnSave" text="💾 Enregistrer" onAction="#saveProject" styleClass="btn-success"/>
+                <Button fx:id="btnCancel" text="❌ Annuler" onAction="#cancelForm" styleClass="btn-secondary"/>
+            </HBox>
+            
+            <Label fx:id="lblFormMessage" text="" styleClass="form-message"/>
+        </VBox>
+        
+    </HBox>
+    
+</VBox>
+</content>
+</ScrollPane>

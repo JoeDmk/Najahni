@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.investissement.FrontRiskAnalysisController"
+            fitToWidth="true" fitToHeight="true"
+            hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="front-scroll"
+            style="-fx-background-color: transparent;">
+<content>
+<VBox spacing="25" styleClass="front-page">
+
+    <padding>
+        <Insets top="25" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- ═══════════════════════════════════════════════════
+         HERO BANNER — Titre principal
+         ═══════════════════════════════════════════════════ -->
+    <VBox spacing="8" alignment="CENTER" styleClass="fo-hero-banner">
+        <Label text="🧠 Intelligence Artificielle — Analyse de Risque"
+               styleClass="fo-hero-title"/>
+        <Label text="Aide à la décision financière basée sur les données économiques mondiales"
+               styleClass="fo-hero-subtitle"/>
+        <HBox spacing="15" alignment="CENTER">
+            <Label fx:id="lblFoStatus" text="⏳ Chargement..."
+                   styleClass="risk-status-loading"/>
+            <Label fx:id="lblFoUpdateTime" text=""
+                   styleClass="risk-status-time"/>
+            <ProgressIndicator fx:id="foLoadingIndicator" prefWidth="18" prefHeight="18"
+                               visible="false" style="-fx-progress-color: #e94560;"/>
+        </HBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         INDICATEURS ÉCONOMIQUES EN TEMPS RÉEL
+         ═══════════════════════════════════════════════════ -->
+    <Label text="📡 Données Économiques en Temps Réel"
+           styleClass="risk-section-title"/>
+
+    <HBox spacing="15">
+        <!-- EUR/USD -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              styleClass="risk-indicator-card, risk-indicator-info">
+            <Label text="💱 EUR / USD" styleClass="risk-indicator-label"/>
+            <Label fx:id="lblFoEurUsd" text="..."
+                   styleClass="risk-indicator-value, risk-value-blue"/>
+        </VBox>
+
+        <!-- EUR/TND -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              styleClass="risk-indicator-card, risk-indicator-purple">
+            <Label text="🏦 EUR / TND" styleClass="risk-indicator-label"/>
+            <Label fx:id="lblFoEurTnd" text="..."
+                   styleClass="risk-indicator-value, risk-value-purple"/>
+        </VBox>
+
+        <!-- PIB -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              styleClass="risk-indicator-card, risk-indicator-low">
+            <Label text="📊 PIB" styleClass="risk-indicator-label"/>
+            <Label fx:id="lblFoGdp" text="..."
+                   styleClass="risk-indicator-value, risk-value-green"/>
+        </VBox>
+
+        <!-- Inflation -->
+        <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS"
+              styleClass="risk-indicator-card, risk-indicator-high">
+            <Label text="📈 Inflation" styleClass="risk-indicator-label"/>
+            <Label fx:id="lblFoInflation" text="..."
+                   styleClass="risk-indicator-value, risk-value-red"/>
+        </VBox>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label fx:id="lblFoCountry" text=""
+               styleClass="risk-country-label"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CALCULATEUR INTERACTIF DE RISQUE
+         ═══════════════════════════════════════════════════ -->
+    <VBox spacing="15" styleClass="risk-calculator-card">
+
+        <Label text="🎯 Calculateur de Risque d'Investissement"
+               styleClass="risk-card-title"/>
+        <Label text="Simulez un investissement et obtenez une analyse IA instantanée basée sur les indicateurs économiques actuels."
+               wrapText="true"
+               styleClass="risk-card-description"/>
+
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <!-- Montant -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="💰 Montant d'investissement (€)"
+                       styleClass="form-label"/>
+                <TextField fx:id="txtAmount" promptText="Ex: 50000" prefHeight="42"
+                           styleClass="form-field"/>
+            </VBox>
+
+            <!-- Deadline -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="📅 Date limite"
+                       styleClass="form-label"/>
+                <DatePicker fx:id="dpDeadline" prefHeight="42" maxWidth="Infinity"
+                            styleClass="form-field"/>
+            </VBox>
+
+            <!-- Pays -->
+            <VBox spacing="5">
+                <Label text="🌍 Contexte économique"
+                       styleClass="form-label"/>
+                <ComboBox fx:id="cmbFoCountry" prefHeight="42" prefWidth="180"
+                          styleClass="front-combo"/>
+            </VBox>
+        </HBox>
+
+        <!-- Bouton Calculer -->
+        <Button fx:id="btnCalculate" text="🧠 Analyser le Risque"
+                onAction="#calculateRisk" maxWidth="Infinity" prefHeight="50"
+                styleClass="risk-btn-calculate"/>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         RÉSULTAT — Jauge + Détails
+         ═══════════════════════════════════════════════════ -->
+    <VBox fx:id="resultPanel" spacing="20" visible="false" managed="false">
+
+        <VBox spacing="15" styleClass="risk-result-card">
+
+            <Label text="📊 Résultat de l'Analyse IA"
+                   styleClass="risk-card-title"/>
+
+            <HBox spacing="30" alignment="CENTER">
+                <!-- Jauge -->
+                <VBox alignment="CENTER" spacing="10">
+                    <StackPane fx:id="foGaugeContainer" prefHeight="160" prefWidth="260"/>
+                    <Label fx:id="lblFoScore" text=""
+                           styleClass="risk-score-value-display"/>
+                    <Label fx:id="lblFoLevel" text=""
+                           styleClass="risk-level-label"/>
+                </VBox>
+
+                <!-- Breakdown -->
+                <VBox fx:id="detailsPanel" spacing="12" HBox.hgrow="ALWAYS">
+
+                    <Label text="Décomposition du Score"
+                           styleClass="risk-breakdown-title"/>
+
+                    <!-- Montant -->
+                    <VBox spacing="3">
+                        <Label fx:id="lblBreakdownAmount" text="Montant : —"
+                               styleClass="risk-breakdown-label"/>
+                        <ProgressBar fx:id="pbAmount" progress="0" prefWidth="300" prefHeight="14"
+                                     styleClass="risk-progress-blue"/>
+                    </VBox>
+
+                    <!-- Durée -->
+                    <VBox spacing="3">
+                        <Label fx:id="lblBreakdownDuration" text="Durée : —"
+                               styleClass="risk-breakdown-label"/>
+                        <ProgressBar fx:id="pbDuration" progress="0" prefWidth="300" prefHeight="14"
+                                     styleClass="risk-progress-orange"/>
+                    </VBox>
+
+                    <!-- Économique -->
+                    <VBox spacing="3">
+                        <Label fx:id="lblBreakdownEconomic" text="Économique : —"
+                               styleClass="risk-breakdown-label"/>
+                        <ProgressBar fx:id="pbEconomic" progress="0" prefWidth="300" prefHeight="14"
+                                     styleClass="risk-progress-red"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+
+            <!-- Recommandation -->
+            <VBox spacing="8" styleClass="risk-recommendation-box">
+                <Label text="💡 Recommandation IA"
+                       styleClass="risk-recommendation-title"/>
+                <Label fx:id="lblFoRecommendation" text=""
+                       wrapText="true"
+                       styleClass="risk-recommendation-text"/>
+            </VBox>
+        </VBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP OPPORTUNITÉS
+         ═══════════════════════════════════════════════════ -->
+    <VBox spacing="12" styleClass="risk-opportunities-card">
+
+        <Label text="🏆 Top Opportunités d'Investissement"
+               styleClass="risk-section-title"/>
+        <Label text="Opportunités récentes avec leur score de risque IA"
+               styleClass="risk-opportunities-subtitle"/>
+
+        <VBox fx:id="opportunitiesContainer" spacing="10">
+            <Label text="Chargement des opportunités..."
+                   styleClass="risk-loading-text"/>
+        </VBox>
+    </VBox>
+
+    <!-- Footer -->
+    <HBox alignment="CENTER" spacing="10" style="-fx-padding: 15 0;">
+        <Label text="🧠 Powered by NAJAHNI IA — Données : World Bank API &amp; Open Exchange Rates"
+               styleClass="risk-footer-text"/>
+    </HBox>
+
+</VBox>
+</content>
+</ScrollPane>

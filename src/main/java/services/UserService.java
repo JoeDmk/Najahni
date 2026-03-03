@@ -764,6 +764,11 @@ public class UserService implements UserInterface {
         } catch (SQLException ignored) {
             user.setPreferredLanguage("fr");
         }
+        try {
+            user.setPreferredCurrency(rs.getString("preferred_currency"));
+        } catch (SQLException ignored) {
+            user.setPreferredCurrency("EUR");
+        }
 
         Timestamp createdAt = rs.getTimestamp("created_at");
         user.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
@@ -795,6 +800,17 @@ public class UserService implements UserInterface {
             ps.executeUpdate();
         } catch (SQLException ex) {
             System.err.println("Error saving language preference: " + ex.getMessage());
+        }
+    }
+
+    public void saveCurrencyPreference(int userId, String currency) {
+        String sql = "UPDATE user SET preferred_currency = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, currency);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Error saving currency preference: " + ex.getMessage());
         }
     }
 

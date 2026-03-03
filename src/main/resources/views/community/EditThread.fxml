@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.EditThreadController"
+            prefWidth="900"
+            prefHeight="600"
+            stylesheets="@../najahni-master.css">
+
+    <top>
+        <VBox spacing="0">
+            <HBox styleClass="module-nav-bar" alignment="CENTER_LEFT" spacing="12">
+                <Button text="← Retour" onAction="#handleGoBack" styleClass="module-back-btn"/>
+                <Label text="Communauté › Groupe › Modifier Thread" styleClass="module-nav-title" HBox.hgrow="ALWAYS"/>
+                <Button text="🏠 Accueil" onAction="#handleGoHome" styleClass="module-home-btn"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header">
+                <Label text="Edit Thread" styleClass="header-title"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" styleClass="content-area">
+            <VBox prefWidth="520" spacing="16" alignment="CENTER_LEFT" styleClass="form-container">
+
+                <Label text="Update Details" styleClass="form-title"/>
+
+                <TextField fx:id="titleField"
+                           promptText="Thread Title"
+                           styleClass="form-field"/>
+
+                <TextArea fx:id="contentField"
+                          promptText="Thread Content"
+                          prefRowCount="6"
+                          wrapText="true"
+                          styleClass="form-field"/>
+
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button text="Cancel"
+                            onAction="#goBack"
+                            styleClass="btn-secondary"/>
+
+                    <Button text="Save Changes"
+                            onAction="#updateThread"
+                            styleClass="btn-primary"/>
+                </HBox>
+
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

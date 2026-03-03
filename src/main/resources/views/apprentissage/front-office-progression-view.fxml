@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+ fx:controller="controllers.apprentissage.FrontOfficeProgressionController"
+ fitToWidth="true" fitToHeight="true"
+ hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+ style="-fx-background-color: transparent; -fx-padding: 0;">
+ <content>
+ <VBox spacing="20" style="-fx-background-color: #f5f6fa;">
+ <padding>
+ <Insets top="25" right="25" bottom="25" left="25"/>
+ </padding>
+
+ <!-- Page Header -->
+ <VBox spacing="5">
+ <Label text="Ma Progression"
+ style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Label text="Suivez votre avancement dans vos cours et débloquez des badges"
+ style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+
+ <!-- XP + Level card -->
+ <HBox spacing="15">
+ <!-- XP Progress -->
+ <VBox spacing="10" HBox.hgrow="ALWAYS"
+ style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18;
+ -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 8, 0, 0, 2);">
+ <HBox alignment="CENTER_LEFT" spacing="10">
+ <Label text="" style="-fx-font-size: 22px;"/>
+ <VBox spacing="2" HBox.hgrow="ALWAYS">
+ <HBox alignment="CENTER_LEFT">
+ <Label fx:id="lblNiveauActuel"
+ text="Niveau 1"
+ style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Label fx:id="lblXPTotal"
+ text="0 XP"
+ style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+ </HBox>
+ <ProgressBar fx:id="progressNiveau" progress="0" maxWidth="Infinity"
+ style="-fx-accent: #f39c12; -fx-pref-height: 10;"/>
+ <Label fx:id="lblXPProchain" text="0 XP pour le prochain niveau"
+ style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+ </HBox>
+ </VBox>
+
+ <!-- Stats -->
+ <VBox styleClass="stat-card" alignment="CENTER" spacing="3" prefWidth="130">
+ <Label fx:id="lblCoursTotal" text="0"
+ style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+ <Label text="Cours suivis" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" alignment="CENTER" spacing="3" prefWidth="130">
+ <Label fx:id="lblCoursCompletes" text="0"
+ style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+ <Label text="Complétés" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" alignment="CENTER" spacing="3" prefWidth="130">
+ <Label fx:id="lblBadgesDebloquesCount" text="0"
+ style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #9b59b6;"/>
+ <Label text="Badges gagnés" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ </HBox>
+
+ <!-- Filter pills -->
+ <HBox spacing="10" alignment="CENTER_LEFT"
+ style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 10;
+ -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 8, 0, 0, 2);">
+ <Button fx:id="pillTous" text="Tous" onAction="#filterProgressions"
+ userData="TOUS" styleClass="pill-active"/>
+ <Button fx:id="pillEnCours" text="En cours" onAction="#filterProgressions"
+ userData="EN_COURS" styleClass="pill-inactive"/>
+ <Button fx:id="pillCompletes" text="Complétés" onAction="#filterProgressions"
+ userData="COMPLETE" styleClass="pill-inactive"/>
+ <Button fx:id="pillNonCommence" text="Non commencés" onAction="#filterProgressions"
+ userData="NON_COMMENCE" styleClass="pill-inactive"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Label fx:id="lblResultCount" text="0 cours"
+ style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;"/>
+ </HBox>
+
+ <!-- Progression Cards Grid -->
+ <FlowPane fx:id="progressionGrid" hgap="18" vgap="18" prefWrapLength="900"
+ style="-fx-background-color: transparent;"/>
+
+ <!-- Empty state -->
+ <VBox fx:id="emptyState" alignment="CENTER" spacing="12" minHeight="200"
+ style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 40;"
+ visible="false" managed="false">
+ <Label text="" style="-fx-font-size: 48px;"/>
+ <Label text="Aucune progression trouvée"
+ style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Label text="Commencez un cours pour suivre votre avancement ici."
+ style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+
+ <!-- Recently Unlocked Badges Section -->
+ <VBox spacing="12">
+ <HBox alignment="CENTER_LEFT" spacing="10">
+ <Label text="Badges récemment débloqués"
+ style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Button text="Voir tous les badges →" onAction="#goToBadges"
+ style="-fx-background-color: transparent; -fx-text-fill: #3498db;
+ -fx-cursor: hand; -fx-font-size: 12px;"/>
+ </HBox>
+ <FlowPane fx:id="badgesRecentsGrid" hgap="12" vgap="12" prefWrapLength="900"
+ style="-fx-background-color: transparent;"/>
+ <VBox fx:id="noBadgesState" alignment="CENTER" spacing="8" minHeight="80"
+ style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;"
+ visible="false" managed="false">
+ <Label text="Continuez à progresser pour débloquer vos premiers badges ! "
+ style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+ </VBox>
+
+ </VBox>
+ </content>
+</ScrollPane>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.community.GroupsPageController"
+            prefWidth="900"
+            prefHeight="650"
+            stylesheets="@../najahni-master.css">
+
+    <top>
+        <VBox styleClass="header" spacing="10">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Groups" styleClass="header-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="+ Create Group"
+                        onAction="#goToAddGroup"
+                        styleClass="btn-primary"/>
+            </HBox>
+
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <ComboBox fx:id="sortComboBox"
+                          prefWidth="180"
+                          promptText="Sort by"
+                          onAction="#handleSortChange"/>
+
+                <TextField fx:id="searchField"
+                           promptText="Search groups..."
+                           prefWidth="260"
+                           styleClass="form-field"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox styleClass="content-area">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox fx:id="groupsContainer"
+                      spacing="16"
+                      styleClass="page-wrap"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+</BorderPane>

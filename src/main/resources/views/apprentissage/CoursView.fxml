@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" 
+ fx:controller="controllers.apprentissage.CoursController"
+ fitToWidth="true" fitToHeight="true"
+ hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+ style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="15" style="-fx-background-color: transparent;">
+ 
+ <padding>
+ <Insets top="10" right="0" bottom="10" left="10"/>
+ </padding>
+ 
+ <!-- En-tête de Page -->
+ <HBox alignment="CENTER_LEFT" spacing="20">
+ <Label text="Gestion des Cours" styleClass="section-title"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Button text="+ Nouveau Cours" onAction="#showAddForm" styleClass="btn-primary"/>
+ <Button text="Actualiser" onAction="#refreshTable" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <Separator/>
+ 
+ <!-- Cartes de Résumé -->
+ <HBox spacing="15">
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblTotalCours" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+ <Label text="Total Cours" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblCoursDebutant" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+ <Label text="Cours Débutant" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblCoursCertifiants" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #9b59b6;"/>
+ <Label text="Certifiants" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblTotalXP" text="0 XP" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+ <Label text="XP Disponible" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ </HBox>
+ 
+ <!-- Contenu Principal - Vue Divisée -->
+ <HBox spacing="20" VBox.vgrow="ALWAYS" minHeight="450">
+ 
+ <!-- Tableau des Cours -->
+ <VBox HBox.hgrow="ALWAYS" spacing="10">
+ <Label text="Liste des Cours" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+ 
+ <!-- Barre de Recherche/Filtre -->
+ <HBox spacing="10" alignment="CENTER_LEFT">
+ <TextField fx:id="txtRecherche" promptText="Rechercher..." prefWidth="200"/>
+ <ComboBox fx:id="cboNiveauFilter" promptText="Niveau" prefWidth="150"/>
+ <ComboBox fx:id="cboTypeFilter" promptText="Type" prefWidth="150"/>
+ <Button text="Filtrer" onAction="#filterCours" styleClass="btn-primary"/>
+ <Button text="Effacer" onAction="#clearFilter" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <TableView fx:id="coursTable" VBox.vgrow="ALWAYS" minHeight="380">
+ <columns>
+ <TableColumn fx:id="colId" text="ID" prefWidth="45" minWidth="35" maxWidth="55"/>
+ <TableColumn fx:id="colTitre" text="Titre" minWidth="120"/>
+ <TableColumn fx:id="colType" text="Type" prefWidth="80" minWidth="60"/>
+ <TableColumn fx:id="colNiveau" text="Niveau" prefWidth="90" minWidth="70"/>
+ <TableColumn fx:id="colPointsXP" text="XP" prefWidth="60" minWidth="45"/>
+ <TableColumn fx:id="colCertification" text="Certifiant" prefWidth="70" minWidth="55"/>
+ <TableColumn fx:id="colActions" text="Actions" prefWidth="110" minWidth="100"/>
+ </columns>
+ <placeholder>
+ <Label text="Aucun cours trouvé. Créez votre premier cours !"/>
+ </placeholder>
+ </TableView>
+ </VBox>
+ 
+ <!-- Formulaire Cours -->
+ <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-padding: 0; -fx-background-color: transparent;">
+ <VBox fx:id="formContainer" styleClass="form-container" spacing="12" minWidth="320" maxWidth="320">
+ <Label fx:id="formTitle" text="+ Ajouter un Cours" styleClass="form-title"/>
+ 
+ <Separator/>
+ 
+ <!-- Champ ID Masqué -->
+ <TextField fx:id="txtId" visible="false" managed="false"/>
+ 
+ <!-- Titre -->
+ <VBox spacing="5">
+ <Label text="Titre *" styleClass="form-label"/>
+ <TextField fx:id="txtTitre" promptText="Ex: Introduction à JavaFX" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Description -->
+ <VBox spacing="5">
+ <Label text="Description" styleClass="form-label"/>
+ <TextArea fx:id="txtDescription" promptText="Description détaillée du cours..." 
+ prefRowCount="3" wrapText="true" styleClass="form-field"/>
+ </VBox>
+ <VBox fx:id="vboxDocumentField" spacing="5">
+ <Label text="Document lié" styleClass="form-label"/>
+ <HBox spacing="8" alignment="CENTER_LEFT">
+ <TextField fx:id="txtDocumentPath"
+ promptText="Aucun fichier sélectionné..."
+ styleClass="form-field"
+ editable="false"
+ HBox.hgrow="ALWAYS"/>
+ <Button text="Parcourir" onAction="#browseDocument" styleClass="btn-secondary"/>
+ <Button text="x" onAction="#clearDocument"
+ style="-fx-background-color: #e74c3c; -fx-text-fill: white;
+ -fx-background-radius: 6; -fx-padding: 5 8; -fx-cursor: hand;"/>
+ </HBox>
+ <Label fx:id="lblDocumentName" text=""
+ style="-fx-font-size: 11px; -fx-text-fill: #27ae60;"/>
+ </VBox>
+
+ <VBox fx:id="vboxVideoField" spacing="5" visible="false" managed="false">
+ <Label text="URL de la vidéo" styleClass="form-label"/>
+ <TextField fx:id="txtVideoUrl"
+ promptText="https://youtube.com/..."
+ styleClass="form-field"/>
+ <Label text="YouTube, Vimeo ou lien direct acceptés"
+ style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;"/>
+ </VBox>
+
+ <!-- Type et Niveau -->
+ <HBox spacing="10">
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Type *" styleClass="form-label"/>
+ <ComboBox fx:id="cboType" promptText="Type de cours" maxWidth="Infinity" styleClass="form-field"/>
+ </VBox>
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Niveau *" styleClass="form-label"/>
+ <ComboBox fx:id="cboNiveau" promptText="Niveau" maxWidth="Infinity" styleClass="form-field"/>
+ </VBox>
+ </HBox>
+ 
+ <!-- Points XP et Durée -->
+ <HBox spacing="10">
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Points XP" styleClass="form-label"/>
+ <TextField fx:id="txtPointsXP" promptText="100" styleClass="form-field"/>
+ </VBox>
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Durée (min)" styleClass="form-label"/>
+ <TextField fx:id="txtDuree" promptText="30" styleClass="form-field"/>
+ </VBox>
+ </HBox>
+
+
+ 
+ <!-- Certification -->
+ <HBox spacing="10" alignment="CENTER_LEFT">
+ <CheckBox fx:id="chkCertification" text="Cours certifiant "/>
+ </HBox>
+ 
+ <Region VBox.vgrow="ALWAYS"/>
+ 
+ <!-- Boutons du Formulaire -->
+ <HBox spacing="10" alignment="CENTER">
+ <Button fx:id="btnSave" text="Enregistrer" onAction="#saveCours" styleClass="btn-success"/>
+ <Button fx:id="btnCancel" text="X Annuler" onAction="#cancelForm" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <Label fx:id="lblFormMessage" text="" styleClass="form-message"/>
+ </VBox>
+ </ScrollPane>
+ 
+ </HBox>
+ 
+</VBox>
+</content>
+</ScrollPane>

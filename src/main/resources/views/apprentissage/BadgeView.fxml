@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" 
+ fx:controller="controllers.apprentissage.BadgeController"
+ fitToWidth="true" fitToHeight="true"
+ hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+ style="-fx-background-color: transparent; -fx-padding: 0;">
+<content>
+<VBox spacing="15" style="-fx-background-color: transparent;">
+ 
+ <padding>
+ <Insets top="10" right="0" bottom="10" left="10"/>
+ </padding>
+ 
+ <!-- En-tête de Page -->
+ <HBox alignment="CENTER_LEFT" spacing="20">
+ <Label text="Gestion des Badges" styleClass="section-title"/>
+ <Region HBox.hgrow="ALWAYS"/>
+ <Button text="+ Nouveau Badge" onAction="#showAddForm" styleClass="btn-primary"/>
+ <Button text="Actualiser" onAction="#refreshTable" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <Separator/>
+ 
+ <!-- Cartes de Résumé -->
+ <HBox spacing="15">
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblTotalBadges" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+ <Label text="Total Badges" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblBadgesCommun" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+ <Label text="Communs" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblBadgesRare" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #e67e22;"/>
+ <Label text="Rares" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="3">
+ <Label fx:id="lblBadgesLegendaire" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #9b59b6;"/>
+ <Label text="Épiques / Légendaires" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+ </VBox>
+ </HBox>
+ 
+ <!-- Contenu Principal - Vue Divisée -->
+ <HBox spacing="20" VBox.vgrow="ALWAYS" minHeight="450">
+ 
+ <!-- Tableau des Badges -->
+ <VBox HBox.hgrow="ALWAYS" spacing="10">
+ <Label text="Liste des Badges" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+ 
+ <!-- Barre de Recherche/Filtre -->
+ <HBox spacing="10" alignment="CENTER_LEFT">
+ <TextField fx:id="txtRecherche" promptText="Rechercher..." prefWidth="200"/>
+ <ComboBox fx:id="cboRareteFilter" promptText="Rareté" prefWidth="150"/>
+ <ComboBox fx:id="cboCategorieFilter" promptText="Catégorie" prefWidth="150"/>
+ <Button text="Filtrer" onAction="#filterBadges" styleClass="btn-primary"/>
+ <Button text="Effacer" onAction="#clearFilter" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <TableView fx:id="badgeTable" VBox.vgrow="ALWAYS" minHeight="380">
+ <columns>
+ <TableColumn fx:id="colId" text="ID" prefWidth="40" minWidth="35" maxWidth="50"/>
+ <TableColumn fx:id="colIcone" text="Icône" prefWidth="50" minWidth="45" maxWidth="60"/>
+ <TableColumn fx:id="colNom" text="Nom" prefWidth="140" minWidth="110"/>
+ <TableColumn fx:id="colRarete" text="Rareté" prefWidth="100" minWidth="85"/>
+ <TableColumn fx:id="colCategorie" text="Catégorie" prefWidth="100" minWidth="85"/>
+ <TableColumn fx:id="colCondition" text="Condition" prefWidth="160" minWidth="120"/>
+ <TableColumn fx:id="colActif" text="Actif" prefWidth="55" minWidth="45" maxWidth="65"/>
+ <TableColumn fx:id="colActions" text="Actions" prefWidth="120" minWidth="110"/>
+ </columns>
+ <placeholder>
+ <Label text="Aucun badge trouvé. Créez votre premier badge !"/>
+ </placeholder>
+ </TableView>
+ </VBox>
+ 
+ <!-- Formulaire Badge -->
+ <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-padding: 0; -fx-background-color: transparent;">
+ <VBox fx:id="formContainer" styleClass="form-container" spacing="12" minWidth="320" maxWidth="320">
+ <Label fx:id="formTitle" text="+ Ajouter un Badge" styleClass="form-title"/>
+ 
+ <Separator/>
+ 
+ <!-- Champ ID Masqué -->
+ <TextField fx:id="txtId" visible="false" managed="false"/>
+ 
+ <!-- Nom -->
+ <VBox spacing="5">
+ <Label text="Nom *" styleClass="form-label"/>
+ <TextField fx:id="txtNom" promptText="Ex: Premier Pas" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Description -->
+ <VBox spacing="5">
+ <Label text="Description" styleClass="form-label"/>
+ <TextArea fx:id="txtDescription" promptText="Description du badge..." 
+ prefRowCount="3" wrapText="true" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Icône et Catégorie -->
+ <HBox spacing="10">
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Icône" styleClass="form-label"/>
+ <TextField fx:id="txtIcone" promptText="" styleClass="form-field"/>
+ </VBox>
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Catégorie" styleClass="form-label"/>
+ <ComboBox fx:id="cboCategorie" promptText="Catégorie" maxWidth="Infinity" styleClass="form-field"/>
+ </VBox>
+ </HBox>
+ 
+ <!-- Rareté -->
+ <VBox spacing="5">
+ <Label text="Rareté *" styleClass="form-label"/>
+ <ComboBox fx:id="cboRarete" promptText="Rareté du badge" maxWidth="Infinity" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Condition d'obtention -->
+ <VBox spacing="5">
+ <Label text="Condition d'obtention *" styleClass="form-label"/>
+ <TextArea fx:id="txtCondition" promptText="Ex: Compléter 5 cours" 
+ prefRowCount="2" wrapText="true" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Points Requis et Cours Requis -->
+ <HBox spacing="10">
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Points Requis" styleClass="form-label"/>
+ <TextField fx:id="txtPointsRequis" promptText="0" styleClass="form-field"/>
+ </VBox>
+ <VBox spacing="5" HBox.hgrow="ALWAYS">
+ <Label text="Cours Requis" styleClass="form-label"/>
+ <TextField fx:id="txtCoursRequis" promptText="0" styleClass="form-field"/>
+ </VBox>
+ </HBox>
+ 
+ <!-- Niveau Requis -->
+ <VBox spacing="5">
+ <Label text="Niveau Requis" styleClass="form-label"/>
+ <TextField fx:id="txtNiveauRequis" promptText="0" styleClass="form-field"/>
+ </VBox>
+ 
+ <!-- Actif -->
+ <HBox spacing="10" alignment="CENTER_LEFT">
+ <CheckBox fx:id="chkActif" text="Badge actif "/>
+ </HBox>
+ 
+ <Region VBox.vgrow="ALWAYS"/>
+ 
+ <!-- Boutons du Formulaire -->
+ <HBox spacing="10" alignment="CENTER">
+ <Button fx:id="btnSave" text="Enregistrer" onAction="#saveBadge" styleClass="btn-success"/>
+ <Button fx:id="btnCancel" text="X Annuler" onAction="#cancelForm" styleClass="btn-secondary"/>
+ </HBox>
+ 
+ <Label fx:id="lblFormMessage" text="" styleClass="form-message"/>
+ </VBox>
+ </ScrollPane>
+ 
+ </HBox>
+ 
+</VBox>
+</content>
+</ScrollPane>

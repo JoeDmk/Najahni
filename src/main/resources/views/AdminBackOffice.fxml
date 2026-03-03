@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:controller="controllers.AdminBackOfficeController"
+            stylesheets="@najahni-master.css"
+            styleClass="main-container"
+            xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- HEADER TOP -->
+    <top>
+        <VBox styleClass="header">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <ImageView fitWidth="36" fitHeight="36" preserveRatio="true">
+                    <image><Image url="@logo_najahni.png"/></image>
+                </ImageView>
+                <VBox spacing="2">
+                    <Label text="NAJAHNI" styleClass="header-title"
+                           style="-fx-font-size: 22px;"/>
+                    <Label text="Panneau d'Administration" styleClass="header-subtitle"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="welcomeLabel" text="Admin"
+                       style="-fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <left>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    styleClass="nav-scroll-pane" minWidth="240" prefWidth="240">
+            <VBox styleClass="nav-menu" spacing="5" minWidth="220">
+                <padding>
+                    <Insets top="20" right="10" bottom="20" left="10"/>
+                </padding>
+
+                <Button fx:id="btnDashboard" text="&#x1f4ca; Tableau de bord"
+                        onAction="#showDashboard"
+                        styleClass="nav-button, nav-button-active" maxWidth="Infinity"/>
+
+                <Separator style="-fx-background-color: rgba(255,255,255,0.1);"/>
+
+                <Label text="MODULES" styleClass="nav-section-label"/>
+
+                <Button fx:id="btnUsers" text="&#x1f465; Gestion Utilisateurs"
+                        onAction="#handleUsersBO"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+
+                <!-- Communaut&#xe9; (collapsible) -->
+                <Button fx:id="btnCommunity" text="&#x1f3d8; Communaut&#xe9;  &#x25b8;"
+                        onAction="#toggleCommunity"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                <VBox fx:id="subMenuCommunity" managed="false" visible="false" spacing="2">
+                    <Button fx:id="btnCommunityGroups" text="    &#x1f465; Groupes"
+                            onAction="#handleCommunityGroups"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnCommunityPosts" text="    &#x1f4dd; Publications"
+                            onAction="#handleCommunityPosts"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnCommunityEvents" text="    &#x1f4c5; &#xc9;v&#xe9;nements"
+                            onAction="#handleCommunityEvents"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                </VBox>
+
+                <!-- Investissement (collapsible) -->
+                <Button fx:id="btnInvestment" text="&#x1f4b0; Investissement  &#x25b8;"
+                        onAction="#toggleInvestment"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                <VBox fx:id="subMenuInvestment" managed="false" visible="false" spacing="2">
+                    <Button fx:id="btnInvestDashboard" text="    &#x1f4ca; Dashboard"
+                            onAction="#handleInvestDashboard"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnInvestOpportunities" text="    &#x1f4a1; Opportunit&#xe9;s"
+                            onAction="#handleInvestOpportunities"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnInvestOffers" text="    &#x1f4cb; Offres"
+                            onAction="#handleInvestOffers"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnInvestProjects" text="    &#x1f4c1; Projets"
+                            onAction="#handleInvestProjects"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnInvestEconomic" text="    &#x1f4c8; &#xc9;conomique"
+                            onAction="#handleInvestEconomic"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                </VBox>
+
+                <!-- Mentorat (collapsible) -->
+                <Button fx:id="btnMentorat" text="&#x1f393; Mentorat  &#x25b8;"
+                        onAction="#toggleMentorat"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                <VBox fx:id="subMenuMentorat" managed="false" visible="false" spacing="2">
+                    <Button fx:id="btnMentoratRequests" text="    &#x1f4e9; Demandes"
+                            onAction="#handleMentoratRequests"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnMentoratSessions" text="    &#x1f4c5; Sessions"
+                            onAction="#handleMentoratSessions"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnMentoratAvailability" text="    &#x1f552; Disponibilit&#xe9;s"
+                            onAction="#handleMentoratAvailability"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnMentoratChatbot" text="    &#x1f916; Chatbot"
+                            onAction="#handleMentoratChatbot"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                </VBox>
+
+                <!-- Projets (collapsible) -->
+                <Button fx:id="btnProjets" text="&#x1f4c1; Projets  &#x25b8;"
+                        onAction="#toggleProjets"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                <VBox fx:id="subMenuProjets" managed="false" visible="false" spacing="2">
+                    <Button fx:id="btnProjetsDashboard" text="    &#x1f4ca; Dashboard"
+                            onAction="#handleProjetsDashboard"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnProjetsClient" text="    &#x1f464; Espace Client"
+                            onAction="#handleProjetsClient"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                </VBox>
+
+                <!-- Apprentissage (collapsible) -->
+                <Button fx:id="btnApprentissage" text="&#x1f4da; Apprentissage  &#x25b8;"
+                        onAction="#toggleApprentissage"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+                <VBox fx:id="subMenuApprentissage" managed="false" visible="false" spacing="2">
+                    <Button fx:id="btnAppDashboard" text="    &#x1f4ca; Dashboard"
+                            onAction="#handleAppDashboard"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnAppCours" text="    &#x1f4da; Cours"
+                            onAction="#handleAppCours"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnAppBadges" text="    &#x1f3c6; Badges"
+                            onAction="#handleAppBadges"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                    <Button fx:id="btnAppProgress" text="    &#x1f4c8; Progression"
+                            onAction="#handleAppProgress"
+                            styleClass="nav-button" maxWidth="Infinity"
+                            style="-fx-font-size: 12px; -fx-padding: 6 10 6 30;"/>
+                </VBox>
+
+                <Separator style="-fx-background-color: rgba(255,255,255,0.1);"/>
+
+                <Label text="OUTILS" styleClass="nav-section-label"/>
+
+                <Button fx:id="btnStats" text="&#x1f4c8; Statistiques"
+                        onAction="#handleStats"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+
+                <Button fx:id="btnBroadcast" text="&#x1f4e7; Email Broadcast"
+                        onAction="#handleBroadcast"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+
+                <Button fx:id="btnHistory" text="&#x1f4cb; Historique Connexions"
+                        onAction="#handleLoginHistory"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+
+                <Button fx:id="btnProfile" text="&#x1f464; Mon Profil"
+                        onAction="#handleMyProfile"
+                        styleClass="nav-button" maxWidth="Infinity"/>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Separator style="-fx-background-color: rgba(255,255,255,0.1);"/>
+
+                <Button text="&#x1f6aa; D&#xe9;connexion"
+                        onAction="#handleLogout"
+                        styleClass="nav-button" maxWidth="Infinity"
+                        style="-fx-text-fill: #e74c3c;"/>
+
+                <Label text="NAJAHNI v2.0 &#x2014; Admin"
+                       style="-fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-padding: 10 0 0 5;"/>
+            </VBox>
+        </ScrollPane>
+    </left>
+
+    <!-- CENTER CONTENT AREA -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <!-- Default: Dashboard content loaded here -->
+        </StackPane>
+    </center>
+
+</BorderPane>

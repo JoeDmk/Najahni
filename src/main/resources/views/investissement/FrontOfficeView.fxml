@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.investissement.FrontOfficeController"
+            stylesheets="@investissement.css, @../najahni-master.css"
+            styleClass="fo-root">
+
+    <!-- ═══ SUB-NAVIGATION TABS ═══ -->
+    <top>
+        <HBox styleClass="fo-sub-tabs" alignment="CENTER_LEFT" spacing="4">
+            <padding><Insets top="0" right="20" bottom="0" left="20"/></padding>
+            <Label fx:id="lblNavSubtitle" text="" visible="false" managed="false"/>
+            <Button fx:id="btnFoOpportunities" text="📊 Opportunités"
+                    styleClass="fo-sub-tab" onAction="#showOpportunities"/>
+            <Button fx:id="btnFoOffers" text="📋 Mes Offres"
+                    styleClass="fo-sub-tab" onAction="#showOffers"/>
+            <Button fx:id="btnFoRiskAnalysis" text="🤖 Analyse IA"
+                    styleClass="fo-sub-tab" onAction="#showRiskAnalysis"/>
+            <Button fx:id="btnFoPortfolio" text="💼 Portefeuille"
+                    styleClass="fo-sub-tab" onAction="#showPortfolio"/>
+            <Button fx:id="btnContracts" text="📜 Contrats"
+                    styleClass="fo-sub-tab" onAction="#showContracts"/>
+            <Button fx:id="btnAIMatching" text="🤝 Matching IA"
+                    styleClass="fo-sub-tab" onAction="#showAIMatching"/>
+            <Button fx:id="btnInbox" text="📬 Inbox"
+                    styleClass="fo-sub-tab" onAction="#toggleInbox"
+                    visible="false" managed="false"/>
+        </HBox>
+    </top>
+
+    <!-- ═══ CONTENT AREA ═══ -->
+    <center>
+        <StackPane fx:id="foContentArea" styleClass="fo-content">
+            <!-- Views loaded dynamically here -->
+        </StackPane>
+    </center>
+
+</BorderPane>

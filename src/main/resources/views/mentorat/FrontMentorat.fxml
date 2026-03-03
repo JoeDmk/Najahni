@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="rootPane"
+            xmlns="http://javafx.com/javafx/17.0.14"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.mentorat.FrontMentoratController"
+            stylesheets="@mentorat.css, @../najahni-master.css"
+            styleClass="fo-root">
+
+    <!-- ═══ SUB-NAVIGATION TABS ═══ -->
+    <top>
+        <HBox fx:id="subTabBar" styleClass="fo-sub-tabs" alignment="CENTER_LEFT" spacing="4">
+            <padding><Insets top="0" right="20" bottom="0" left="20"/></padding>
+            <Button fx:id="tabExploreMentors" text="Explorer les Mentors"
+                    styleClass="fo-sub-tab" onAction="#showExploreMentors"/>
+            <Button fx:id="tabMyRequests" text="Mes Demandes"
+                    styleClass="fo-sub-tab" onAction="#showMyRequests"/>
+            <Button fx:id="tabMySessions" text="Mes Sessions"
+                    styleClass="fo-sub-tab" onAction="#showMySessions"/>
+            <Button fx:id="tabMyAvailability" text="Mes Disponibilites"
+                    styleClass="fo-sub-tab" visible="false" managed="false"
+                    onAction="#showMyAvailability"/>
+        </HBox>
+    </top>
+
+    <!-- ═══ CONTENT AREA ═══ -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="fo-content"/>
+    </center>
+
+</BorderPane>

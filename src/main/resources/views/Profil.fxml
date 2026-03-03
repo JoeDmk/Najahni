@@ -93,29 +93,15 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane fx:controller="controllers.ProfilController"
-            stylesheets="@modern.css"
+            stylesheets="@najahni-master.css"
             style="-fx-background-color: #F0F2F5;"
             xmlns="http://javafx.com/javafx/17.0.14"
             xmlns:fx="http://javafx.com/fxml/1">
 
-    <top>
-        <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="16">
-            <padding><Insets top="14" right="24" bottom="14" left="24"/></padding>
-            <Button text="← Retour" onAction="#handleBack" styleClass="btn-back"/>
-            <Label text="Mon Profil" styleClass="page-header-title"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <HBox spacing="8" alignment="CENTER">
-                <Label text="Rôle :" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 13px;"/>
-                <Label fx:id="roleLabel" styleClass="role-badge"/>
-            </HBox>
-            <Label fx:id="verifiedLabel" styleClass="verified-badge"/>
-        </HBox>
-    </top>
-
     <center>
         <ScrollPane fitToWidth="true" styleClass="modern-scroll">
             <VBox alignment="CENTER" style="-fx-padding: 30;">
-                <VBox styleClass="glass-card" spacing="18" maxWidth="620">
+                <VBox styleClass="glass-card" spacing="18" maxWidth="820">
                     <padding><Insets top="35" right="40" bottom="35" left="40"/></padding>
 
                     <!-- Profile Image - Circular -->

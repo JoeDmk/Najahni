@@ -363,28 +363,7 @@ public class FaceLoginController {
     // ==================== Navigation ====================
 
     private void redirectToHome(User user) {
-        try {
-            FXMLLoader loader;
-            if (user.getRole() == Type.ADMIN) {
-                loader = new FXMLLoader(getClass().getResource("/views/Dashboard.fxml"));
-            } else {
-                loader = new FXMLLoader(getClass().getResource("/views/Home.fxml"));
-            }
-            Parent root = loader.load();
-
-            if (user.getRole() == Type.ADMIN) {
-                DashboardController ctrl = loader.getController();
-                ctrl.setCurrentUser(user);
-            } else {
-                HomeController ctrl = loader.getController();
-                ctrl.setCurrentUser(user);
-            }
-
-            SceneHelper.switchScene(SceneHelper.stageOf(webcamView), root);
-        } catch (Exception e) {
-            System.err.println("Error redirecting after Face ID login: " + e.getMessage());
-            e.printStackTrace();
-        }
+        tools.NavigationHelper.goHome(webcamView, user);
     }
 
     @FXML
